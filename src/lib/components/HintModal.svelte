@@ -130,27 +130,64 @@
 }
 
   
-  function colourToCode(colour: string): string {
-    let output: string = ''
-    switch (colour) {
-      case ('red'):
-        output = 'r';
-      case ('yellow'):
-        output = 'y';
-      case ('blue'):
-        output = 'b';
-      case ('white'):
-        output = 'w';
-      case ('green'):
-        output = 'g';
-      default:
-        output = '';
-        console.log('invalid colour given');
-    }
-    return output;
+function colourToCode(colour: string): string {
+  let output: string = ''
+  switch (colour) {
+    case ('red'):
+      output = 'r';
+      break;
+    case ('yellow'):
+      output = 'y';
+      break;
+    case ('blue'):
+      output = 'b';
+      break;
+    case ('white'):
+      output = 'w';
+      break;
+    case ('green'):
+      output = 'g';
+      break;
+    default:
+      output = '';
+      console.log('invalid colour given');
   }
+  return output;
+}
   
-  function isHintValid(hint: string | number) {
+function isHintValid(hint: string | number): boolean {
+  let output: boolean = false;
+  switch (variant) {
+    case ('no-variant' || 'blacks'):
+      output = isHintValidNoRainbows(hint);
+    case ('rainbows' || 'rainbows-and-blacks'):
+      output = isHintValidIncludingRainbows(hint);
+  }
+  return output;
+}
+
+function isHintValidNoRainbows(hint: string | number): boolean {
+  const selectedCards = Array.from($cardsSelectedStore);
+
+  // Check if all of the selected cards validate the hint
+  const isValid = selectedCards.every(cardId => {
+      const card = $cards.find(c => c.id === cardId);
+      if (!card) return false; // Skip if card not found for some reason
+
+      if (typeof hint === 'string') {
+          const colourIndex = colours.indexOf(hint);
+          // Hint is valid if it's not explicitly marked as false
+          return (card.colourInformation[colourIndex] === null || card.colourInformation[colourIndex] === true);
+      } else if (typeof hint === 'number') {
+          // Hint is valid if it's not explicitly marked as false
+          return (card.numberInformation[hint - 1] === null || card.numberInformation[hint - 1] === true);
+      }
+  });
+
+  return isValid;
+}
+
+function isHintValidIncludingRainbows(hint: string | number): boolean {
     const selectedCards = Array.from($cardsSelectedStore);
 
     // Check if all of the selected cards validate the hint
@@ -159,18 +196,25 @@
         if (!card) return false; // Skip if card not found for some reason
 
         if (typeof hint === 'string') {
-            const colourIndex = colours.indexOf(hint);
-            // Hint is valid if it's not explicitly marked as false
-            return (card.colourInformation[colourIndex] === null || card.colourInformation[colourIndex] === true);
+            // Check if the card could be a rainbow
+            const isRainbowPossible = card.colourInformation[5] === null || card.colourInformation[5] === true;
+
+            if (isRainbowPossible) {
+                // If a card could be a rainbow, accept all colour hints
+                return true;
+            } else {
+                // Otherwise, check the specific colour index
+                const colourIndex = colours.indexOf(hint);
+                return (card.colourInformation[colourIndex] === null || card.colourInformation[colourIndex] === true);
+            }
         } else if (typeof hint === 'number') {
-            // Hint is valid if it's not explicitly marked as false
+            // Hint is valid if it's not explicitly marked as false for numbers
             return (card.numberInformation[hint - 1] === null || card.numberInformation[hint - 1] === true);
         }
     });
 
     return isValid;
 }
-
 
 
   function closePanel() {
