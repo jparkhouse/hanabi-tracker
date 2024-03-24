@@ -34,9 +34,9 @@
       case 'no-variant':
         saveColourHintNoVariant(colourHint);
         break;
-    //   case 'rainbows':
-    //     saveColourHintRainbows(colourHint);
-    //     break;
+       case 'rainbows':
+         saveColourHintRainbows(colourHint);
+         break;
     //   case 'blacks':
     //     saveColourHintBlacks(colourHint);
     //     break;
@@ -79,7 +79,7 @@
         if (selectedCardIds.includes(card.id)) { // if the card is selected
           if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === null) { // if this card has not been touched by this colour hint before
             card.colourInformation.forEach((value, i) => {
-              if (i != colourIndex || i < 5) {
+              if (i != colourIndex && i < 5) {
                 card.colourInformation[i] = false;
               }
               else {
@@ -87,13 +87,23 @@
               }
             })
           }
-          if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === false) { // if this card has been touched by a different colour hint before
+          else if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === false) { // if this card has been touched by a different colour hint before
             card.colourInformation.forEach((value, i) => {
-              if (i < 5) { // it is rainbow
-                card.colourInformation[i] = false;
+              if (i == 5) { // all indexes except rainbow sshould be false, since the only way it can be more than one colour is if it is rainbow
+                card.colourInformation[i] = true;
               }
               else {
+                card.colourInformation[i] = false;
+              }
+            })
+          }
+          else if (card.colourInformation[5] === false && card.colourInformation[colourIndex] === null) { // if this card has negative rainbow/colour hint
+            card.colourInformation.forEach((value, i) => {
+              if (i == colourIndex) { // it is precisely that colour
                 card.colourInformation[i] = true;
+              }
+              else {
+                card.colourInformation[i] = false;
               }
             })
           }

@@ -33,6 +33,11 @@
           <option value="4">4</option>
           <option value="5">5</option>
         </select>
+        <label for="Variant">Variant:</label>
+        <select id="Variant" bind:value={tempConfig.variant}>
+          <option value="'no-variant'">No variant</option>
+          <option value="rainbows">Rainbows</option>
+        </select>
       </div>
       
 

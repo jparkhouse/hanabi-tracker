@@ -4,7 +4,7 @@ Inspired by functionality found over on [hanab.live](https://hanab.live), I deci
 
 ## Features
 
-Currently, the app features the ability to choose between 3-5 cards, apply hints, and play or discard cards. While the code represents other variants, they are not fully implemented; only 'no-variant', or the standard 5 hanabi suits, are currently supported.
+Currently, the app features the ability to choose between 3-5 cards, apply hints, and play or discard cards. While the code represents other variants, they are not fully implemented; only 'no-variant', or the standard 5 hanabi suits, and 'rainbows', the standard 5 suits with the multicoloured, or rainbow, suit are currently supported.
 
 ## Technical
 
@@ -14,7 +14,8 @@ The app is built by me, Jake, and I am very much an amatuer coder. It uses Vite 
 
 Next on the roadmap:
 - Fix CSS to improve styles and responsiveness
-- 'rainbows' variant
+- ~~'rainbows' variant~~
 - 'blacks' variant
 - 'rainbows-and-blacks' variant
 - Notes on cards
+- an Undo feature
