@@ -1,0 +1,121 @@
+function saveHint() {
+      if (selectedHint) {
+          console.log("a hint!")
+          if (typeof selectedHint === 'string') {
+            let colourHint = selectedHint;
+            let colourIndex = colours.findIndex(element => {element === colourHint});
+            switch (variant) {
+              case 'no-variant':
+                cards.updateCards(selected => {
+                  let updated = selected;
+                  updated.forEach((card, index) => {
+                    if (card.id in $cardsSelectedStore) { // if the card is selected
+                      card.colourInformation.forEach((value, index) => {
+                        if (index != colourIndex) { // in no-variant, cannot be any other colour
+                          value = false;
+                        }
+                        else { // it is this colour
+                          value = true;
+                        }
+                      })
+                    }
+                    else { // it is not this colour by negative information
+                      card.colourInformation[colourIndex] = false;
+                    }
+                  })
+                  return updated;
+                });
+              case 'rainbows':
+              cards.updateCards(selected => {
+                  let updated = selected;
+                  updated.forEach((card, index) => {
+                    if (card.id in $cardsSelectedStore) { // if the card is selected
+                      card.colourInformation.forEach((value, index) => {
+                        if (index != colourIndex && index < 5) { // in rainbow variant, cannot be any other colour
+                          value = false;
+                        }
+                        else if (index === colourIndex || index === 5) { // it is this colour, or rainbow
+                          value = true;
+                        }
+                      });
+                    }
+                    else { // it is not this colour by negative information
+                      card.colourInformation[colourIndex] = false;
+                      card.colourInformation[5] = false; // by negative information it also cannot be rainbow
+                    }
+                  })
+                  return updated;
+                });
+              case 'blacks':
+                cards.updateCards(selected => {
+                  let updated = selected;
+                  updated.forEach((card, index) => {
+                    if (card.id in $cardsSelectedStore) { // if the card is selected
+                      card.colourInformation.forEach((value, index) => {
+                        if (index != colourIndex) { // in blacks, cannot be any other colour, including black
+                          value = false;
+                        }
+                        else { // it is this colour (and not black)
+                          value = true;
+                        }
+                      })
+                    }
+                    else { // it is not this colour by negative information, could still be black
+                      card.colourInformation[colourIndex] = false;
+                    }
+                  })
+                  return updated;
+                });
+              case 'rainbows-and-blacks': // the most ew
+                cards.updateCards(selected => {
+                  let updated = selected;
+                  updated.forEach((card, index) => {
+                    if (card.id in $cardsSelectedStore) { // if the card is selected
+                      card.colourInformation.forEach((value, index) => {
+                        if (index != colourIndex && index < 5) { // in rainbows-and-blacks, cannot be any other colour
+                          value = false;
+                        }
+                        else if (index === colourIndex || index === 5) { // it is this colour, or rainbow
+                          value = true;
+                        }
+                      });
+                      card.colourInformation[6] = false; // since it has colour, it cannot be black
+                    }
+                    else { // it is not this colour, or rainbow, by negative information
+                      card.colourInformation[colourIndex] = false;
+                      card.colourInformation[5] = false;
+                    }
+                  })
+                  return updated;
+                });
+            }
+          }
+          else if (typeof selectedHint === 'number') {
+            let numberHint = selectedHint as number;
+            cards.updateCards(selected => {
+              let updated = selected;
+              updated.forEach((card, index) => {
+                if (card.id in $cardsSelectedStore) { // if the card is selected
+                  card.numberInformation.forEach((value, index) => {
+                    if (index != numberHint - 1) { // can only be that number for all variants currently implemented
+                      value = false;
+                    }
+                    else { // it is this number
+                      value = true;
+                    }
+                  })
+                }
+                else { // it is not this number by negative information
+                  card.numberInformation[numberHint - 1] = false;
+                }
+              })
+              return updated; // finally end this fuck off logic
+            });
+          }
+          cardsSelectedStore.update(selected => {
+            selected = new Set<number>();
+            return selected;
+          })
+          closePanel();
+      }
+    }

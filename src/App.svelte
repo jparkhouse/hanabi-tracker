@@ -1,10 +1,9 @@
 <script lang="ts">
-  import ConfigPanel from './lib/components/ConfigPanel.svelte';
+  import GameControls from './lib/components/GameControls.svelte';
   import Hand from './lib/components/Hand.svelte'
 </script>
 
 <main>
-  <ConfigPanel />
+  <GameControls />
   <Hand />
-  <!-- Your other components like Hand, Card, etc. go here -->
 </main>
