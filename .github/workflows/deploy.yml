@@ -23,9 +23,6 @@ jobs:
 
     - name: Build
       run: npm run build
-
-    - name: List output files
-      run: ls -R dist
       
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.4
