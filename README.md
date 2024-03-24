@@ -1,6 +1,6 @@
 # Hanabi tracker
 
-Inspired by functionality found over on [hanab.live], I decided to embark on making a web app for tracking a single player's hand. I hope to build towards feature parity with hanab.live, with the addition of notes, marking cards as critical, etc, although there will be some functionality I cannot add, since this app will never have the full game state. 
+Inspired by functionality found over on [hanab.live](hanab.live), I decided to embark on making a web app for tracking a single player's hand. I hope to build towards feature parity with hanab.live, with the addition of notes, marking cards as critical, etc, although there will be some functionality I cannot add, since this app will never have the full game state. The hosted app can be found [here](jparkhouse.github.io/hanabi-tracker/) assuming all is working well.
 
 ## Features
 
