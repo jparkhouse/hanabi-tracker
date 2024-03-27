@@ -37,6 +37,7 @@
         <select id="Variant" bind:value={tempConfig.variant}>
           <option value="'no-variant'">No variant</option>
           <option value="rainbows">Rainbows</option>
+          <option value="blacks">Blacks</option>
         </select>
       </div>
       
