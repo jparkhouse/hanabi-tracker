@@ -4,7 +4,11 @@ Inspired by functionality found over on [hanab.live](https://hanab.live), I deci
 
 ## Features
 
-Currently, the app features the ability to choose between 3-5 cards, apply hints, and play or discard cards. Currently supports No variant (standard 5 suits), Rainbows (a multicolour suit), Black (a colourless suit), and Rainbows and Blacks (both the multicolour and no colour suits) are usable.
+Currently, the app features the ability to choose between 3-5 cards, apply hints, and play or discard cards. Currently supports:
+- No variant (standard 5 suits)
+- Rainbows (a multicolour suit)
+- Black (a colourless suit)
+- Rainbows and Blacks (both the multicolour and no colour suits).
 
 ## Technical
 
