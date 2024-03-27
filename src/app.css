@@ -38,6 +38,13 @@ h1 {
 #app {
   margin: 20px;
   text-align: center;
+  max-width: 100%;
+  display: flex;
+  flex: 1;
+}
+
+main {
+  min-width: 100%;
 }
 
 button {

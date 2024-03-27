@@ -49,6 +49,7 @@
     justify-content: space-around; /* Distribute space around items */
     flex-wrap: wrap; /* Allow wrapping if needed */
     gap: 10px; /* Space between cards */
+    width: 100%;
   }
   </style>
   

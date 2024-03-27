@@ -53,8 +53,8 @@
      on:click={() => onSelect(id)}
      on:keydown={(event) => (event.key === 'Enter' || event.key === ' ') && onSelect(id)}>
   <p>Card {id + 1}</p>
-  <p>Numbers: {decodeNumber(numberInformation)}</p>
-  <p>Colours: {decodeColour(colourInformation)}</p>
+  <p>{decodeNumber(numberInformation)}</p>
+  <p>{decodeColour(colourInformation)}</p>
 </div>
   
   <style>
@@ -68,7 +68,9 @@
         min-width: 100px; /* Minimum width for a card */
         margin: 10px; /* Margin around cards */
         text-align: center; /* Center text inside cards */
+        flex: 1;
         aspect-ratio: 3/4;
+        font-size: 3vw;
     }
 
     .card.selected {
