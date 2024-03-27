@@ -23,3 +23,4 @@ Next on the roadmap:
     - finessed (needs an interaction)
 - Notes on cards
 - an Undo feature
+- improving card graphics as more is known

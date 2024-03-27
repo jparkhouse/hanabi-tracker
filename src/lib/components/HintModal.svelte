@@ -105,10 +105,12 @@ function saveColourHintNoVariant(colourHint: string) {
             })
           }
         }
-        else { // it is not this colour, or rainbow, by negative information
+        else if (card.colourInformation[5] !== true) { // it is not this colour, or rainbow, by negative information.
+                                                       // if statement catches against removing rainbow when hint should clearly apply
+                                                       // which leaves a truely colourless card
           card.colourInformation[colourIndex] = false;
           card.colourInformation[5] = false;
-        }
+        } // in the case where the rainbow card is excluded, we assume this is a user error
       })
       return updated;
     });
@@ -173,10 +175,12 @@ function saveColourHintNoVariant(colourHint: string) {
             })
           }
         }
-        else { // it is not this colour, or rainbow, by negative information
+        else if (card.colourInformation[5] !== true) { // it is not this colour, or rainbow, by negative information.
+                                                       // if statement catches against removing rainbow when hint should clearly apply
+                                                       // which leaves a truely colourless card
           card.colourInformation[colourIndex] = false;
           card.colourInformation[5] = false;
-        }
+        } // in the case where a rainbow card is excluded from the hint, we assume this is user error
       })
       return updated;
     });
