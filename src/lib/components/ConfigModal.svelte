@@ -38,6 +38,7 @@
           <option value="no-variant">No variant</option>
           <option value="rainbows">Rainbows</option>
           <option value="blacks">Blacks</option>
+          <option value="rainbows-and-blacks">Rainbows and Blacks</option>
         </select>
       </div>
       

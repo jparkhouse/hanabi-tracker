@@ -34,39 +34,39 @@
       case 'no-variant':
         saveColourHintNoVariant(colourHint);
         break;
-       case 'rainbows':
-         saveColourHintRainbows(colourHint);
+        case 'rainbows':
+          saveColourHintRainbows(colourHint);
+          break;
+        case 'blacks':
+          saveColourHintBlacks(colourHint);
+          break;
+       case 'rainbows-and-blacks':
+         saveColourHintRainbowsAndBlacks(colourHint);
          break;
-       case 'blacks':
-         saveColourHintBlacks(colourHint);
-         break;
-    //   case 'rainbows-and-blacks':
-    //     saveColourHintRainbowsAndBlacks(colourHint);
-    //     break;
     }
   }
 
-  function saveColourHintNoVariant(colourHint: string) {
-    const selectedCardIds = Array.from($cardsSelectedStore);
-    const colourIndex = colours.findIndex(colour => colour === colourHint);
+function saveColourHintNoVariant(colourHint: string) {
+  const selectedCardIds = Array.from($cardsSelectedStore);
+  const colourIndex = colours.findIndex(colour => colour === colourHint);
 
-    cards.updateCards(selected => {
-      const updated = selected.map(card => {
-        // Determine new colour information based on whether the card is selected
-        const newColourInformation = card.colourInformation.map((value, idx) => {
-          if (selectedCardIds.includes(card.id)) {
-            // If the card is selected, mark the colourIndex as true and others as false
-            return idx === colourIndex ? true : false;
-          } else {
-            // If the card is not selected, keep existing value except the colourIndex to false
-            return idx !== colourIndex ? value : false;
-          }
-        });
-        // Return a new card object with the updated colour information
-        return { ...card, colourInformation: newColourInformation };
+  cards.updateCards(selected => {
+    const updated = selected.map(card => {
+      // Determine new colour information based on whether the card is selected
+      const newColourInformation = card.colourInformation.map((value, idx) => {
+        if (selectedCardIds.includes(card.id)) {
+          // If the card is selected, mark the colourIndex as true and others as false
+          return idx === colourIndex ? true : false;
+        } else {
+          // If the card is not selected, keep existing value except the colourIndex to false
+          return idx !== colourIndex ? value : false;
+        }
       });
-      return updated;
+      // Return a new card object with the updated colour information
+      return { ...card, colourInformation: newColourInformation };
     });
+    return updated;
+  });
 }
 
   function saveColourHintRainbows(colourHint: string) {
@@ -79,11 +79,8 @@
         if (selectedCardIds.includes(card.id)) { // if the card is selected
           if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === null) { // if this card has not been touched by this colour hint before
             card.colourInformation.forEach((value, i) => {
-              if (i != colourIndex && i < 5) {
+              if (i != colourIndex && i != 5) {
                 card.colourInformation[i] = false;
-              }
-              else {
-                card.colourInformation[i] = null; // still unknown if it is either colour or rainbow
               }
             })
           }
@@ -136,6 +133,51 @@
         // Return a new card object with the updated colour information
         return { ...card, colourInformation: newColourInformation };
       });
+      return updated;
+    });
+  }
+
+  function saveColourHintRainbowsAndBlacks(colourHint: string) {
+    const selectedCardIds = Array.from($cardsSelectedStore);
+    const colourIndex = colours.findIndex(colour => colour === colourHint);
+
+    cards.updateCards(selected => {
+      let updated = selected;
+      updated.forEach((card, index) => {
+        if (selectedCardIds.includes(card.id)) { // if the card is selected
+          if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === null) { // if this card has not been touched by this colour hint before
+            card.colourInformation.forEach((value, i) => {
+              if (i != colourIndex && i != 5) { // could be either that colour or rainbow
+                card.colourInformation[i] = false;
+              }
+            })
+          }
+          else if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === false) { // if this card has been touched by a different colour hint before
+            card.colourInformation.forEach((value, i) => {
+              if (i == 5) { // all indexes except rainbow sshould be false, since the only way it can be more than one colour is if it is rainbow
+                card.colourInformation[i] = true;
+              }
+              else {
+                card.colourInformation[i] = false;
+              }
+            })
+          }
+          else if (card.colourInformation[5] === false && card.colourInformation[colourIndex] === null) { // if this card has negative rainbow/colour hint
+            card.colourInformation.forEach((value, i) => {
+              if (i == colourIndex) { // it is precisely that colour
+                card.colourInformation[i] = true;
+              }
+              else {
+                card.colourInformation[i] = false;
+              }
+            })
+          }
+        }
+        else { // it is not this colour, or rainbow, by negative information
+          card.colourInformation[colourIndex] = false;
+          card.colourInformation[5] = false;
+        }
+      })
       return updated;
     });
   }
@@ -199,6 +241,9 @@ function isHintValid(hint: string | number): boolean {
       break;
     case ('blacks'):
       output = isHintValidBlacks(hint);
+      break;
+    case ('rainbows-and-blacks'):
+      output = isHintValidRainbowsAndBlacks(hint);
       break;
   }
   return output;
@@ -269,6 +314,35 @@ function isHintValidBlacks(hint: string | number): boolean {
         } else if (typeof hint === 'number') {
           // Hint is valid if it's not explicitly marked as false for numbers
           return (card.numberInformation[hint - 1] === null || card.numberInformation[hint - 1] === true);
+        }
+    });
+
+    return isValid;
+}
+
+function isHintValidRainbowsAndBlacks(hint: string | number): boolean {
+    const selectedCards = Array.from($cardsSelectedStore);
+
+    // Check if all of the selected cards validate the hint
+    const isValid = selectedCards.every(cardId => {
+        const card = $cards.find(c => c.id === cardId);
+        if (!card) return false; // Skip if card not found for some reason
+
+        if (typeof hint === 'string') {
+            // Check if the card could be a rainbow
+            const isRainbowPossible = card.colourInformation[5] === null || card.colourInformation[5] === true;
+
+            if (isRainbowPossible) {
+                // If a card could be a rainbow, accept all colour hints
+                return true;
+            } else {
+                // Otherwise, check the specific colour index
+                const colourIndex = colours.indexOf(hint);
+                return (card.colourInformation[colourIndex] === null || card.colourInformation[colourIndex] === true);
+            }
+        } else if (typeof hint === 'number') {
+            // Hint is valid if it's not explicitly marked as false for numbers
+            return (card.numberInformation[hint - 1] === null || card.numberInformation[hint - 1] === true);
         }
     });
 

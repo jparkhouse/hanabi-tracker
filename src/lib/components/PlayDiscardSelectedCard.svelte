@@ -3,6 +3,9 @@
     import { cardsSelectedStore } from "../stores/cardsSelectedStore";
     import { cards } from "../stores/cardsStore";
     import { incrementAndGet } from "../stores/cardIDCounterStore";
+    import gameConfig from "../stores/gameConfigStore";
+
+    $: variant = $gameConfig.variant;
 
     function playDiscardSelectedCard() {
     if ($cardsSelectedStore.size === 1) {
@@ -11,11 +14,7 @@
       cards.updateCards($cards => {
         // Logic to remove the selected card
         const updatedCards = $cards.filter(card => card.id !== selectedId);
-        // Add a new card with default information at the end if needed
-        // Example: Add logic based on game rules about when new cards are added
         updatedCards.push(createDefaultCard(incrementAndGet()));
-
-        // This is a placeholder; you'll define createDefaultCard next
         return updatedCards;
       });
 
@@ -29,8 +28,7 @@
       id: id,
       numberInformation: Array(5).fill(null),
       colourInformation: Array(
-        // Use gameConfig for variant-specific length; this is a simplified example
-        5 // Adjust based on your game's rules
+        variant === 'no-variant' ? 5 : variant === 'rainbows' || variant === 'blacks' ? 6 : 7
       ).fill(null),
     };
   }
