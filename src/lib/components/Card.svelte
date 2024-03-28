@@ -10,11 +10,12 @@
     export let isHinted: boolean;
     export let isFinessed: boolean;
     export let isChopMoved: boolean;
+    export let isCritical: boolean;
     export let onSelect: (id: number) => void;
   
     $: variant = $gameConfig.variant;
     $: numberOfCards = $gameConfig.numberOfCards;
-    $: borderColour = selected ? 'blue' : isHinted ? 'orange' : isFinessed ? 'lightblue' : isChopMoved ? 'white' : 'lightgray';
+    $: borderColour = selected ? 'blue' : isCritical ? 'red' : isHinted ? 'orange' : isFinessed ? 'lightblue' : isChopMoved ? 'white' : 'lightgray';
 
     // Utility to decode colour information into readable format
     function decodeColour(colourInfo: (boolean | null)[]): string {
@@ -65,7 +66,7 @@
   <style>
     .card {
         background-color: dimgrey;
-        border: 2px solid;
+        border: 3px solid;
         color: white;
         border-radius: 8px;
         padding: 10px;

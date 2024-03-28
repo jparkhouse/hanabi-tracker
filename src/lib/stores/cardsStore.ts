@@ -19,6 +19,7 @@ function createCardsStore() {
       isHinted: false,
       isChopMoved: false,
       isFinessed: false,
+      isCritical: false,
     }));
     set(newCards);
   };

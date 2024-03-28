@@ -36,6 +36,7 @@
       isHinted={card.isHinted}
       isChopMoved={card.isChopMoved}
       isFinessed={card.isFinessed}
+      isCritical={card.isCritical}
       onSelect={handleCardSelect}
     />
   {/each}

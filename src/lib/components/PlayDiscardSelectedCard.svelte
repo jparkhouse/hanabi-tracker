@@ -33,6 +33,7 @@
       isHinted: false,
       isChopMoved: false,
       isFinessed: false,
+      isCritical: false,
     };
   }
 </script>

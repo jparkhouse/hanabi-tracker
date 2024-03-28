@@ -7,4 +7,5 @@ export interface Card {
     isHinted: boolean;
     isFinessed: boolean;
     isChopMoved: boolean;
+    isCritical: boolean;
   }
