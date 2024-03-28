@@ -33,6 +33,9 @@
       numberInformation={card.numberInformation}
       colourInformation={card.colourInformation}
       selected={$cardsSelectedStore.has(card.id)}
+      isHinted={card.isHinted}
+      isChopMoved={card.isChopMoved}
+      isFinessed={card.isFinessed}
       onSelect={handleCardSelect}
     />
   {/each}

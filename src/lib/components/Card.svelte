@@ -7,10 +7,14 @@
     export let numberInformation: (boolean | null)[];
     export let colourInformation: (boolean | null)[];
     export let selected: boolean = false;
+    export let isHinted: boolean;
+    export let isFinessed: boolean;
+    export let isChopMoved: boolean;
     export let onSelect: (id: number) => void;
   
     $: variant = $gameConfig.variant;
     $: numberOfCards = $gameConfig.numberOfCards;
+    $: borderColour = selected ? 'blue' : isHinted ? 'orange' : isFinessed ? 'lightblue' : isChopMoved ? 'white' : 'lightgray';
 
     // Utility to decode colour information into readable format
     function decodeColour(colourInfo: (boolean | null)[]): string {
@@ -49,9 +53,10 @@
     }
   </script>
   
-<div class="card {selected ? 'selected' : ''} no-{numberOfCards}" tabindex="0" role="button"
+<div class="card no-{numberOfCards}" tabindex="0" role="button"
      on:click={() => onSelect(id)}
-     on:keydown={(event) => (event.key === 'Enter' || event.key === ' ') && onSelect(id)}>
+     on:keydown={(event) => (event.key === 'Enter' || event.key === ' ') && onSelect(id)}
+     style="border-color: {borderColour};">
   <p>Card {id + 1}</p>
   <p>{decodeNumber(numberInformation)}</p>
   <p>{decodeColour(colourInformation)}</p>
@@ -60,7 +65,7 @@
   <style>
     .card {
         background-color: dimgrey;
-        border: 2px solid lightgray;
+        border: 2px solid;
         color: white;
         border-radius: 8px;
         padding: 10px;
@@ -71,10 +76,6 @@
         flex: 1;
         aspect-ratio: 3/4;
         font-size: 3vw;
-    }
-
-    .card.selected {
-        border: 2px solid blue;
     }
 
     .card.no-3 {

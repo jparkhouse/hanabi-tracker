@@ -30,6 +30,9 @@
       colourInformation: Array(
         variant === 'no-variant' ? 5 : variant === 'rainbows' || variant === 'blacks' ? 6 : 7
       ).fill(null),
+      isHinted: false,
+      isChopMoved: false,
+      isFinessed: false,
     };
   }
 </script>

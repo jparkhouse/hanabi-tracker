@@ -16,6 +16,9 @@ function createCardsStore() {
       colourInformation: Array(
         config.variant === 'no-variant' ? 5 : config.variant === 'rainbows' || config.variant === 'blacks' ? 6 : 7
       ).fill(null),
+      isHinted: false,
+      isChopMoved: false,
+      isFinessed: false,
     }));
     set(newCards);
   };

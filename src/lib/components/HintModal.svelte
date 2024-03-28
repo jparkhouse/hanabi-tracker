@@ -55,6 +55,7 @@ function saveColourHintNoVariant(colourHint: string) {
       // Determine new colour information based on whether the card is selected
       const newColourInformation = card.colourInformation.map((value, idx) => {
         if (selectedCardIds.includes(card.id)) {
+          card.isHinted = true;
           // If the card is selected, mark the colourIndex as true and others as false
           return idx === colourIndex ? true : false;
         } else {
@@ -63,7 +64,7 @@ function saveColourHintNoVariant(colourHint: string) {
         }
       });
       // Return a new card object with the updated colour information
-      return { ...card, colourInformation: newColourInformation };
+      return { ...card, colourInformation: newColourInformation};
     });
     return updated;
   });
@@ -77,6 +78,7 @@ function saveColourHintNoVariant(colourHint: string) {
       let updated = selected;
       updated.forEach((card, index) => {
         if (selectedCardIds.includes(card.id)) { // if the card is selected
+          card.isHinted = true;
           if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === null) { // if this card has not been touched by this colour hint before
             card.colourInformation.forEach((value, i) => {
               if (i != colourIndex && i != 5) {
@@ -125,6 +127,7 @@ function saveColourHintNoVariant(colourHint: string) {
         // Determine new colour information based on whether the card is selected
         const newColourInformation = card.colourInformation.map((value, idx) => {
           if (selectedCardIds.includes(card.id)) {
+            card.isHinted = true;
             // If the card is selected, mark the colourIndex as true and others as false (including black)
             return idx === colourIndex ? true : false;
           } else {
@@ -133,7 +136,7 @@ function saveColourHintNoVariant(colourHint: string) {
           }
         });
         // Return a new card object with the updated colour information
-        return { ...card, colourInformation: newColourInformation };
+        return { ...card, colourInformation: newColourInformation};
       });
       return updated;
     });
@@ -147,6 +150,7 @@ function saveColourHintNoVariant(colourHint: string) {
       let updated = selected;
       updated.forEach((card, index) => {
         if (selectedCardIds.includes(card.id)) { // if the card is selected
+          card.isHinted = true;
           if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === null) { // if this card has not been touched by this colour hint before
             card.colourInformation.forEach((value, i) => {
               if (i != colourIndex && i != 5) { // could be either that colour or rainbow
@@ -194,6 +198,7 @@ function saveColourHintNoVariant(colourHint: string) {
         // Determine new number information based on whether the card is selected
         const newNumberInformation = card.numberInformation.map((value, idx) => {
           if (selectedCardIds.includes(card.id)) {
+            card.isHinted = true;
             // If the card is selected, mark the matching index (numberHint - 1) as true, others as false
             return idx === (numberHint - 1) ? true : false;
           } else {
@@ -202,7 +207,7 @@ function saveColourHintNoVariant(colourHint: string) {
           }
         });
         // Return a new card object with the updated number information
-        return { ...card, numberInformation: newNumberInformation };
+        return { ...card, numberInformation: newNumberInformation};
       });
       return updated;
     });
