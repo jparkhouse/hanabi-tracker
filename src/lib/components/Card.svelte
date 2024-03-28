@@ -15,7 +15,7 @@
   
     $: variant = $gameConfig.variant;
     $: numberOfCards = $gameConfig.numberOfCards;
-    $: borderColour = selected ? 'blue' : isCritical ? 'red' : isHinted ? 'orange' : isFinessed ? 'lightblue' : isChopMoved ? 'white' : 'lightgray';
+    $: borderColour = selected ? 'blue' : isCritical ? 'red' : isHinted ? 'orange' : isFinessed ? 'aqua' : isChopMoved ? 'white' : 'gray';
 
     // Utility to decode colour information into readable format
     function decodeColour(colourInfo: (boolean | null)[]): string {

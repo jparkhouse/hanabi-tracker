@@ -4,7 +4,13 @@ Inspired by functionality found over on [hanab.live](https://hanab.live), I deci
 
 ## Features
 
-Currently, the app features the ability to choose between 3-5 cards, apply hints, and play or discard cards. Currently supports:
+Currently, the app features the ability to:
+- choose between 3-5 cards
+- apply hints
+- play or discard cards
+- mark cards as critical, chop moved, or finessed
+    - hinted is automatically marked
+Variants currently supported:
 - No variant (standard 5 suits)
 - Rainbows (a multicolour suit)
 - Black (a colourless suit)
@@ -17,14 +23,15 @@ The app is built by me, Jake, and I am very much an amatuer coder. It uses Vite 
 ## ToDo
 
 Next on the roadmap:
-- Fix CSS to improve styles and responsiveness
+- ~~Fix CSS to improve styles and responsiveness~~
 - ~~'rainbows' variant~~
 - ~~'blacks' variant~~
 - ~~'rainbows-and-blacks' variant~~
-- highlight cards for:
-    - touched
-    - chop moved (needs an interaction)
-    - finessed (needs an interaction)
+- ~~highlight cards for:~~
+    - ~~touched~~
+    - ~~chop moved (needs an interaction)~~
+    - ~~finessed (needs an interaction)~~
+    - ~~critical~~
 - Notes on cards
 - an Undo feature
 - improving card graphics as more is known
