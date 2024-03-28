@@ -8,8 +8,9 @@ Currently, the app features the ability to:
 - choose between 3-5 cards
 - apply hints
 - play or discard cards
-- mark cards as critical, chop moved, or finessed
-    - hinted is automatically marked
+- mark cards as critical (red border), chop moved (white border), or finessed (aqua border)
+    - hinted is automatically marked (orange border)
+
 Variants currently supported:
 - No variant (standard 5 suits)
 - Rainbows (a multicolour suit)
