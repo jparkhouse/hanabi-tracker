@@ -5,11 +5,18 @@ import type { GameConfig } from './gameConfigStore';
 import type { Card as CardType } from '../models/card';
 import { nextCardId, incrementAndGet } from '../stores/cardIDCounterStore';
 import { cardsSelectedStore } from './cardsSelectedStore';
+import { Stack } from '../models/stack';
+import { deepCopy } from '../shared/deepCopy';
 
 function createCardsStore() {
-  const { subscribe, set, update } = writable<CardType[]>([]);
+
+  const { subscribe, set, update, value } = writable<CardType[]>([]);
+  const storeHistory = new Stack<CardType[]>(5);
 
   const resetCards = (config: GameConfig) => {
+    storeHistory.push(this.map((value) => {
+      return deepCopy(value);
+    }))
     const newCards: CardType[] = Array.from({ length: config.numberOfCards }, (_, i) => ({
       id: incrementAndGet(),
       numberInformation: Array(5).fill(null),
@@ -40,10 +47,20 @@ function createCardsStore() {
   return {
     subscribe,
     updateCards: (updateFunction: (cards: CardType[]) => CardType[]) => {
-      update(currentCards => updateFunction(currentCards));
+      update(currentCards => {
+        storeHistory.push(currentCards.map((value) => {
+          return deepCopy(value); //take a copy of the cards for the stack
+        }))
+        return updateFunction(currentCards);
+      });
     },
     // Add a method for manual cleanup if necessary, depending on your app structure
     cleanup: () => unsubscribe(),
+    rollback: (rollbackFunction: () => {
+      update(currentCards => {
+
+      })
+    })
   };
 }
 
