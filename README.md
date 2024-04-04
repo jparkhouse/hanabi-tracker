@@ -10,6 +10,7 @@ Currently, the app features the ability to:
 - play or discard cards
 - mark cards as critical (red border), chop moved (white border), or finessed (aqua border)
     - hinted is automatically marked (orange border)
+- undo actions (up to 5)
 
 Variants currently supported:
 - No variant (standard 5 suits)
@@ -35,4 +36,4 @@ Next on the roadmap:
     - ~~critical~~
 - Notes on cards
 - ~~an Undo feature~~
-- improving card graphics as more is known
+- ~~improving card graphics as more is known~~
