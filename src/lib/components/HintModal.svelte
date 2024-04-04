@@ -125,68 +125,66 @@ function saveColourHintNoVariant(colourHint: string) {
     cards.updateCards(selected => {
       const updated = selected.map(card => {
         // Determine new colour information based on whether the card is selected
-        const newColourInformation = card.colourInformation.map((value, idx) => {
-          if (selectedCardIds.includes(card.id)) {
-            card.isHinted = true;
-            // If the card is selected, mark the colourIndex as true and others as false (including black)
-            return idx === colourIndex ? true : false;
-          } else {
-            // If the card is not selected, keep existing value except the colourIndex to false. This will persist black, since black can never be selected.
-            return (idx !== colourIndex) ? value : false;
+        let newColourInformation;
+        if (selectedCardIds.includes(card.id)) {
+          card.isHinted = true;
+          // If the card is selected, apply the colour hint
+          newColourInformation = card.colourInformation.map((value, idx) => 
+            idx === colourIndex ? true : false);
+        } else {
+          // If the card is not selected, maintain existing values but set the hinted colour to false
+          newColourInformation = card.colourInformation.map((value, idx) => 
+            idx !== colourIndex ? value : false);
+          
+          // If all colours are false and black is not already set to true, set it to true
+          const isAllColoursFalse = newColourInformation.slice(0, 5).every(val => val === false);
+          if (isAllColoursFalse && newColourInformation[5] === null) {
+            newColourInformation[5] = true;
           }
-        });
-        // Return a new card object with the updated colour information
-        return { ...card, colourInformation: newColourInformation};
+        }
+
+        return { ...card, colourInformation: newColourInformation };
       });
       return updated;
     });
-  }
+}
+
 
   function saveColourHintRainbowsAndBlacks(colourHint: string) {
     const selectedCardIds = Array.from($cardsSelectedStore);
     const colourIndex = colours.findIndex(colour => colour === colourHint);
 
     cards.updateCards(selected => {
-      let updated = selected;
-      updated.forEach((card, index) => {
-        if (selectedCardIds.includes(card.id)) { // if the card is selected
+      return selected.map(card => {
+        // Clone the current state to a new object to ensure reactivity.
+        let newColourInformation = [...card.colourInformation];
+
+        if (selectedCardIds.includes(card.id)) {
+          // Logic for selected cards
           card.isHinted = true;
-          if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === null) { // if this card has not been touched by this colour hint before
-            card.colourInformation.forEach((value, i) => {
-              if (i != colourIndex && i != 5) { // could be either that colour or rainbow
-                card.colourInformation[i] = false;
-              }
-            })
+          if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === null) {
+            // If the card could potentially be this colour or rainbow (hasn't been hinted this colour before)
+            newColourInformation = newColourInformation.map((value, idx) => idx === colourIndex || idx === 5 ? null : false);
+          } else if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === false) { // if this card has been touched by a different colour hint before
+            newColourInformation = newColourInformation.map((value, idx) => idx === 5 ? true : false); // explicitly rainbow
+          } else if (card.colourInformation[5] === false && card.colourInformation[colourIndex] === null) {
+            // If the card cannot be rainbow but hasn't been hinted this colour before
+            newColourInformation = newColourInformation.map((value, idx) => idx === colourIndex ? true : false);
           }
-          else if (card.colourInformation[5] === null && card.colourInformation[colourIndex] === false) { // if this card has been touched by a different colour hint before
-            card.colourInformation.forEach((value, i) => {
-              if (i == 5) { // all indexes except rainbow sshould be false, since the only way it can be more than one colour is if it is rainbow
-                card.colourInformation[i] = true;
-              }
-              else {
-                card.colourInformation[i] = false;
-              }
-            })
-          }
-          else if (card.colourInformation[5] === false && card.colourInformation[colourIndex] === null) { // if this card has negative rainbow/colour hint
-            card.colourInformation.forEach((value, i) => {
-              if (i == colourIndex) { // it is precisely that colour
-                card.colourInformation[i] = true;
-              }
-              else {
-                card.colourInformation[i] = false;
-              }
-            })
+        } else {
+          // Logic for unselected cards - handling potential to be black
+          newColourInformation[colourIndex] = false; // Mark this colour as false since it's a hint
+          newColourInformation[5] = false; // Rainbow is also set to false since it's not selected
+
+          const allColoursFalse = newColourInformation.slice(0, 5).every(value => value === false); // Check if all other colours are false
+          if (allColoursFalse && newColourInformation[6] === null) {
+            // If all colours are false and black hasn't been set, set black to true
+            newColourInformation[6] = true; // Mark black as true
           }
         }
-        else if (card.colourInformation[5] !== true) { // it is not this colour, or rainbow, by negative information.
-                                                       // if statement catches against removing rainbow when hint should clearly apply
-                                                       // which leaves a truely colourless card
-          card.colourInformation[colourIndex] = false;
-          card.colourInformation[5] = false;
-        } // in the case where a rainbow card is excluded from the hint, we assume this is user error
-      })
-      return updated;
+
+        return { ...card, colourInformation: newColourInformation };
+      });
     });
   }
 
