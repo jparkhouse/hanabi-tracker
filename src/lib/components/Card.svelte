@@ -17,6 +17,16 @@
     $: numberOfCards = $gameConfig.numberOfCards;
     $: borderColour = selected ? 'blue' : isCritical ? 'red' : isHinted ? 'orange' : isFinessed ? 'aqua' : isChopMoved ? 'white' : 'gray';
 
+    let knownColour: string | null = null;
+    $: {
+        const knownColourIndex = colourInformation.findIndex(value => value === true);
+        if (knownColourIndex === -1) {
+            knownColour = null;
+        } else {
+            knownColour = getColourCodeByIndex(knownColourIndex);
+        }
+    }
+
     // Utility to decode colour information into readable format
     function decodeColour(colourInfo: (boolean | null)[]): string {
         let output: string = colourInfo.map((value, index) => 
@@ -53,8 +63,8 @@
         }
     }
   </script>
-  
-<div class="card no-{numberOfCards}" tabindex="0" role="button"
+ 
+<div class="card no-{numberOfCards} {(knownColour != null) ? knownColour : ''}" tabindex="0" role="button"
      on:click={() => onSelect(id)}
      on:keydown={(event) => (event.key === 'Enter' || event.key === ' ') && onSelect(id)}
      style="border-color: {borderColour};">
@@ -65,9 +75,9 @@
   
   <style>
     .card {
-        background-color: dimgrey;
-        border: 3px solid;
+        background-color: dimgray;
         color: white;
+        border: 3px solid;
         border-radius: 8px;
         padding: 10px;
         cursor: pointer;
@@ -77,6 +87,46 @@
         flex: 1;
         aspect-ratio: 3/4;
         font-size: 3vw;
+    }
+
+    .m {
+        background-image: linear-gradient(to bottom right, red, orange, yellow, green, blue, indigo, violet);
+        color: white;
+        text-shadow: 
+            -1px -1px 0 #000,  
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000; /* Black text shadow to create outline effect */
+    }
+
+    .bl {
+        background-color: #000;
+        color: white;
+    }
+
+    .r {
+        background-color: red;
+        color: white;
+    }
+
+    .b {
+        background-color: navy;
+        color: white;
+    }
+
+    .g {
+        background-color: darkgreen;
+        color: white;
+    }
+
+    .w {
+        background-color: white;
+        color: black;
+    }
+
+    .y {
+        background-color: yellow;
+        color: black;
     }
 
     .card.no-3 {
