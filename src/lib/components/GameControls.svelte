@@ -3,6 +3,7 @@
   import PlayDiscardSelectedCard from "./PlayDiscardSelectedCard.svelte";
   import ConfigModal from './ConfigModal.svelte';
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
+  import { cards, storeHistorySize } from "../stores/cardsStore";
   import HintModal from "./HintModal.svelte";
   import MarkModal from "./MarkModal.svelte";
 
@@ -23,6 +24,14 @@
   function openMarkModal() {
     isMarkModalOpen = true;
   }
+
+  $: historySize = $storeHistorySize;
+
+  function handleRollback() {
+    cards.rollback()
+  }
+
+  $: console.log($storeHistorySize)
 </script>
 
 <div class="game-controls">
@@ -30,6 +39,7 @@
   <PlayDiscardSelectedCard />
   <button class="hint-panel" on:click={openHintModal} disabled={$cardsSelectedStore.size < 1}>Record Hint</button>
   <button class="mark-panel" on:click={openMarkModal} disabled={$cardsSelectedStore.size < 1}>Mark cards</button>
+  <button class="undo" on:click={handleRollback} disabled={historySize < 1}>Undo</button>
 </div>
 <ConfigModal bind:isOpen={isConfigModalOpen} />
 <HintModal bind:isOpen={isHintModalOpen} />

@@ -1,6 +1,7 @@
+//lib/src/models/stack.ts
 interface IStack<T> {
     push(item: T): void;
-    pop(): T;
+    pop(): T | undefined;
     peek(): T;
     size(): number;
     clear(): void;
@@ -19,8 +20,12 @@ export class Stack<T> implements IStack<T> {
         this.storage.push(item); // add new item to top of stack
     };
 
-    pop(): T {
-        return this.storage.pop() // returns newest item and removes it from the stack
+    pop(): T | undefined{
+        if (this.size() > 0) {
+            return this.storage.pop() // returns newest item and removes it from the stack
+        }
+        throw console.error('empty stack popped');
+        
     };
 
     peek(): T {
