@@ -21,12 +21,20 @@
     }
   }
 
+  let supported = true;
+
   // Call this function when your app initializes, or when it's appropriate to acquire the wake lock
-  requestWakeLock();
+  if ('wakeLock' in navigator) {
+  // Screen Wake Lock API is supported
+    requestWakeLock();
+  } else {
+    supported = false;
+  }
+  
 </script>
 
 <main>
   <GameControls />
   <Hand />
-  <a href="https://github.com/jparkhouse/hanabi-tracker/" target="_blank">Check out my code!</a>
+  <a href="https://github.com/jparkhouse/hanabi-tracker/" target="_blank" hidden={supported}>Check out my code!</a>
 </main>
