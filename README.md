@@ -34,5 +34,5 @@ Next on the roadmap:
     - ~~finessed (needs an interaction)~~
     - ~~critical~~
 - Notes on cards
-- an Undo feature
+- ~~an Undo feature~~
 - improving card graphics as more is known
