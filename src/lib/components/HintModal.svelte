@@ -164,14 +164,6 @@
           newColourInformation = card.colourInformation.map((value, idx) =>
             idx !== colourIndex ? value : false
           );
-
-          // If all colours are false and black is not already set to true, set it to true
-          const isAllColoursFalse = newColourInformation
-            .slice(0, 5)
-            .every((val) => val === false);
-          if (isAllColoursFalse && newColourInformation[5] === null) {
-            newColourInformation[5] = true;
-          }
         }
         makeSingleNullTrue(newColourInformation);
         return { ...card, colourInformation: newColourInformation };
