@@ -78,6 +78,7 @@
           }
         );
         // Return a new card object with the updated colour information
+        makeSingleNullTrue(newColourInformation);
         return { ...card, colourInformation: newColourInformation };
       });
       return updated;
@@ -137,6 +138,7 @@
           // which leaves a truely colourless card
           card.colourInformation[colourIndex] = false;
           card.colourInformation[5] = false;
+          makeSingleNullTrue(card.colourInformation);
         } // in the case where the rainbow card is excluded, we assume this is a user error
       });
       return updated;
@@ -171,7 +173,7 @@
             newColourInformation[5] = true;
           }
         }
-
+        makeSingleNullTrue(newColourInformation);
         return { ...card, colourInformation: newColourInformation };
       });
       return updated;
@@ -219,16 +221,8 @@
           // Logic for unselected cards - handling potential to be black
           newColourInformation[colourIndex] = false; // Mark this colour as false since it's a hint
           newColourInformation[5] = false; // Rainbow is also set to false since it's not selected
-
-          const allColoursFalse = newColourInformation
-            .slice(0, 5)
-            .every((value) => value === false); // Check if all other colours are false
-          if (allColoursFalse && newColourInformation[6] === null) {
-            // If all colours are false and black hasn't been set, set black to true
-            newColourInformation[6] = true; // Mark black as true
-          }
         }
-
+        makeSingleNullTrue(newColourInformation);
         return { ...card, colourInformation: newColourInformation };
       });
     });
