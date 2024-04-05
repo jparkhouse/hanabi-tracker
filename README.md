@@ -25,15 +25,6 @@ The app is built by me, Jake, and I am very much an amatuer coder. It uses Vite 
 ## ToDo
 
 Next on the roadmap:
-- ~~Fix CSS to improve styles and responsiveness~~
-- ~~'rainbows' variant~~
-- ~~'blacks' variant~~
-- ~~'rainbows-and-blacks' variant~~
-- ~~highlight cards for:~~
-    - ~~touched~~
-    - ~~chop moved (needs an interaction)~~
-    - ~~finessed (needs an interaction)~~
-    - ~~critical~~
+- Colour icons
+- Potentially improve UX
 - Notes on cards
-- ~~an Undo feature~~
-- ~~improving card graphics as more is known~~
