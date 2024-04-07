@@ -17,24 +17,24 @@
   function saveFlags() {
     const selectedCardIds = Array.from($cardsSelectedStore);
 
-    localCards.map(card => {
-      if (selectedCardIds.includes(card.id)) {
-        switch (flag) {
-          case 'critical':
-            card.isCritical = !card.isCritical;
-            break;
-          case 'chop-move':
-            card.isChopMoved = !card.isChopMoved;
-            break;
-          case 'finesse':
-            card.isFinessed = !card.isFinessed;
-            break;
+    cards.updateCards((currentCards) => {
+      const updated = currentCards.map((card) => {
+        if (selectedCardIds.includes(card.id)) {
+          switch (flag) {
+            case 'critical':
+              card.isCritical = !card.isCritical;
+              break;
+            case 'chop-move':
+              card.isChopMoved = !card.isChopMoved;
+              break;
+            case 'finesse':
+              card.isFinessed = !card.isFinessed;
+              break;
+          }
         }
-      }
-      return card
-    });
-    cards.updateCards(localCards => {
-      return localCards;
+        return card;
+      });
+      return updated;
     });
     cardsSelectedStore.update(selected => {
       selected = new Set<number>();
@@ -82,4 +82,3 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
 </style>
-  
