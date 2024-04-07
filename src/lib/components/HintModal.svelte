@@ -424,8 +424,8 @@
 </script>
 
 {#if isOpen}
-  <div class="modal-overlay">
-    <div class="hint-modal">
+  <div class="modal-overlay" on:click={closePanel}>
+    <div class="hint-modal" on:click|stopPropagation>
       <div class="numbers-hints">
         {#each numbers as number}
           <button

@@ -47,8 +47,8 @@
   
 
 {#if isOpen}
-<div class="modal-overlay">
-  <div class="mark-modal">
+<div class="modal-overlay" on:click={closePanel}>
+  <div class="mark-modal" on:click|stopPropagation>
     <div class="flags">
       <button class="btn" on:click={() => flag = 'critical'}>Critical</button>
       <button class="btn" on:click={() => flag = 'chop-move'}>Chop moved</button>
