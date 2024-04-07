@@ -45,7 +45,7 @@
     icons = colourInformation
       .map((value, index) => {
         if (value === true || value === null) {
-          return `src/assets/${getColourCodeByIndex(index)}.svg`; // Assuming SVGs are stored as files and accessible via path
+          return `public/${getColourCodeByIndex(index)}.svg`; // Assuming SVGs are stored as files and accessible via path
         }
         return null;
       })
