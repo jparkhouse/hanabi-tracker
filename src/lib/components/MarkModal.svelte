@@ -73,6 +73,10 @@
     justify-content: center;
     align-items: center;
   }
+
+  .flags {
+    padding: 20px;
+  }
   
   .mark-modal {
     background-color: dimgray;
