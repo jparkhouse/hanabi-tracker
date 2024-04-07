@@ -132,6 +132,7 @@
     flex: 1;
     font-size: 3vw;
     height: 70vh;
+    min-height: 150px;
     overflow: hidden;
   }
 
