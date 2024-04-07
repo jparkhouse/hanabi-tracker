@@ -1,12 +1,13 @@
 // /lib/stores/cardsStore.ts
 import { writable } from 'svelte/store';
+import structuredClone from '@ungap/structured-clone';
+
 import gameConfig from './gameConfigStore';
 import type { GameConfig } from './gameConfigStore';
 import type { Card as CardType } from '../models/card';
 import { nextCardId, incrementAndGet } from '../stores/cardIDCounterStore';
 import { cardsSelectedStore } from './cardsSelectedStore';
 import { Stack } from '../models/stack';
-import { deepCopy } from '../shared/deepCopy';
 
 const storeHistory = new Stack<CardType[]>(5);
 
@@ -18,7 +19,7 @@ function createCardsStore() {
   
   const saveState = () => {
     update(currentCards => {
-      storeHistory.push(deepCopy(currentCards));
+      storeHistory.push(structuredClone(currentCards));
       return currentCards;
     })
     storeHistorySize.set(storeHistory.size());
