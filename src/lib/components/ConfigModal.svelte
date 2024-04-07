@@ -48,8 +48,8 @@
 </script>
 
 {#if isOpen}
-  <div class="modal-overlay">
-    <div class="config-modal">
+<div class="modal-overlay" on:click={closePanel}>
+  <div class="config-modal" on:click|stopPropagation>
       <div class="config-form">
         <label for="numberOfCards">Number of Cards:</label>
         <select id="numberOfCards" bind:value={tempConfig.numberOfCards}>
