@@ -25,6 +25,5 @@ The app is built by me, Jake, and I am very much an amatuer coder. It uses Vite 
 ## ToDo
 
 Next on the roadmap:
-- Colour icons
 - Potentially improve UX
 - Notes on cards
