@@ -9,7 +9,7 @@ permissions:
 jobs:
   release-please:
     name: Release Please
-    runs-ons: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v4
         with:
