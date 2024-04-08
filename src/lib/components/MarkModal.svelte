@@ -17,24 +17,24 @@
   function saveFlags() {
     const selectedCardIds = Array.from($cardsSelectedStore);
 
-    localCards.map(card => {
-      if (selectedCardIds.includes(card.id)) {
-        switch (flag) {
-          case 'critical':
-            card.isCritical = !card.isCritical;
-            break;
-          case 'chop-move':
-            card.isChopMoved = !card.isChopMoved;
-            break;
-          case 'finesse':
-            card.isFinessed = !card.isFinessed;
-            break;
+    cards.updateCards((currentCards) => {
+      const updated = currentCards.map((card) => {
+        if (selectedCardIds.includes(card.id)) {
+          switch (flag) {
+            case 'critical':
+              card.isCritical = !card.isCritical;
+              break;
+            case 'chop-move':
+              card.isChopMoved = !card.isChopMoved;
+              break;
+            case 'finesse':
+              card.isFinessed = !card.isFinessed;
+              break;
+          }
         }
-      }
-      return card
-    });
-    cards.updateCards(localCards => {
-      return localCards;
+        return card;
+      });
+      return updated;
     });
     cardsSelectedStore.update(selected => {
       selected = new Set<number>();
@@ -47,8 +47,8 @@
   
 
 {#if isOpen}
-<div class="modal-overlay">
-  <div class="mark-modal">
+<div class="modal-overlay" on:click={closePanel}>
+  <div class="mark-modal" on:click|stopPropagation>
     <div class="flags">
       <button class="btn" on:click={() => flag = 'critical'}>Critical</button>
       <button class="btn" on:click={() => flag = 'chop-move'}>Chop moved</button>
@@ -73,6 +73,10 @@
     justify-content: center;
     align-items: center;
   }
+
+  .flags {
+    padding: 20px;
+  }
   
   .mark-modal {
     background-color: dimgray;
@@ -82,4 +86,3 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
 </style>
-  
