@@ -2,10 +2,12 @@
 
 <script lang="ts">
   import gameConfig from "../stores/gameConfigStore";
+  import { Variant, Suits, getSuits } from "../models/variantEnums";
+  import { Numbers, getNumbers } from "../models/numberEnums";
 
   export let id: number;
-  export let numberInformation: (boolean | null)[];
-  export let colourInformation: (boolean | null)[];
+  export let numberInformation: number;
+  export let colourInformation: number;
   export let selected: boolean = false;
   export let isHinted: boolean;
   export let isFinessed: boolean;
@@ -29,73 +31,66 @@
 
   let knownColour: string | null = null;
   $: {
-    const knownColourIndex = colourInformation.findIndex(
-      (value) => value === true
-    );
-    if (knownColourIndex === -1) {
-      knownColour = null;
+    if ((colourInformation & (colourInformation - 1)) == 0) {
+      knownColour = getColourCodeFromSuit(colourInformation);
     } else {
-      knownColour = getColourCodeByIndex(knownColourIndex);
+      knownColour = null;
     }
   }
 
-  let icons: (string | null)[] = []; // This will store the SVG paths or components for the relevant icons
-
+  let icons: string[] = []; // This will store the SVG paths or components for the relevant icons
   $: {
-    icons = colourInformation
-      .map((value, index) => {
-        if (value === true && getColourCodeByIndex(index) == 'rainbow') {
-          return 'rainbow-empty.svg'
-        }
-        else if (value === true || value == null) {
-          return `${getColourCodeByIndex(index)}.svg`; // Assuming SVGs are stored as files and accessible via path
-        }
-        else 
-        return null;
-      })
-      .filter(Boolean);
-  }
-
-  // Utility to decode colour information into readable format
-  function decodeColour(colourInfo: (boolean | null)[]): string {
-    let output: string = colourInfo
-      .map((value, index) =>
-        value === true || value === null ? getColourCodeByIndex(index) : ""
-      )
-      .join(" ");
-    return output;
+    if (knownColour == 'rainbow') {
+      icons = ['rainbow-empty.svg']
+    } else {
+    icons = getSuits(colourInformation).map((value) => {
+      return '{$getColourCodeFromSuit(value)}.svg'
+    })};
   }
 
   // Utility to decode number information into readable format
-  function decodeNumber(numberInfo: (boolean | null)[]): string {
-    let output: string = numberInfo
-      .map((value, index) =>
-        value === true || value === null ? (index + 1).toString() : ""
+  function decodeNumber(numberInfo: number): string {
+    let output: string = getNumbers(numberInfo)
+      .map((value) =>
+        getNumberFromNumberEnum(value)
       )
       .join(" ");
     return output;
   }
 
-  function getColourCodeByIndex(index: number): string {
-    if (index < 5) {
-      return ["red", "yellow", "blue", "white", "green"][index];
+  function getColourCodeFromSuit(suit: Suits): string {
+    switch (suit) {
+      case Suits.Red:
+        return "red";
+      case Suits.Yellow:
+        return "yellow";
+      case Suits.Blue:
+        return "blue";
+      case Suits.White:
+        return "white";
+      case Suits.Green:
+        return "green";
+      case Suits.Rainbow:
+        return "rainbow";
+      case Suits.Black:
+        return "black";
     }
-    if (variant == "blacks" && index == 5) {
-      return "black";
-    }
-    if (variant == "rainbows" && index == 5) {
-      return "rainbow";
-    }
-    if (variant == "rainbows-and-blacks" && index == 5) {
-      return "rainbow";
-    }
-    if (variant == "rainbows-and-blacks" && index == 6) {
-      return "black";
-    } else {
-      console.log(
-        "Index {index} out of range for card {self.id} and variant {variant}"
-      );
-      return "err";
+  }
+
+  function getNumberFromNumberEnum(num: Numbers): string {
+    switch (num) {
+      case Numbers.One:
+        return '1'
+      case Numbers.Two:
+        return '2'
+      case Numbers.Three:
+        return '3'
+      case Numbers.Four:
+        return '4'
+      case Numbers.Five:
+        return '5'
+      case Numbers.All:
+        return '1 2 3 4 5'
     }
   }
 </script>
@@ -206,15 +201,17 @@
 
   .icons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(30px, 1fr)); /* Create as many columns as possible, with a minimum width of 30px */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(30px, 1fr)
+    ); /* Create as many columns as possible, with a minimum width of 30px */
     grid-auto-rows: minmax(30px, auto); /* Rows should be at least 30px high */
     gap: 5px; /* Space between icons */
     justify-content: center; /* Center the entire grid horizontally */
     align-content: center; /* Center the entire grid vertically when there's extra space */
     max-width: 100%; /* Ensure the grid doesn't exceed the card's width */
     margin: auto; /* Center the grid within the card */
-}
-
+  }
 
   .icon {
     width: 100%; /* Ensure SVG icons scale within the grid */

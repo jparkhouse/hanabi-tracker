@@ -7,7 +7,7 @@ export enum Numbers {
   All = One | Two | Three | Four | Five,
 }
 
-export function getSuits(numbers: number): Numbers[] {
+export function getNumbers(numbers: number): Numbers[] {
   // a helper function to take a number and return the suits
   let power = 0;
   let output: number[] = [];
