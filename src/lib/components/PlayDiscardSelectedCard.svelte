@@ -4,6 +4,7 @@
     import { cards } from "../stores/cardsStore";
     import { incrementAndGet } from "../stores/cardIDCounterStore";
     import gameConfig from "../stores/gameConfigStore";
+    import { Numbers } from "../models/numberEnums";
 
     $: variant = $gameConfig.variant;
 
@@ -23,13 +24,10 @@
   }
 
   function createDefaultCard(id: number) {
-    // Assuming a structure similar to what you have for initializing cards
     return {
       id: id,
-      numberInformation: Array(5).fill(null),
-      colourInformation: Array(
-        variant === 'no-variant' ? 5 : variant === 'rainbows' || variant === 'blacks' ? 6 : 7
-      ).fill(null),
+      numberInformation: Numbers.All,
+      colourInformation: $gameConfig.variant,
       isHinted: false,
       isChopMoved: false,
       isFinessed: false,
