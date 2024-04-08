@@ -206,8 +206,8 @@
 
   .icons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(30px, 1fr)); /* Create as many columns as possible, with a minimum width of 20px */
-    grid-auto-rows: minmax(30px, auto); /* Rows should be at least 20px high */
+    grid-template-columns: repeat(auto-fit, minmax(30px, 1fr)); /* Create as many columns as possible, with a minimum width of 30px */
+    grid-auto-rows: minmax(30px, auto); /* Rows should be at least 30px high */
     gap: 5px; /* Space between icons */
     justify-content: center; /* Center the entire grid horizontally */
     align-content: center; /* Center the entire grid vertically when there's extra space */
