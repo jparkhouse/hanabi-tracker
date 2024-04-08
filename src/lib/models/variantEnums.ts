@@ -85,7 +85,7 @@ export const suitProperties: Record<Suits, SuitProperties> = {
   },
 };
 
-export function getSuits(suits: number): number[] { // a helper function to take a number and return the suits
+export function getSuits(suits: number): Suits[] { // a helper function to take a number and return the suits
     let power = 0;
     let output: number[] = [];
     while (1 << power < suits) {
