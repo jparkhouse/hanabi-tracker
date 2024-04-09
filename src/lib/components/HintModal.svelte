@@ -12,13 +12,15 @@
   $: variant = $gameConfig.variant;
 
   interface SelectedHint {
-    type: 'colour' | 'number' | null;
-    value: number;
+    type: "colour" | "number" | null;
+    colourValue: number | null;
+    numberValue: number | null;
   }
 
   let selectedHint: SelectedHint = {
     type: null,
-    value: 0,
+    colourValue: null,
+    numberValue: null,
   };
 
   let availableColourHintsEnums: SuitEnum[] = [];
@@ -125,10 +127,13 @@
   function saveHint() {
     if (!selectedHint.type) return;
 
-    if (selectedHint.type == "colour") {
-      saveColourHint(selectedHint.value);
-    } else if (selectedHint.type == "number") {
-      saveNumberHint(selectedHint.value);
+    if (selectedHint.type == "colour" && selectedHint.colourValue !== null) {
+      saveColourHint(selectedHint.colourValue as number);
+    } else if (
+      selectedHint.type == "number" &&
+      selectedHint.numberValue !== null
+    ) {
+      saveNumberHint(selectedHint.numberValue as number);
     }
     cardsSelectedStore.update((selected) => {
       // reset cards selected
@@ -192,13 +197,44 @@
     });
   }
 
+  function isSelectedHint(
+    hint: SelectedHint,
+    selectedHint: SelectedHint
+  ): boolean {
+    console.log("Checking hint:", hint, "against selectedHint:", selectedHint);
+    const result =
+      hint.type === selectedHint.type &&
+      hint.colourValue === selectedHint.colourValue &&
+      hint.numberValue === selectedHint.numberValue;
+    console.log("Result:", result);
+    return selectedHint && result;
+  }
+
+  function selectColourHint(colourHint: number): void {
+    selectedHint = {
+      type: "colour",
+      colourValue: colourHint,
+      numberValue: null,
+    };
+  }
+
+  function selectNumberHint(numberHint: number): void {
+    selectedHint = {
+      type: "number",
+      colourValue: null,
+      numberValue: numberHint,
+    };
+  }
+
   function closePanel() {
     isOpen = false;
     selectedHint = {
       type: null,
-      value: 0,
+      colourValue: null,
+      numberValue: null,
     }; // Reset selected hint
   }
+  $: console.log(selectedHint);
 </script>
 
 {#if isOpen}
@@ -207,19 +243,33 @@
       <div class="numbers-hints">
         {#each [0, 1, 2, 3, 4] as index}
           <button
-            class="btn"
+            class="btn {isSelectedHint(
+              {
+                type: 'number',
+                colourValue: null,
+                numberValue: availableNumberHintsEnums[index],
+              },
+              selectedHint
+            )
+              ? 'selected'
+              : ''}"
             hidden={!isNumberHintValid(availableNumberHintsEnums[index])}
-            on:click={() =>
-              (selectedHint = {type: 'number', value: availableNumberHintsEnums[index]})}>{availableNumberHintsStrings[index]}</button
+            on:click={() => selectNumberHint(availableNumberHintsEnums[index])}
+            >{availableNumberHintsStrings[index]}</button
           >
         {/each}
       </div>
       <div class="colours-hints">
         {#each availableColourHintsEnums as colour}
           <button
-            class="btn"
+            class="btn {isSelectedHint(
+              { type: 'colour', colourValue: colour, numberValue: null },
+              selectedHint
+            )
+              ? 'selected'
+              : ''}"
             hidden={!isColourHintValid(colour)}
-            on:click={() => (selectedHint = { type: 'colour', value: colour })}
+            on:click={() => selectColourHint(colour)}
             >{suitProperties[colour].stringHint}</button
           >
         {/each}
@@ -260,5 +310,10 @@
   .colours-hints {
     padding: 20px;
     gap: 10px;
+  }
+
+  .selected {
+    background-color: lightblue;
+    color: black;
   }
 </style>
