@@ -2,8 +2,8 @@
 
 <script lang="ts">
   import gameConfig from "../stores/gameConfigStore";
-  import { Variant, Suits, getSuits } from "../models/variantEnums";
-  import { Numbers, getNumbers } from "../models/numberEnums";
+  import { Variant, SuitEnum, getSuits } from "../models/variantEnums";
+  import { NumberEnum, getNumbers } from "../models/numberEnums";
 
   export let id: number;
   export let numberInformation: number;
@@ -42,9 +42,11 @@
   $: {
     if (knownColour == 'rainbow') {
       icons = ['rainbow-empty.svg']
+    } else if (knownColour !== null) {
+      icons = [`${knownColour}.svg`]
     } else {
     icons = getSuits(colourInformation).map((value) => {
-      return '{$getColourCodeFromSuit(value)}.svg'
+      return `${getColourCodeFromSuit(value)}.svg`;
     })};
   }
 
@@ -58,38 +60,38 @@
     return output;
   }
 
-  function getColourCodeFromSuit(suit: Suits): string {
+  function getColourCodeFromSuit(suit: SuitEnum): string {
     switch (suit) {
-      case Suits.Red:
+      case SuitEnum.Red:
         return "red";
-      case Suits.Yellow:
+      case SuitEnum.Yellow:
         return "yellow";
-      case Suits.Blue:
+      case SuitEnum.Blue:
         return "blue";
-      case Suits.White:
+      case SuitEnum.White:
         return "white";
-      case Suits.Green:
+      case SuitEnum.Green:
         return "green";
-      case Suits.Rainbow:
+      case SuitEnum.Rainbow:
         return "rainbow";
-      case Suits.Black:
+      case SuitEnum.Black:
         return "black";
     }
   }
 
-  function getNumberFromNumberEnum(num: Numbers): string {
+  function getNumberFromNumberEnum(num: NumberEnum): string {
     switch (num) {
-      case Numbers.One:
+      case NumberEnum.One:
         return '1'
-      case Numbers.Two:
+      case NumberEnum.Two:
         return '2'
-      case Numbers.Three:
+      case NumberEnum.Three:
         return '3'
-      case Numbers.Four:
+      case NumberEnum.Four:
         return '4'
-      case Numbers.Five:
+      case NumberEnum.Five:
         return '5'
-      case Numbers.All:
+      case NumberEnum.All:
         return '1 2 3 4 5'
     }
   }

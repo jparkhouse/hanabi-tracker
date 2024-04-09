@@ -8,7 +8,7 @@ import type { Card as CardType } from '../models/card';
 import { nextCardId, incrementAndGet } from '../stores/cardIDCounterStore';
 import { cardsSelectedStore } from './cardsSelectedStore';
 import { Stack } from '../models/stack';
-import { Numbers } from '../models/numberEnums';
+import { NumberEnum } from '../models/numberEnums';
 
 const storeHistory = new Stack<CardType[]>(5);
 
@@ -44,7 +44,7 @@ function createCardsStore() {
     storeHistorySize.set(storeHistory.size());
     const newCards: CardType[] = Array.from({ length: config.numberOfCards }, (_, i) => ({
       id: incrementAndGet(),
-      numberInformation: Numbers.All, // set all numbers to possible
+      numberInformation: NumberEnum.All, // set all numbers to possible
       colourInformation: config.variant, // get all posible suits from variant
       isHinted: false,
       isChopMoved: false,

@@ -1,4 +1,4 @@
-export enum Suits {
+export enum SuitEnum {
   Red = 1,
   Yellow = 1 << 1,
   Blue = 1 << 2,
@@ -9,10 +9,10 @@ export enum Suits {
 }
 
 export const enum Variant {
-  NoVariant = Suits.Red | Suits.Yellow | Suits.Blue | Suits.White | Suits.Green,
-  Rainbows = NoVariant | Suits.Rainbow,
-  Blacks = NoVariant | Suits.Black,
-  RainbowsAndBlacks = NoVariant | Suits.Rainbow | Suits.Black,
+  NoVariant = SuitEnum.Red | SuitEnum.Yellow | SuitEnum.Blue | SuitEnum.White | SuitEnum.Green,
+  Rainbows = NoVariant | SuitEnum.Rainbow,
+  Blacks = NoVariant | SuitEnum.Black,
+  RainbowsAndBlacks = NoVariant | SuitEnum.Rainbow | SuitEnum.Black,
 }
 
 interface SuitProperties {
@@ -26,56 +26,56 @@ interface SuitProperties {
   // assume !(numberHint | negativeNumberHintModifier)
 }
 
-export const suitProperties: Record<Suits, SuitProperties> = {
-  [Suits.Red]: {
+export const suitProperties: Record<SuitEnum, SuitProperties> = {
+  [SuitEnum.Red]: {
     stringHint: "Red",
-    colourHint: Suits.Red,
+    colourHint: SuitEnum.Red,
     positiveColourHintModifier: null,
     negativeColourHintModifier: null,
     positiveNumberHintModifier: null,
     negativeNumberHintModifier: null,
   },
-  [Suits.Yellow]: {
+  [SuitEnum.Yellow]: {
     stringHint: "Yellow",
-    colourHint: Suits.Yellow,
+    colourHint: SuitEnum.Yellow,
     positiveColourHintModifier: null,
     negativeColourHintModifier: null,
     positiveNumberHintModifier: null,
     negativeNumberHintModifier: null,
   },
-  [Suits.Blue]: {
+  [SuitEnum.Blue]: {
     stringHint: "Blue",
-    colourHint: Suits.Blue,
+    colourHint: SuitEnum.Blue,
     positiveColourHintModifier: null,
     negativeColourHintModifier: null,
     positiveNumberHintModifier: null,
     negativeNumberHintModifier: null,
   },
-  [Suits.White]: {
+  [SuitEnum.White]: {
     stringHint: "White",
-    colourHint: Suits.White,
+    colourHint: SuitEnum.White,
     positiveColourHintModifier: null,
     negativeColourHintModifier: null,
     positiveNumberHintModifier: null,
     negativeNumberHintModifier: null,
   },
-  [Suits.Green]: {
+  [SuitEnum.Green]: {
     stringHint: "Green",
-    colourHint: Suits.Green,
+    colourHint: SuitEnum.Green,
     positiveColourHintModifier: null,
     negativeColourHintModifier: null,
     positiveNumberHintModifier: null,
     negativeNumberHintModifier: null,
   },
-  [Suits.Rainbow]: {
+  [SuitEnum.Rainbow]: {
     stringHint: null,
     colourHint: null,
-    positiveColourHintModifier: Suits.Rainbow, // apply rainbow on for any positive hints
-    negativeColourHintModifier: Suits.Rainbow, // a negative hint for colour implies not rainbow
+    positiveColourHintModifier: SuitEnum.Rainbow, // apply rainbow on for any positive hints
+    negativeColourHintModifier: SuitEnum.Rainbow, // a negative hint for colour implies not rainbow
     positiveNumberHintModifier: null,
     negativeNumberHintModifier: null,
   },
-  [Suits.Black]: {
+  [SuitEnum.Black]: {
     stringHint: null,
     colourHint: null,
     positiveColourHintModifier: null,
@@ -85,13 +85,14 @@ export const suitProperties: Record<Suits, SuitProperties> = {
   },
 };
 
-export function getSuits(suits: number): Suits[] { // a helper function to take a number and return the suits
+export function getSuits(suits: number): SuitEnum[] { // a helper function to take a number and return the suits
     let power = 0;
     let output: number[] = [];
-    while (1 << power < suits) {
+    while ((1 << power) <= suits) {
         if (((1 << power) & suits) == (1 << power)) { // 00001(red) & 11111 (no variant) = 00001 (red) 
             output.push(1 << power);
         }
+        power = power + 1;
     }
     return output // an array of the suits, in order
 }

@@ -4,7 +4,7 @@
     import { cards } from "../stores/cardsStore";
     import { incrementAndGet } from "../stores/cardIDCounterStore";
     import gameConfig from "../stores/gameConfigStore";
-    import { Numbers } from "../models/numberEnums";
+    import { NumberEnum } from "../models/numberEnums";
 
     $: variant = $gameConfig.variant;
 
@@ -26,7 +26,7 @@
   function createDefaultCard(id: number) {
     return {
       id: id,
-      numberInformation: Numbers.All,
+      numberInformation: NumberEnum.All,
       colourInformation: $gameConfig.variant,
       isHinted: false,
       isChopMoved: false,
