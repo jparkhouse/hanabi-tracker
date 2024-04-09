@@ -1,5 +1,8 @@
 <!-- /lib/components/HintModal.svelte -->
 <script lang="ts">
+  import type { Card } from "../models/card";
+  import { NumberEnum } from "../models/numberEnums";
+  import { SuitEnum, getSuits, suitProperties } from "../models/variantEnums";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { cards } from "../stores/cardsStore";
   import gameConfig from "../stores/gameConfigStore";
@@ -8,418 +11,193 @@
 
   $: variant = $gameConfig.variant;
 
-  const numbers = [1, 2, 3, 4, 5];
-  const colours = ["red", "yellow", "blue", "white", "green"]; // Same order as on cards
-  let selectedHint: number | string | null = null;
+  interface SelectedHint {
+    type: 'colour' | 'number' | null;
+    value: number;
+  }
+
+  let selectedHint: SelectedHint = {
+    type: null,
+    value: 0,
+  };
+
+  let availableColourHintsEnums: SuitEnum[] = [];
+  let availableNumberHintsStrings: (string | null)[] = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+  ];
+  let availableNumberHintsEnums: NumberEnum[] = [
+    NumberEnum.One,
+    NumberEnum.Two,
+    NumberEnum.Three,
+    NumberEnum.Four,
+    NumberEnum.Five,
+  ];
+  $: {
+    availableColourHintsEnums = getSuits(variant).filter(
+      (suit) => suitProperties[suit].stringHint != null
+    );
+  } // this should return matching arrays of all suit Enums with a stringHint property (i.e. all hintable suits)
+
+  function isColourHintValid(colourHint: number): boolean {
+    const selectedCardIds = Array.from($cardsSelectedStore);
+    const isValid = selectedCardIds.every((cardId) => {
+      const card = $cards.find((c) => c.id === cardId);
+      if (!card) {
+        return false;
+      } else {
+        const hintModifier = getPositiveColourHintModifier(card);
+        return (card.colourInformation & (colourHint | hintModifier)) > 0; // the hint is applicable if one of the card's suits is possible (1) and that hint also has a 1
+      }
+    });
+    return isValid;
+  }
+
+  function isNumberHintValid(numberHint: number): boolean {
+    const selectedCardIds = Array.from($cardsSelectedStore);
+    const isValid = selectedCardIds.every((cardId) => {
+      const card = $cards.find((c) => c.id === cardId);
+      if (!card) {
+        return false;
+      } else {
+        const hintModifier: number = getPositiveNumberHintModifier(card); // I hate this type assertion
+        return (card.numberInformation & (numberHint | hintModifier)) > 0; // the hint is applicable if one of the card's suits is possible (1) and that hint also has a 1
+      }
+    });
+    return isValid;
+  }
+
+  function getPositiveColourHintModifier(card: Card): number {
+    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+      .map((value) => {
+        return suitProperties[value].positiveColourHintModifier;
+      })
+      .filter((value) => {
+        return value !== null;
+      })
+      .reduce((result, num) => {
+        return (result as number) | (num as number);
+      }, 0) as number;
+  }
+
+  function getPositiveNumberHintModifier(card: Card): number {
+    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+      .map((value) => {
+        return suitProperties[value].positiveNumberHintModifier;
+      })
+      .filter((value) => {
+        return value !== null;
+      })
+      .reduce((result, num) => {
+        return (result as number) | (num as number);
+      }, 0) as number;
+  }
+
+  function getNegativeColourHintModifier(card: Card): number {
+    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+      .map((value) => {
+        return suitProperties[value].negativeColourHintModifier;
+      })
+      .filter((value) => {
+        return value !== null;
+      })
+      .reduce((result, num) => {
+        return (result as number) | (num as number);
+      }, 0) as number;
+  }
+
+  function getNegativeNumberHintModifier(card: Card): number {
+    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+      .map((value) => {
+        return suitProperties[value].negativeNumberHintModifier;
+      })
+      .filter((value) => {
+        return value !== null;
+      })
+      .reduce((result, num) => {
+        return (result as number) | (num as number);
+      }, 0) as number;
+  }
 
   function saveHint() {
-    if (!selectedHint) return;
-    console.log("a hint!");
+    if (!selectedHint.type) return;
 
-    if (typeof selectedHint === "string") {
-      saveColourHint(selectedHint as string);
-    } else if (typeof selectedHint === "number") {
-      saveNumberHint(selectedHint as number);
+    if (selectedHint.type == "colour") {
+      saveColourHint(selectedHint.value);
+    } else if (selectedHint.type == "number") {
+      saveNumberHint(selectedHint.value);
     }
     cardsSelectedStore.update((selected) => {
+      // reset cards selected
       selected = new Set<number>();
       return selected;
     });
     closePanel();
   }
 
-  function saveColourHint(colourHint: string) {
-    switch (variant) {
-      case "no-variant":
-        saveColourHintNoVariant(colourHint);
-        break;
-      case "rainbows":
-        saveColourHintRainbows(colourHint);
-        break;
-      case "blacks":
-        saveColourHintBlacks(colourHint);
-        break;
-      case "rainbows-and-blacks":
-        saveColourHintRainbowsAndBlacks(colourHint);
-        break;
-    }
-  }
-
-  function makeSingleNullTrue(input: (boolean | null)[]): void { // helper function to set a single null to true in colourInformation arrays
-    // Count nulls and falses
-    const nullCount = input.filter((item) => item === null).length;
-    const falseCount = input.filter((item) => item === false).length;
-
-    // Check if one item is null and all others are false
-    if (nullCount === 1 && falseCount === input.length - 1) {
-      // Find the index of the null item and change it to true
-      const nullIndex = input.findIndex((item) => item === null);
-      input[nullIndex] = true;
-    }
-  }
-
-  function saveColourHintNoVariant(colourHint: string) {
+  function saveColourHint(colourHint: number) {
     const selectedCardIds = Array.from($cardsSelectedStore);
-    const colourIndex = colours.findIndex((colour) => colour === colourHint);
-
-    cards.updateCards((selected) => {
-      const updated = selected.map((card) => {
-        // Determine new colour information based on whether the card is selected
-        const newColourInformation = card.colourInformation.map(
-          (value, idx) => {
-            if (selectedCardIds.includes(card.id)) {
-              card.isHinted = true;
-              // If the card is selected, mark the colourIndex as true and others as false
-              return idx === colourIndex ? true : false;
-            } else {
-              // If the card is not selected, keep existing value except the colourIndex to false
-              return idx !== colourIndex ? value : false;
-            }
-          }
-        );
-        // Return a new card object with the updated colour information
-        makeSingleNullTrue(newColourInformation);
-        return { ...card, colourInformation: newColourInformation };
-      });
-      return updated;
-    });
-  }
-
-  function saveColourHintRainbows(colourHint: string) {
-    const selectedCardIds = Array.from($cardsSelectedStore);
-    const colourIndex = colours.findIndex((colour) => colour === colourHint);
-
-    cards.updateCards((selected) => {
-      let updated = selected;
-      updated.forEach((card, index) => {
+    cards.updateCards((allCards) => {
+      const newCards = allCards.map((card) => {
         if (selectedCardIds.includes(card.id)) {
-          // if the card is selected
-          card.isHinted = true;
-          if (
-            card.colourInformation[5] === null &&
-            card.colourInformation[colourIndex] === null
-          ) {
-            // if this card has not been touched by this colour hint before
-            card.colourInformation.forEach((value, i) => {
-              if (i != colourIndex && i != 5) {
-                card.colourInformation[i] = false;
-              }
-            });
-          } else if (
-            card.colourInformation[5] === null &&
-            card.colourInformation[colourIndex] === false
-          ) {
-            // if this card has been touched by a different colour hint before
-            card.colourInformation.forEach((value, i) => {
-              if (i == 5) {
-                // all indexes except rainbow sshould be false, since the only way it can be more than one colour is if it is rainbow
-                card.colourInformation[i] = true;
-              } else {
-                card.colourInformation[i] = false;
-              }
-            });
-          } else if (
-            card.colourInformation[5] === false &&
-            card.colourInformation[colourIndex] === null
-          ) {
-            // if this card has negative rainbow/colour hint
-            card.colourInformation.forEach((value, i) => {
-              if (i == colourIndex) {
-                // it is precisely that colour
-                card.colourInformation[i] = true;
-              } else {
-                card.colourInformation[i] = false;
-              }
-            });
-          }
-        } else if (card.colourInformation[5] !== true) {
-          // it is not this colour, or rainbow, by negative information.
-          // if statement catches against removing rainbow when hint should clearly apply
-          // which leaves a truely colourless card
-          card.colourInformation[colourIndex] = false;
-          card.colourInformation[5] = false;
-          makeSingleNullTrue(card.colourInformation);
-        } // in the case where the rainbow card is excluded, we assume this is a user error
-      });
-      return updated;
-    });
-  }
-
-  function saveColourHintBlacks(colourHint: string) {
-    const selectedCardIds = Array.from($cardsSelectedStore);
-    const colourIndex = colours.findIndex((colour) => colour === colourHint);
-
-    cards.updateCards((selected) => {
-      const updated = selected.map((card) => {
-        // Determine new colour information based on whether the card is selected
-        let newColourInformation;
-        if (selectedCardIds.includes(card.id)) {
-          card.isHinted = true;
-          // If the card is selected, apply the colour hint
-          newColourInformation = card.colourInformation.map((value, idx) =>
-            idx === colourIndex ? true : false
-          );
+          const hintModifier = getPositiveColourHintModifier(card);
+          const newColourInformation =
+            card.colourInformation & (colourHint | hintModifier);
+          return {
+            ...card,
+            colourInformation: newColourInformation,
+            isHinted: true,
+          };
         } else {
-          // If the card is not selected, maintain existing values but set the hinted colour to false
-          newColourInformation = card.colourInformation.map((value, idx) =>
-            idx !== colourIndex ? value : false
-          );
+          const hintModifier = getNegativeColourHintModifier(card);
+          const newColourInformation =
+            card.colourInformation & ~(colourHint | hintModifier);
+          return {
+            ...card,
+            colourInformation: newColourInformation,
+          };
         }
-        makeSingleNullTrue(newColourInformation);
-        return { ...card, colourInformation: newColourInformation };
       });
-      return updated;
-    });
-  }
-
-  function saveColourHintRainbowsAndBlacks(colourHint: string) {
-    const selectedCardIds = Array.from($cardsSelectedStore);
-    const colourIndex = colours.findIndex((colour) => colour === colourHint);
-
-    cards.updateCards((selected) => {
-      return selected.map((card) => {
-        // Clone the current state to a new object to ensure reactivity.
-        let newColourInformation = [...card.colourInformation];
-
-        if (selectedCardIds.includes(card.id)) {
-          // Logic for selected cards
-          card.isHinted = true;
-          if (
-            card.colourInformation[5] === null &&
-            card.colourInformation[colourIndex] === null
-          ) {
-            // If the card could potentially be this colour or rainbow (hasn't been hinted this colour before)
-            newColourInformation = newColourInformation.map((value, idx) =>
-              idx === colourIndex || idx === 5 ? null : false
-            );
-          } else if (
-            card.colourInformation[5] === null &&
-            card.colourInformation[colourIndex] === false
-          ) {
-            // if this card has been touched by a different colour hint before
-            newColourInformation = newColourInformation.map((value, idx) =>
-              idx === 5 ? true : false
-            ); // explicitly rainbow
-          } else if (
-            card.colourInformation[5] === false &&
-            card.colourInformation[colourIndex] === null
-          ) {
-            // If the card cannot be rainbow but hasn't been hinted this colour before
-            newColourInformation = newColourInformation.map((value, idx) =>
-              idx === colourIndex ? true : false
-            );
-          }
-        } else {
-          // Logic for unselected cards - handling potential to be black
-          newColourInformation[colourIndex] = false; // Mark this colour as false since it's a hint
-          newColourInformation[5] = false; // Rainbow is also set to false since it's not selected
-        }
-        makeSingleNullTrue(newColourInformation);
-        return { ...card, colourInformation: newColourInformation };
-      });
+      return newCards;
     });
   }
 
   function saveNumberHint(numberHint: number) {
     const selectedCardIds = Array.from($cardsSelectedStore);
-
-    cards.updateCards((selected) => {
-      const updated = selected.map((card) => {
-        // Determine new number information based on whether the card is selected
-        const newNumberInformation = card.numberInformation.map(
-          (value, idx) => {
-            if (selectedCardIds.includes(card.id)) {
-              card.isHinted = true;
-              // If the card is selected, mark the matching index (numberHint - 1) as true, others as false
-              return idx === numberHint - 1 ? true : false;
-            } else {
-              // If the card is not selected, apply negative information
-              return idx !== numberHint - 1 ? value : false;
-            }
-          }
-        );
-        // Return a new card object with the updated number information
-        return { ...card, numberInformation: newNumberInformation };
+    cards.updateCards((allCards) => {
+      const newCards = allCards.map((card) => {
+        if (selectedCardIds.includes(card.id)) {
+          const hintModifier = getPositiveNumberHintModifier(card);
+          const newNumberInformation =
+            card.numberInformation & (numberHint | hintModifier);
+          return {
+            ...card,
+            numberInformation: newNumberInformation,
+            isHinted: true,
+          };
+        } else {
+          const hintModifier = getNegativeNumberHintModifier(card);
+          const newNumberInformation =
+            card.numberInformation & ~(numberHint | hintModifier);
+          return {
+            ...card,
+            numberInformation: newNumberInformation,
+          };
+        }
       });
-      return updated;
+      return newCards;
     });
-  }
-
-  function colourToCode(colour: string): string {
-    let output: string = "";
-    switch (colour) {
-      case "red":
-        output = "r";
-        break;
-      case "yellow":
-        output = "y";
-        break;
-      case "blue":
-        output = "b";
-        break;
-      case "white":
-        output = "w";
-        break;
-      case "green":
-        output = "g";
-        break;
-      default:
-        output = "";
-        console.log("invalid colour given");
-    }
-    return output;
-  }
-
-  function isHintValid(hint: string | number): boolean {
-    let output: boolean = false;
-    switch (variant) {
-      case "no-variant":
-        output = isHintValidNoVariant(hint);
-        break;
-      case "rainbows":
-        output = isHintValidRainbows(hint);
-        break;
-      case "blacks":
-        output = isHintValidBlacks(hint);
-        break;
-      case "rainbows-and-blacks":
-        output = isHintValidRainbowsAndBlacks(hint);
-        break;
-    }
-    return output;
-  }
-
-  function isHintValidNoVariant(hint: string | number): boolean {
-    const selectedCards = Array.from($cardsSelectedStore);
-
-    // Check if all of the selected cards validate the hint
-    const isValid = selectedCards.every((cardId) => {
-      const card = $cards.find((c) => c.id === cardId);
-      if (!card) return false; // Skip if card not found for some reason
-
-      if (typeof hint === "string") {
-        const colourIndex = colours.indexOf(hint);
-        // Hint is valid if it's not explicitly marked as false
-        return (
-          card.colourInformation[colourIndex] === null ||
-          card.colourInformation[colourIndex] === true
-        );
-      } else if (typeof hint === "number") {
-        // Hint is valid if it's not explicitly marked as false
-        return (
-          card.numberInformation[hint - 1] === null ||
-          card.numberInformation[hint - 1] === true
-        );
-      }
-    });
-
-    return isValid;
-  }
-
-  function isHintValidRainbows(hint: string | number): boolean {
-    const selectedCards = Array.from($cardsSelectedStore);
-
-    // Check if all of the selected cards validate the hint
-    const isValid = selectedCards.every((cardId) => {
-      const card = $cards.find((c) => c.id === cardId);
-      if (!card) return false; // Skip if card not found for some reason
-
-      if (typeof hint === "string") {
-        // Check if the card could be a rainbow
-        const isRainbowPossible =
-          card.colourInformation[5] === null ||
-          card.colourInformation[5] === true;
-
-        if (isRainbowPossible) {
-          // If a card could be a rainbow, accept all colour hints
-          return true;
-        } else {
-          // Otherwise, check the specific colour index
-          const colourIndex = colours.indexOf(hint);
-          return (
-            card.colourInformation[colourIndex] === null ||
-            card.colourInformation[colourIndex] === true
-          );
-        }
-      } else if (typeof hint === "number") {
-        // Hint is valid if it's not explicitly marked as false for numbers
-        return (
-          card.numberInformation[hint - 1] === null ||
-          card.numberInformation[hint - 1] === true
-        );
-      }
-    });
-
-    return isValid;
-  }
-
-  function isHintValidBlacks(hint: string | number): boolean {
-    const selectedCards = Array.from($cardsSelectedStore);
-
-    // Check if all of the selected cards validate the hint
-    const isValid = selectedCards.every((cardId) => {
-      const card = $cards.find((c) => c.id === cardId);
-      if (!card) return false; // Skip if card not found for some reason
-
-      if (typeof hint === "string") {
-        // Otherwise, check the specific colour index
-        const colourIndex = colours.indexOf(hint);
-        return (
-          card.colourInformation[colourIndex] === null ||
-          card.colourInformation[colourIndex] === true
-        );
-      } else if (typeof hint === "number") {
-        // Hint is valid if it's not explicitly marked as false for numbers
-        return (
-          card.numberInformation[hint - 1] === null ||
-          card.numberInformation[hint - 1] === true
-        );
-      }
-    });
-
-    return isValid;
-  }
-
-  function isHintValidRainbowsAndBlacks(hint: string | number): boolean {
-    const selectedCards = Array.from($cardsSelectedStore);
-
-    // Check if all of the selected cards validate the hint
-    const isValid = selectedCards.every((cardId) => {
-      const card = $cards.find((c) => c.id === cardId);
-      if (!card) return false; // Skip if card not found for some reason
-
-      if (typeof hint === "string") {
-        // Check if the card could be a rainbow
-        const isRainbowPossible =
-          card.colourInformation[5] === null ||
-          card.colourInformation[5] === true;
-
-        if (isRainbowPossible) {
-          // If a card could be a rainbow, accept all colour hints
-          return true;
-        } else {
-          // Otherwise, check the specific colour index
-          const colourIndex = colours.indexOf(hint);
-          return (
-            card.colourInformation[colourIndex] === null ||
-            card.colourInformation[colourIndex] === true
-          );
-        }
-      } else if (typeof hint === "number") {
-        // Hint is valid if it's not explicitly marked as false for numbers
-        return (
-          card.numberInformation[hint - 1] === null ||
-          card.numberInformation[hint - 1] === true
-        );
-      }
-    });
-
-    return isValid;
   }
 
   function closePanel() {
     isOpen = false;
-    selectedHint = null; // Reset selected hint
+    selectedHint = {
+      type: null,
+      value: 0,
+    }; // Reset selected hint
   }
 </script>
 
@@ -427,20 +205,22 @@
   <div class="modal-overlay" on:click={closePanel}>
     <div class="hint-modal" on:click|stopPropagation>
       <div class="numbers-hints">
-        {#each numbers as number}
+        {#each [0, 1, 2, 3, 4] as index}
           <button
             class="btn"
-            hidden={!isHintValid(number)}
-            on:click={() => (selectedHint = number)}>{number}</button
+            hidden={!isNumberHintValid(availableNumberHintsEnums[index])}
+            on:click={() =>
+              (selectedHint = {type: 'number', value: availableNumberHintsEnums[index]})}>{availableNumberHintsStrings[index]}</button
           >
         {/each}
       </div>
       <div class="colours-hints">
-        {#each colours as colour}
+        {#each availableColourHintsEnums as colour}
           <button
             class="btn"
-            hidden={!isHintValid(colour)}
-            on:click={() => (selectedHint = colour)}>{colour}</button
+            hidden={!isColourHintValid(colour)}
+            on:click={() => (selectedHint = { type: 'colour', value: colour })}
+            >{suitProperties[colour].stringHint}</button
           >
         {/each}
       </div>

@@ -22,8 +22,6 @@
       });
     }
   };
-  // You might trigger an update or handle the selection differently depending on your app's needs
-  $: console.log($cards); // Log the current state of cards whenever it changes
 </script>
   
 <div class="hand">

@@ -2,18 +2,16 @@
 <script lang="ts">
   import { cards } from "../stores/cardsStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  
+
   export let isOpen = false;
 
-  let flag: 'critical' | 'chop-move' | 'finesse' | null = null;
-  
-  $: localCards = $cards
-  
+  let flag: "critical" | "chop-move" | "finesse" | null = null;
+
   function closePanel() {
     flag = null;
     isOpen = false;
   }
-  
+
   function saveFlags() {
     const selectedCardIds = Array.from($cardsSelectedStore);
 
@@ -21,13 +19,13 @@
       const updated = currentCards.map((card) => {
         if (selectedCardIds.includes(card.id)) {
           switch (flag) {
-            case 'critical':
+            case "critical":
               card.isCritical = !card.isCritical;
               break;
-            case 'chop-move':
+            case "chop-move":
               card.isChopMoved = !card.isChopMoved;
               break;
-            case 'finesse':
+            case "finesse":
               card.isFinessed = !card.isFinessed;
               break;
           }
@@ -36,32 +34,35 @@
       });
       return updated;
     });
-    cardsSelectedStore.update(selected => {
+    cardsSelectedStore.update((selected) => {
       selected = new Set<number>();
       return selected;
     });
     closePanel();
   }
-    
 </script>
-  
 
 {#if isOpen}
-<div class="modal-overlay" on:click={closePanel}>
-  <div class="mark-modal" on:click|stopPropagation>
-    <div class="flags">
-      <button class="btn" on:click={() => flag = 'critical'}>Critical</button>
-      <button class="btn" on:click={() => flag = 'chop-move'}>Chop moved</button>
-      <button class="btn" on:click={() => flag = 'finesse'}>Finessed</button>
-    </div>
-    <div class="actions">
-      <button on:click={saveFlags} disabled={!flag}>Save</button>
-      <button on:click={closePanel}>Cancel</button>
+  <div class="modal-overlay" on:click={closePanel}>
+    <div class="mark-modal" on:click|stopPropagation>
+      <div class="flags">
+        <button class="btn" on:click={() => (flag = "critical")}
+          >Critical</button
+        >
+        <button class="btn" on:click={() => (flag = "chop-move")}
+          >Chop moved</button
+        >
+        <button class="btn" on:click={() => (flag = "finesse")}>Finessed</button
+        >
+      </div>
+      <div class="actions">
+        <button on:click={saveFlags} disabled={!flag}>Save</button>
+        <button on:click={closePanel}>Cancel</button>
+      </div>
     </div>
   </div>
-</div>
 {/if}
-  
+
 <style>
   .modal-overlay {
     position: fixed;
@@ -77,12 +78,12 @@
   .flags {
     padding: 20px;
   }
-  
+
   .mark-modal {
     background-color: dimgray;
     padding: 20px;
     border-radius: 5px;
     border: 2px solid lightgray;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
 </style>

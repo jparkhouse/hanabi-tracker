@@ -1,8 +1,8 @@
 // /lib/models/card.ts
 
 export interface Card {
-    numberInformation: (boolean | null)[];
-    colourInformation: (boolean | null)[];
+    numberInformation: number; // updated type for bitfuckery
+    colourInformation: number;
     id: number; // Unique identifier for each card
     isHinted: boolean;
     isFinessed: boolean;

@@ -60,8 +60,6 @@
   function handleRollback() {
     cards.rollback()
   }
-
-  $: console.log($storeHistorySize)
 </script>
 
 <div class="game-controls">
