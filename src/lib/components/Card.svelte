@@ -80,8 +80,8 @@
         numberIconStyles.backgroundColour = "none";
         break;
       case "rainbow":
-        numberIconStyles.strokeColour = "white";
-        numberIconStyles.backgroundColour = "none";
+        numberIconStyles.strokeColour = "black";
+        numberIconStyles.backgroundColour = "white";
         break;
       case "yellow":
         numberIconStyles.strokeColour = "black";
@@ -309,16 +309,11 @@
       auto-fit,
       minmax(35px, 1fr)
     ); /* Create as many columns as can fit, but not less than 30px */
-    grid-template-rows: repeat(
-      auto-fit,
-      minmax(35px, 1fr)
-    ); /* Create as many columns as can fit, but not less than 30px */
     grid-auto-flow: row dense;
     grid-gap: 2px; /* Set gap between icons */
-    align-items: center; /* Center items vertically */
     justify-items: center; /* Center items horizontally */
-    height: 45%; /* Set the height */
-    overflow: hidden; /* Prevent overflow */
+    height: 40%; /* Set the height */
+    padding-top: 5px;
   }
 
   .number-icons > *,
@@ -328,6 +323,8 @@
     display: flex; /* To center icon content */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
+    max-width: 100%;
+    max-height: 100%;
   }
 
   @media (max-width: 600px) {
