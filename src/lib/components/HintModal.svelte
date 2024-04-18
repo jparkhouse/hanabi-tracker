@@ -234,7 +234,6 @@
       numberValue: null,
     }; // Reset selected hint
   }
-  $: console.log(selectedHint);
 </script>
 
 {#if isOpen}
