@@ -4,10 +4,15 @@
   import gameConfig from "../stores/gameConfigStore";
   import { Variant, SuitEnum, getSuits } from "../models/variantEnums";
   import { NumberEnum, getNumbers } from "../models/numberEnums";
+  import One from "./number-icons/One.svelte";
+  import Three from "./number-icons/Three.svelte";
+  import Two from "./number-icons/Two.svelte";
+  import Four from "./number-icons/Four.svelte";
+  import Five from "./number-icons/Five.svelte";
 
   export let id: number;
-  export let numberInformation: number;
-  export let colourInformation: number;
+  export let numberInformation: NumberEnum;
+  export let colourInformation: SuitEnum;
   export let selected: boolean = false;
   export let isHinted: boolean;
   export let isFinessed: boolean;
@@ -38,26 +43,63 @@
     }
   }
 
-  let icons: string[] = []; // This will store the SVG paths or components for the relevant icons
-  $: {
-    if (knownColour == 'rainbow') {
-      icons = ['rainbow-empty.svg']
-    } else if (knownColour !== null) {
-      icons = [`${knownColour}.svg`]
-    } else {
-    icons = getSuits(colourInformation).map((value) => {
-      return `${getColourCodeFromSuit(value)}.svg`;
-    })};
+  interface NumberIconStyles {
+    backgroundColour: string;
+    strokeColour: string;
   }
 
-  // Utility to decode number information into readable format
-  function decodeNumber(numberInfo: number): string {
-    let output: string = getNumbers(numberInfo)
-      .map((value) =>
-        getNumberFromNumberEnum(value)
-      )
-      .join(" ");
-    return output;
+  let numberIconStyles: NumberIconStyles = {
+    backgroundColour: "white",
+    strokeColour: "none",
+  };
+
+  $: {
+    switch (knownColour) {
+      case "red":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "none";
+        break;
+      case "blue":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "none";
+        break;
+      case "green":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "none";
+        break;
+      case "black":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "none";
+        break;
+      case "rainbow":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "none";
+        break;
+      case "yellow":
+        numberIconStyles.strokeColour = "black";
+        numberIconStyles.backgroundColour = "none";
+        break;
+      case "white":
+        numberIconStyles.strokeColour = "black";
+        numberIconStyles.backgroundColour = "none";
+        break;
+      default:
+        numberIconStyles.backgroundColour = "white";
+        numberIconStyles.strokeColour = "none";
+    }
+  }
+
+  let colourIcons: string[] = []; // This will store the SVG paths or components for the relevant icons
+  $: {
+    if (knownColour == "rainbow") {
+      colourIcons = ["rainbow-empty.svg"];
+    } else if (knownColour !== null) {
+      colourIcons = [`${knownColour}.svg`];
+    } else {
+      colourIcons = getSuits(colourInformation).map((value) => {
+        return `${getColourCodeFromSuit(value)}.svg`;
+      });
+    }
   }
 
   function getColourCodeFromSuit(suit: SuitEnum): string {
@@ -82,17 +124,17 @@
   function getNumberFromNumberEnum(num: NumberEnum): string {
     switch (num) {
       case NumberEnum.One:
-        return '1'
+        return "1";
       case NumberEnum.Two:
-        return '2'
+        return "2";
       case NumberEnum.Three:
-        return '3'
+        return "3";
       case NumberEnum.Four:
-        return '4'
+        return "4";
       case NumberEnum.Five:
-        return '5'
+        return "5";
       case NumberEnum.All:
-        return '1 2 3 4 5'
+        return "1 2 3 4 5";
     }
   }
 </script>
@@ -106,11 +148,52 @@
     (event.key === "Enter" || event.key === " ") && onSelect(id)}
   style="border-color: {borderColour};"
 >
-  <p>Card {id + 1}</p>
-  <p>{decodeNumber(numberInformation)}</p>
-  <div class="icons">
-    {#each icons as icon}
-      <img src={icon} alt="colour icon" class="icon" />
+  <p class="card-id">Card {id + 1}</p>
+  <div class="number-icons">
+    <One
+      backgroundColour={numberIconStyles.backgroundColour}
+      strokeColour={numberIconStyles.strokeColour}
+      hidden={!(
+        getNumbers(numberInformation).includes(NumberEnum.One) ||
+        getNumbers(numberInformation).includes(NumberEnum.All)
+      )}
+    />
+    <Two
+      backgroundColour={numberIconStyles.backgroundColour}
+      strokeColour={numberIconStyles.strokeColour}
+      hidden={!(
+        getNumbers(numberInformation).includes(NumberEnum.Two) ||
+        getNumbers(numberInformation).includes(NumberEnum.All)
+      )}
+    />
+    <Three
+      backgroundColour={numberIconStyles.backgroundColour}
+      strokeColour={numberIconStyles.strokeColour}
+      hidden={!(
+        getNumbers(numberInformation).includes(NumberEnum.Three) ||
+        getNumbers(numberInformation).includes(NumberEnum.All)
+      )}
+    />
+    <Four
+      backgroundColour={numberIconStyles.backgroundColour}
+      strokeColour={numberIconStyles.strokeColour}
+      hidden={!(
+        getNumbers(numberInformation).includes(NumberEnum.Four) ||
+        getNumbers(numberInformation).includes(NumberEnum.All)
+      )}
+    />
+    <Five
+      backgroundColour={numberIconStyles.backgroundColour}
+      strokeColour={numberIconStyles.strokeColour}
+      hidden={!(
+        getNumbers(numberInformation).includes(NumberEnum.Five) ||
+        getNumbers(numberInformation).includes(NumberEnum.All)
+      )}
+    />
+  </div>
+  <div class="colour-icons">
+    {#each colourIcons as icon}
+      <img src={icon} alt="colour icon" class="colour-icon" />
     {/each}
   </div>
 </div>
@@ -125,7 +208,7 @@
     color: white;
     border: 3px solid;
     border-radius: 8px;
-    padding: 10px;
+    padding: 5px;
     cursor: pointer;
     min-width: 100px; /* Minimum width for a card */
     margin: 5px; /* Margin around cards */
@@ -135,6 +218,10 @@
     height: 70vh;
     min-height: 150px;
     overflow: hidden;
+  }
+
+  .card-id {
+    height: 10%;
   }
 
   .rainbow {
@@ -201,22 +288,37 @@
     aspect-ratio: 3/4;
   }
 
-  .icons {
-    display: grid;
-    grid-template-columns: repeat(
-      auto-fit,
-      minmax(30px, 1fr)
-    ); /* Create as many columns as possible, with a minimum width of 30px */
-    grid-auto-rows: minmax(30px, auto); /* Rows should be at least 30px high */
+  .colour-icons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center; /* Center the icons horizontally */
+    align-items: center; /* Align icons vertically */
     gap: 5px; /* Space between icons */
-    justify-content: center; /* Center the entire grid horizontally */
-    align-content: center; /* Center the entire grid vertically when there's extra space */
     max-width: 100%; /* Ensure the grid doesn't exceed the card's width */
+    max-height: 30%; /* Adjust based on the height of the icons */
     margin: auto; /* Center the grid within the card */
   }
 
-  .icon {
-    width: 100%; /* Ensure SVG icons scale within the grid */
+  .number-icons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center; /* Center the icons horizontally */
+    align-items: center; /* Align icons vertically */
+    gap: 5px; /* Space between icons */
+    max-width: 100%; /* Ensure the grid doesn't exceed the card's width */
+    height: 20%; /* Adjust based on the height of the icons */
+    margin: auto; /* Center the grid within the card */
+  }
+
+  .number-icon {
+    width: auto; /* Ensure SVG icons scale within the grid */
+    min-height: 30px; /* Adjust based on your preferred icon size */
+  }
+
+  .colour-icon {
+    width: auto;
     min-width: 30px; /* Adjust based on your preferred icon size */
   }
 </style>
