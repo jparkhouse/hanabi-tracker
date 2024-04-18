@@ -9,6 +9,14 @@
   import Two from "./number-icons/Two.svelte";
   import Four from "./number-icons/Four.svelte";
   import Five from "./number-icons/Five.svelte";
+  import Red from "./suit-icons/Red.svelte";
+  import Yellow from "./suit-icons/Yellow.svelte";
+  import Blue from "./suit-icons/Blue.svelte";
+  import White from "./suit-icons/White.svelte";
+  import Green from "./suit-icons/Green.svelte";
+  import Rainbow from "./suit-icons/Rainbow.svelte";
+  import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
+  import Black from "./suit-icons/Black.svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
@@ -89,19 +97,6 @@
     }
   }
 
-  let colourIcons: string[] = []; // This will store the SVG paths or components for the relevant icons
-  $: {
-    if (knownColour == "rainbow") {
-      colourIcons = ["rainbow-empty.svg"];
-    } else if (knownColour !== null) {
-      colourIcons = [`${knownColour}.svg`];
-    } else {
-      colourIcons = getSuits(colourInformation).map((value) => {
-        return `${getColourCodeFromSuit(value)}.svg`;
-      });
-    }
-  }
-
   function getColourCodeFromSuit(suit: SuitEnum): string {
     switch (suit) {
       case SuitEnum.Red:
@@ -118,23 +113,6 @@
         return "rainbow";
       case SuitEnum.Black:
         return "black";
-    }
-  }
-
-  function getNumberFromNumberEnum(num: NumberEnum): string {
-    switch (num) {
-      case NumberEnum.One:
-        return "1";
-      case NumberEnum.Two:
-        return "2";
-      case NumberEnum.Three:
-        return "3";
-      case NumberEnum.Four:
-        return "4";
-      case NumberEnum.Five:
-        return "5";
-      case NumberEnum.All:
-        return "1 2 3 4 5";
     }
   }
 </script>
@@ -192,9 +170,14 @@
     />
   </div>
   <div class="colour-icons">
-    {#each colourIcons as icon}
-      <img src={icon} alt="colour icon" class="colour-icon" />
-    {/each}
+    <Red hidden={!getSuits(colourInformation).includes(SuitEnum.Red)} />
+    <Yellow hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)} />
+    <Blue hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)} />
+    <White hidden={!getSuits(colourInformation).includes(SuitEnum.White)} />
+    <Green hidden={!getSuits(colourInformation).includes(SuitEnum.Green)} />
+    <Rainbow hidden={!(getSuits(colourInformation).includes(SuitEnum.Rainbow) && knownColour == null)} />
+    <RainbowEmpty hidden={!(getSuits(colourInformation).includes(SuitEnum.Rainbow) && knownColour == 'rainbow')} />
+    <Black hidden={!getSuits(colourInformation).includes(SuitEnum.Black)} />
   </div>
 </div>
 
