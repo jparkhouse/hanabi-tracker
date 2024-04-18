@@ -171,9 +171,15 @@
   </div>
   <div class="colour-icons">
     <Red hidden={!getSuits(colourInformation).includes(SuitEnum.Red)} />
-    <Yellow hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)} />
+    <Yellow
+      hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
+      strokeColour={knownColour !== "yellow" ? "white" : "black"}
+    />
     <Blue hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)} />
-    <White hidden={!getSuits(colourInformation).includes(SuitEnum.White)} />
+    <White
+      hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
+      strokeColour={knownColour !== "white" ? "white" : "black"}
+    />
     <Green hidden={!getSuits(colourInformation).includes(SuitEnum.Green)} />
     <Rainbow
       hidden={!(
@@ -207,7 +213,6 @@
     margin: 5px; /* Margin around cards */
     align-content: center; /* Center text inside cards */
     flex: 1;
-    font-size: 3vw;
     height: 70vh;
     min-height: 150px;
     overflow: hidden;
@@ -215,6 +220,7 @@
 
   .card-id {
     height: 10%;
+
   }
 
   .rainbow {
@@ -267,17 +273,17 @@
   }
 
   .card.no-3 {
-    width: calc(100% / 3);
+    width: calc(100% / 3 - 2px);
     aspect-ratio: 3/4;
   }
 
   .card.no-4 {
-    width: calc(100% / 4);
+    width: calc(100% / 4 - 2px);
     aspect-ratio: 3/4;
   }
 
   .card.no-5 {
-    width: calc(100% / 5);
+    width: calc(100% / 5 - 2px);
     aspect-ratio: 3/4;
   }
 
@@ -288,19 +294,31 @@
     justify-content: center; /* Center the content horizontally */
   }
 
-  .card .number-icons,
-  .card .colour-icons {
+  .card .number-icons {
     height: 45%;
     display: flex;
     flex-wrap: nowrap; /* Prevent wrapping for number icons */
     align-items: center;
     justify-content: center;
-    flex: 1;
     width: 100%; /* adding this fixed the number icons but not the colour icons */
   }
 
   .card .colour-icons {
-    flex-wrap: wrap; /* Allow wrapping for colour icons */
+    display: grid; /* Use grid layout */
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(35px, 1fr)
+    ); /* Create as many columns as can fit, but not less than 30px */
+    grid-template-rows: repeat(
+      auto-fit,
+      minmax(35px, 1fr)
+    ); /* Create as many columns as can fit, but not less than 30px */
+    grid-auto-flow: row dense;
+    grid-gap: 2px; /* Set gap between icons */
+    align-items: center; /* Center items vertically */
+    justify-items: center; /* Center items horizontally */
+    height: 45%; /* Set the height */
+    overflow: hidden; /* Prevent overflow */
   }
 
   .number-icons > *,
@@ -313,9 +331,10 @@
   }
 
   @media (max-width: 600px) {
-  .number-icons > *, .colour-icons > * {
-    min-width: 30px; /* Smaller size for smaller screens */
-    min-height: 30px;
+    .number-icons > *,
+    .colour-icons > * {
+      min-width: 30px; /* Smaller size for smaller screens */
+      min-height: 30px;
+    }
   }
-}
 </style>
