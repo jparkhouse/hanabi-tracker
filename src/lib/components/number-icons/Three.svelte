@@ -9,7 +9,7 @@
 {#if !hidden}
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  height=100%;
+  height="100%"
   fill="none"
   viewBox="0 0 197 264"
   role="img"
