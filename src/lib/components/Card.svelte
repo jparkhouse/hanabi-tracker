@@ -58,44 +58,8 @@
 
   let numberIconStyles: NumberIconStyles = {
     backgroundColour: "white",
-    strokeColour: "none",
+    strokeColour: "black",
   };
-
-  $: {
-    switch (knownColour) {
-      case "red":
-        numberIconStyles.strokeColour = "white";
-        numberIconStyles.backgroundColour = "none";
-        break;
-      case "blue":
-        numberIconStyles.strokeColour = "white";
-        numberIconStyles.backgroundColour = "none";
-        break;
-      case "green":
-        numberIconStyles.strokeColour = "white";
-        numberIconStyles.backgroundColour = "none";
-        break;
-      case "black":
-        numberIconStyles.strokeColour = "white";
-        numberIconStyles.backgroundColour = "none";
-        break;
-      case "rainbow":
-        numberIconStyles.strokeColour = "black";
-        numberIconStyles.backgroundColour = "white";
-        break;
-      case "yellow":
-        numberIconStyles.strokeColour = "black";
-        numberIconStyles.backgroundColour = "none";
-        break;
-      case "white":
-        numberIconStyles.strokeColour = "black";
-        numberIconStyles.backgroundColour = "none";
-        break;
-      default:
-        numberIconStyles.backgroundColour = "white";
-        numberIconStyles.strokeColour = "none";
-    }
-  }
 
   function getColourCodeFromSuit(suit: SuitEnum): string {
     switch (suit) {
