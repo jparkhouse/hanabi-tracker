@@ -175,8 +175,18 @@
     <Blue hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)} />
     <White hidden={!getSuits(colourInformation).includes(SuitEnum.White)} />
     <Green hidden={!getSuits(colourInformation).includes(SuitEnum.Green)} />
-    <Rainbow hidden={!(getSuits(colourInformation).includes(SuitEnum.Rainbow) && knownColour == null)} />
-    <RainbowEmpty hidden={!(getSuits(colourInformation).includes(SuitEnum.Rainbow) && knownColour == 'rainbow')} />
+    <Rainbow
+      hidden={!(
+        getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
+        knownColour == null
+      )}
+    />
+    <RainbowEmpty
+      hidden={!(
+        getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
+        knownColour == "rainbow"
+      )}
+    />
     <Black hidden={!getSuits(colourInformation).includes(SuitEnum.Black)} />
   </div>
 </div>
@@ -271,37 +281,41 @@
     aspect-ratio: 3/4;
   }
 
-  .colour-icons {
+  .card .card-id {
+    height: 10%;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: center; /* Center the icons horizontally */
-    align-items: center; /* Align icons vertically */
-    gap: 5px; /* Space between icons */
-    max-width: 100%; /* Ensure the grid doesn't exceed the card's width */
-    max-height: 30%; /* Adjust based on the height of the icons */
-    margin: auto; /* Center the grid within the card */
+    align-items: center; /* Center the content vertically */
+    justify-content: center; /* Center the content horizontally */
   }
 
-  .number-icons {
+  .card .number-icons,
+  .card .colour-icons {
+    height: 45%;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: center; /* Center the icons horizontally */
-    align-items: center; /* Align icons vertically */
-    gap: 5px; /* Space between icons */
-    max-width: 100%; /* Ensure the grid doesn't exceed the card's width */
-    height: 20%; /* Adjust based on the height of the icons */
-    margin: auto; /* Center the grid within the card */
+    flex-wrap: nowrap; /* Prevent wrapping for number icons */
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%; /* adding this fixed the number icons but not the colour icons */
   }
 
-  .number-icon {
-    width: auto; /* Ensure SVG icons scale within the grid */
-    min-height: 30px; /* Adjust based on your preferred icon size */
+  .card .colour-icons {
+    flex-wrap: wrap; /* Allow wrapping for colour icons */
   }
 
-  .colour-icon {
-    width: auto;
-    min-width: 30px; /* Adjust based on your preferred icon size */
+  .number-icons > *,
+  .colour-icons > * {
+    flex: 1 1 auto; /* Grow to fill the space, no shrinking, no automatic basis */
+    margin: 4px; /* Optional: for spacing */
+    display: flex; /* To center icon content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
   }
+
+  @media (max-width: 600px) {
+  .number-icons > *, .colour-icons > * {
+    min-width: 30px; /* Smaller size for smaller screens */
+    min-height: 30px;
+  }
+}
 </style>
