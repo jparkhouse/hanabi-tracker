@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/jparkhouse/hanabi-tracker/compare/v1.2.0...v1.2.1) (2024-04-18)
+
+
+### Bug Fixes
+
+* went back to simple number icons, no variation in colours ([f0d4c80](https://github.com/jparkhouse/hanabi-tracker/commit/f0d4c8053e54c611f947e77da2c58a937cbbdfb0))
+
 ## [1.2.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.1.0...v1.2.0) (2024-04-18)
 
 
