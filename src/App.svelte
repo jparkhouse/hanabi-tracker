@@ -6,5 +6,5 @@
 <main>
   <GameControls />
   <Hand />
-  <a href="https://github.com/jparkhouse/hanabi-tracker/" target="_blank">Check out my code!</a>
+  <a href="https://github.com/jparkhouse/hanabi-tracker/" target="_blank"><u>Check out my code!</u></a>
 </main>

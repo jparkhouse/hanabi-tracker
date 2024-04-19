@@ -67,7 +67,7 @@
   <button class="wake-lock" on:click={toggleWakeLock} hidden={!wakeLockSupported}>{wakeLockButtonText}</button>
   <PlayDiscardSelectedCard />
   <button class="hint-panel" on:click={openHintModal} disabled={$cardsSelectedStore.size < 1}>Record Hint</button>
-  <button class="mark-panel" on:click={openMarkModal} disabled={$cardsSelectedStore.size < 1}>Mark cards</button>
+  <button class="mark-panel" on:click={openMarkModal} disabled={$cardsSelectedStore.size < 1}>Mark Cards</button>
   <button class="undo" on:click={handleRollback} disabled={historySize < 1}>Undo</button>
 </div>
 <ConfigModal bind:isOpen={isConfigModalOpen} />
