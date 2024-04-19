@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2](https://github.com/jparkhouse/hanabi-tracker/compare/v1.2.1...v1.2.2) (2024-04-19)
+
+
+### Bug Fixes
+
+* capitalise mark cards ([c755e8f](https://github.com/jparkhouse/hanabi-tracker/commit/c755e8f77bc3e0d040b7711813c0d0399ff22d29))
+* underlined hyperlink for more standard styling ([c755e8f](https://github.com/jparkhouse/hanabi-tracker/commit/c755e8f77bc3e0d040b7711813c0d0399ff22d29))
+
 ## [1.2.1](https://github.com/jparkhouse/hanabi-tracker/compare/v1.2.0...v1.2.1) (2024-04-18)
 
 
