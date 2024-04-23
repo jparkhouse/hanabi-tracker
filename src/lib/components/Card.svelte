@@ -30,17 +30,13 @@
 
   $: variant = $gameConfig.variant;
   $: numberOfCards = $gameConfig.numberOfCards;
-  $: borderColour = selected
-    ? "blue"
-    : isCritical
-      ? "red"
-      : isHinted
-        ? "orange"
-        : isFinessed
-          ? "aqua"
-          : isChopMoved
-            ? "white"
-            : "gray";
+  $: borderColour = 
+      selected ? 'var(--border-selected)' :
+      isCritical ? 'var(--border-critical)' :
+      isHinted ? 'var(--border-hinted)' :
+      isFinessed ? 'var(--border-finessed)' :
+      isChopMoved ? 'var(--border-chopmoved)' :
+      'var(--border-default)';
 
   let knownColour: string | null = null;
   $: {
@@ -82,7 +78,9 @@
 </script>
 
 <div
-  class="card no-{numberOfCards} {knownColour != null ? knownColour : ''}"
+  class="card no-{numberOfCards} {knownColour != null
+    ? knownColour
+    : ''} {selected ? 'selected' : ''}"
   tabindex="0"
   role="button"
   on:click={() => onSelect(id)}
@@ -169,7 +167,7 @@
     align-items: center; /* Align children horizontally in the center */
     background-color: dimgray;
     color: white;
-    border: 3px solid;
+    border: 6px solid;
     border-radius: 8px;
     padding: 5px;
     cursor: pointer;
@@ -182,9 +180,12 @@
     overflow: hidden;
   }
 
+  .selected {
+    filter: brightness(1.2);
+  }
+
   .card-id {
     height: 10%;
-
   }
 
   .rainbow {
@@ -211,8 +212,12 @@
     color: white;
   }
 
+  .black.selected {
+    background-color: #151515;
+  }
+
   .red {
-    background-color: red;
+    background-color: crimson;
     color: white;
   }
 
@@ -227,12 +232,12 @@
   }
 
   .white {
-    background-color: white;
+    background-color: whitesmoke;
     color: black;
   }
 
   .yellow {
-    background-color: yellow;
+    background-color: gold;
     color: black;
   }
 
