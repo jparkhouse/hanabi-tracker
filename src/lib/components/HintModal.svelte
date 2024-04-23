@@ -216,6 +216,7 @@
       colourValue: colourHint,
       numberValue: null,
     };
+    saveHint();
   }
 
   function selectNumberHint(numberHint: number): void {
@@ -224,6 +225,7 @@
       colourValue: null,
       numberValue: numberHint,
     };
+    saveHint();
   }
 
   function closePanel() {
@@ -274,7 +276,6 @@
         {/each}
       </div>
       <div class="actions">
-        <button on:click={saveHint} disabled={!selectedHint}>Save</button>
         <button on:click={closePanel}>Cancel</button>
       </div>
     </div>
