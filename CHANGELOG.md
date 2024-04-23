@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/jparkhouse/hanabi-tracker/compare/v1.3.0...v1.3.1) (2024-04-23)
+
+
+### Bug Fixes
+
+* better colours ([6ecd13e](https://github.com/jparkhouse/hanabi-tracker/commit/6ecd13e84a0799be6e0fa9fc6237e2fb72ad7124))
+* removed exta click from hint flow ([b601865](https://github.com/jparkhouse/hanabi-tracker/commit/b6018650d2dbe23db3e180326ddb0b5320262409))
+
 ## [1.3.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.2.2...v1.3.0) (2024-04-23)
 
 
