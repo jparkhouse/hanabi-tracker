@@ -94,7 +94,7 @@
   function handleClickOutside(event: MouseEvent) {
     const path = event.composedPath();
     const clickedCard = path.find(
-      (el) => el.classList && el.classList.contains("card")
+      (el) => el instanceof HTMLElement && el.classList && el.classList.contains("card")
     );
 
     if (!clickedCard) {
