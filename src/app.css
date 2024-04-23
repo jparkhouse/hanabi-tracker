@@ -11,6 +11,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --border-selected: blue;
+  --border-critical: red;
+  --border-hinted: orange;
+  --border-finessed: aqua;
+  --border-chopmoved: white; /* Default assuming dark mode */
+  --border-default: gray;
 }
 
 a {
@@ -72,6 +79,10 @@ button:focus-visible {
   :root {
     color: #213547;
     background-color: #ffffff;
+    --border-chopmoved: darkblue; /* Default assuming dark mode */
+  }
+  a {
+    color: #213547;
   }
   a:hover {
     color: #747bff;
