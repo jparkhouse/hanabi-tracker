@@ -17,6 +17,10 @@
   import Rainbow from "./suit-icons/Rainbow.svelte";
   import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
   import Black from "./suit-icons/Black.svelte";
+  import { cards } from "../stores/cardsStore";
+  import { activeMenuCard } from "../stores/menuStore";
+  import { cardsSelectedStore } from "../stores/cardsSelectedStore";
+  import { onMount, onDestroy } from "svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
@@ -28,7 +32,8 @@
   export let isCritical: boolean;
   export let onSelect: (id: number) => void;
 
-  $: variant = $gameConfig.variant;
+  $: localMode = $activeMenuCard === id ? "menu" : "card";
+  $: isMenuActive = $activeMenuCard !== null;
   $: numberOfCards = $gameConfig.numberOfCards;
   $: borderColour = selected
     ? "blue"
@@ -61,6 +66,16 @@
     strokeColour: "black",
   };
 
+  // Toggle mode function
+  function toggleMode() {
+    if (localMode === "card" && !isMenuActive) {
+      activeMenuCard.set(id);
+    } else if (localMode === "menu") {
+      activeMenuCard.set(null);
+    }
+    cardsSelectedStore.set(new Set<number>());
+  }
+
   function getColourCodeFromSuit(suit: SuitEnum): string {
     switch (suit) {
       case SuitEnum.Red:
@@ -79,86 +94,220 @@
         return "black";
     }
   }
+
+  function handleClickOutside(event: MouseEvent) {
+    const path = event.composedPath();
+    const clickedCard = path.find(
+      (el) => el.classList && el.classList.contains("card")
+    );
+
+    if (!clickedCard) {
+      // If no card was clicked, reset the active card
+      if ($activeMenuCard !== null) {
+        activeMenuCard.set(null);
+      }
+    }
+  }
+
+  // Register body click event on mount and clean up on destroy
+
+  onMount(() => {
+    document.body.addEventListener("click", handleClickOutside, true); // Use capture phase to handle the click first
+  });
+
+  onDestroy(() => {
+    document.body.removeEventListener("click", handleClickOutside, true);
+  });
+
+  function toggleCritical(): void {
+    cards.updateCards((allCards) => {
+      const newCards = allCards.map((card) => {
+        if (card.id === id) {
+          return { ...card, isCritical: !isCritical };
+        }
+        return card;
+      });
+      return newCards;
+    });
+  }
+
+  function toggleChopMoved(): any {
+    cards.updateCards((allCards) => {
+      const newCards = allCards.map((card) => {
+        if (card.id === id) {
+          return { ...card, isChopMoved: !isChopMoved };
+        }
+        return card;
+      });
+      return newCards;
+    });
+  }
+
+  function toggleFinessed(): any {
+    cards.updateCards((allCards) => {
+      const newCards = allCards.map((card) => {
+        if (card.id === id) {
+          return { ...card, isFinessed: !isFinessed };
+        }
+        return card;
+      });
+      return newCards;
+    });
+  }
+
+  let timeoutId: ReturnType<typeof setTimeout>;
+  let preventClickAction = false; // Flag to prevent click action after long press or right click
+
+  function handleRightClick(event: MouseEvent) {
+    event.preventDefault(); // Stop the context menu
+    toggleMode(); // Toggle to menu mode
+    preventClickAction = true; // Set the flag to prevent click action
+  }
+
+  function handleMouseDown(event: MouseEvent) {
+    if (handleInteraction(event)) {
+      preventClickAction = false; // Reset the flag on mouse down
+      timeoutId = setTimeout(() => {
+        toggleMode(); // Long press logic here
+        preventClickAction = true; // Set the flag to prevent click action
+      }, 500); // Delay for long press detection
+    }
+  }
+
+  function handleMouseUp(event: MouseEvent) {
+    if (handleInteraction(event)) {
+      clearTimeout(timeoutId); // Ensure to clear the timer if the mouse leaves the element
+    }
+  }
+
+  function handleMouseLeave(event: MouseEvent) {
+    if (handleInteraction(event)) {
+      clearTimeout(timeoutId); // Ensure to clear the timer if the mouse leaves the element
+    }
+  }
+
+  function handleInteraction(event: MouseEvent) {
+    if (isMenuActive && $activeMenuCard !== id) {
+      event.stopPropagation(); // Prevent the event from propagating further
+      return false; // Block the interaction
+    }
+    return true; // Allow interaction
+  }
+
+  // Click handler
+  function handleClick(event: MouseEvent) {
+    const currentActive = $activeMenuCard;
+    if (currentActive !== null && currentActive !== id) {
+      // If another card is active, deactivate it
+      activeMenuCard.set(null);
+    } else if ($activeMenuCard === null) {
+      onSelect(id);
+    }
+  }
 </script>
 
 <div
   class="card no-{numberOfCards} {knownColour != null ? knownColour : ''}"
   tabindex="0"
   role="button"
-  on:click={() => onSelect(id)}
-  on:keydown={(event) =>
-    (event.key === "Enter" || event.key === " ") && onSelect(id)}
+  on:click={(event) => handleClick(event)}
+  on:contextmenu|preventDefault={(event) => handleRightClick(event)}
+  on:mousedown={(event) => handleMouseDown(event)}
+  on:mouseup={(event) => handleMouseUp(event)}
+  on:mouseleave={(event) => handleMouseLeave(event)}
   style="border-color: {borderColour};"
 >
-  <p class="card-id">Card {id + 1}</p>
-  <div class="number-icons">
-    <One
-      backgroundColour={numberIconStyles.backgroundColour}
-      strokeColour={numberIconStyles.strokeColour}
-      hidden={!(
-        getNumbers(numberInformation).includes(NumberEnum.One) ||
-        getNumbers(numberInformation).includes(NumberEnum.All)
-      )}
-    />
-    <Two
-      backgroundColour={numberIconStyles.backgroundColour}
-      strokeColour={numberIconStyles.strokeColour}
-      hidden={!(
-        getNumbers(numberInformation).includes(NumberEnum.Two) ||
-        getNumbers(numberInformation).includes(NumberEnum.All)
-      )}
-    />
-    <Three
-      backgroundColour={numberIconStyles.backgroundColour}
-      strokeColour={numberIconStyles.strokeColour}
-      hidden={!(
-        getNumbers(numberInformation).includes(NumberEnum.Three) ||
-        getNumbers(numberInformation).includes(NumberEnum.All)
-      )}
-    />
-    <Four
-      backgroundColour={numberIconStyles.backgroundColour}
-      strokeColour={numberIconStyles.strokeColour}
-      hidden={!(
-        getNumbers(numberInformation).includes(NumberEnum.Four) ||
-        getNumbers(numberInformation).includes(NumberEnum.All)
-      )}
-    />
-    <Five
-      backgroundColour={numberIconStyles.backgroundColour}
-      strokeColour={numberIconStyles.strokeColour}
-      hidden={!(
-        getNumbers(numberInformation).includes(NumberEnum.Five) ||
-        getNumbers(numberInformation).includes(NumberEnum.All)
-      )}
-    />
-  </div>
-  <div class="colour-icons">
-    <Red hidden={!getSuits(colourInformation).includes(SuitEnum.Red)} />
-    <Yellow
-      hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
-      strokeColour={knownColour !== "yellow" ? "white" : "black"}
-    />
-    <Blue hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)} />
-    <White
-      hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
-      strokeColour={knownColour !== "white" ? "white" : "black"}
-    />
-    <Green hidden={!getSuits(colourInformation).includes(SuitEnum.Green)} />
-    <Rainbow
-      hidden={!(
-        getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
-        knownColour == null
-      )}
-    />
-    <RainbowEmpty
-      hidden={!(
-        getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
-        knownColour == "rainbow"
-      )}
-    />
-    <Black hidden={!getSuits(colourInformation).includes(SuitEnum.Black)} />
-  </div>
+  {#if $activeMenuCard !== id}
+    <p class="card-id">Card {id + 1}</p>
+    <div class="number-icons">
+      <One
+        backgroundColour={numberIconStyles.backgroundColour}
+        strokeColour={numberIconStyles.strokeColour}
+        hidden={!(
+          getNumbers(numberInformation).includes(NumberEnum.One) ||
+          getNumbers(numberInformation).includes(NumberEnum.All)
+        )}
+      />
+      <Two
+        backgroundColour={numberIconStyles.backgroundColour}
+        strokeColour={numberIconStyles.strokeColour}
+        hidden={!(
+          getNumbers(numberInformation).includes(NumberEnum.Two) ||
+          getNumbers(numberInformation).includes(NumberEnum.All)
+        )}
+      />
+      <Three
+        backgroundColour={numberIconStyles.backgroundColour}
+        strokeColour={numberIconStyles.strokeColour}
+        hidden={!(
+          getNumbers(numberInformation).includes(NumberEnum.Three) ||
+          getNumbers(numberInformation).includes(NumberEnum.All)
+        )}
+      />
+      <Four
+        backgroundColour={numberIconStyles.backgroundColour}
+        strokeColour={numberIconStyles.strokeColour}
+        hidden={!(
+          getNumbers(numberInformation).includes(NumberEnum.Four) ||
+          getNumbers(numberInformation).includes(NumberEnum.All)
+        )}
+      />
+      <Five
+        backgroundColour={numberIconStyles.backgroundColour}
+        strokeColour={numberIconStyles.strokeColour}
+        hidden={!(
+          getNumbers(numberInformation).includes(NumberEnum.Five) ||
+          getNumbers(numberInformation).includes(NumberEnum.All)
+        )}
+      />
+    </div>
+    <div class="colour-icons">
+      <Red hidden={!getSuits(colourInformation).includes(SuitEnum.Red)} />
+      <Yellow
+        hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
+        strokeColour={knownColour !== "yellow" ? "white" : "black"}
+      />
+      <Blue hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)} />
+      <White
+        hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
+        strokeColour={knownColour !== "white" ? "white" : "black"}
+      />
+      <Green hidden={!getSuits(colourInformation).includes(SuitEnum.Green)} />
+      <Rainbow
+        hidden={!(
+          getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
+          knownColour == null
+        )}
+      />
+      <RainbowEmpty
+        hidden={!(
+          getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
+          knownColour == "rainbow"
+        )}
+      />
+      <Black hidden={!getSuits(colourInformation).includes(SuitEnum.Black)} />
+    </div>
+  {:else}
+    <div class="menu no-{numberOfCards} {knownColour != null ? knownColour : ''}">
+      <div class="menu-buttons">
+        <button
+          class="btn menu-button {isCritical ? 'selected' : ''}"
+          on:click={() => toggleCritical()}>Critical</button
+        >
+        <button
+          class="btn menu-button {isChopMoved ? 'selected' : ''}"
+          on:click={() => toggleChopMoved()}>Chop moved</button
+        >
+        <button
+          class="btn menu-button {isFinessed ? 'selected' : ''}"
+          on:click={() => toggleFinessed()}>Finessed</button
+        >
+      </div>
+      <button class="btn menu-button close-button" on:click={toggleMode}>
+        Close
+      </button>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -184,7 +333,6 @@
 
   .card-id {
     height: 10%;
-
   }
 
   .rainbow {
@@ -297,5 +445,49 @@
       min-width: 30px; /* Smaller size for smaller screens */
       min-height: 30px;
     }
+  }
+
+  .menu-buttons {
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between buttons */
+    width: 100%;
+    height: 80%;
+  }
+
+  .menu {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-button {
+    border: 2px solid #cccccc; /* Light grey border */
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    width: 90%
+  }
+
+  .menu-button.selected {
+    background-color: lightblue;
+    color: black;
+  }
+
+  /* Additional styling for the 'Close' button to make it stand out or appear at the bottom */
+  .btn.close-button {
+    background-color: #ff4136; /* Red background for the close button */
+    color: #ffffff; /* White text for contrast */
+  }
+
+  .btn.close-button:hover {
+    background-color: #e82c23; /* Darker red on hover */
   }
 </style>
