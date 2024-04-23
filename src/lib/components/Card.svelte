@@ -62,6 +62,42 @@
     strokeColour: "black",
   };
 
+  $: {
+    switch (knownColour) {
+      case "red":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "red";
+        break;
+      case "blue":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "mediumblue";
+        break;
+      case "green":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "green";
+        break;
+      case "black":
+        numberIconStyles.strokeColour = "white";
+        numberIconStyles.backgroundColour = "black";
+        break;
+      case "rainbow":
+        numberIconStyles.strokeColour = "black";
+        numberIconStyles.backgroundColour = "white";
+        break;
+      case "yellow":
+        numberIconStyles.strokeColour = "black";
+        numberIconStyles.backgroundColour = "yellow";
+        break;
+      case "white":
+        numberIconStyles.strokeColour = "black";
+        numberIconStyles.backgroundColour = "white";
+        break;
+      default:
+        numberIconStyles.backgroundColour = "lightgrey";
+        numberIconStyles.strokeColour = "black";
+    }
+  }
+
   // Toggle mode function
   function toggleMode() {
     if (localMode === "card" && !isMenuActive) {
@@ -265,12 +301,17 @@
         hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
         strokeColour={knownColour !== "yellow" ? "white" : "black"}
       />
-      <Blue hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)} />
+      <Blue 
+      hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)}
+      backgroundColour="mediumblue"
+       />
       <White
         hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
         strokeColour={knownColour !== "white" ? "white" : "black"}
       />
-      <Green hidden={!getSuits(colourInformation).includes(SuitEnum.Green)} />
+      <Green 
+      hidden={!getSuits(colourInformation).includes(SuitEnum.Green)}
+      backgroundColour="green" />
       <Rainbow
         hidden={!(
           getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
@@ -366,12 +407,12 @@
   }
 
   .red {
-    background-color: crimson;
+    background-color: #c00;
     color: white;
   }
 
   .blue {
-    background-color: navy;
+    background-color: midnightblue;
     color: white;
   }
 
