@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.2.2...v1.3.0) (2024-04-23)
+
+
+### Features
+
+* removed mark modal and integrated into card menus ([441e2de](https://github.com/jparkhouse/hanabi-tracker/commit/441e2de038706b65228dd6b83851742165af92ca))
+
+
+### Bug Fixes
+
+* added background colour states on selection ([91bbe3d](https://github.com/jparkhouse/hanabi-tracker/commit/91bbe3d58ab531422b2d028ad1c2d963c46d3ab4))
+* added background colour states on selection ([5d41223](https://github.com/jparkhouse/hanabi-tracker/commit/5d41223f419d2976f87f67f36eeb37a8a1993d25))
+* improved light/dark modes ([91bbe3d](https://github.com/jparkhouse/hanabi-tracker/commit/91bbe3d58ab531422b2d028ad1c2d963c46d3ab4))
+* improved light/dark modes ([5d41223](https://github.com/jparkhouse/hanabi-tracker/commit/5d41223f419d2976f87f67f36eeb37a8a1993d25))
+
 ## [1.2.2](https://github.com/jparkhouse/hanabi-tracker/compare/v1.2.1...v1.2.2) (2024-04-19)
 
 
