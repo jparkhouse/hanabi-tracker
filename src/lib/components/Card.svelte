@@ -35,13 +35,17 @@
   $: localMode = $activeMenuCard === id ? "menu" : "card";
   $: isMenuActive = $activeMenuCard !== null;
   $: numberOfCards = $gameConfig.numberOfCards;
-  $: borderColour = 
-      selected ? 'var(--border-selected)' :
-      isCritical ? 'var(--border-critical)' :
-      isHinted ? 'var(--border-hinted)' :
-      isFinessed ? 'var(--border-finessed)' :
-      isChopMoved ? 'var(--border-chopmoved)' :
-      'var(--border-default)';
+  $: borderColour = selected
+    ? "var(--border-selected)"
+    : isCritical
+      ? "var(--border-critical)"
+      : isHinted
+        ? "var(--border-hinted)"
+        : isFinessed
+          ? "var(--border-finessed)"
+          : isChopMoved
+            ? "var(--border-chopmoved)"
+            : "var(--border-default)";
 
   let knownColour: string | null = null;
   $: {
@@ -127,30 +131,6 @@
     }
   }
 
-  function handleClickOutside(event: MouseEvent) {
-    const path = event.composedPath();
-    const clickedCard = path.find(
-      (el) => el instanceof HTMLElement && el.classList && el.classList.contains("card")
-    );
-
-    if (!clickedCard) {
-      // If no card was clicked, reset the active card
-      if ($activeMenuCard !== null) {
-        activeMenuCard.set(null);
-      }
-    }
-  }
-
-  // Register body click event on mount and clean up on destroy
-
-  onMount(() => {
-    document.body.addEventListener("click", handleClickOutside, true); // Use capture phase to handle the click first
-  });
-
-  onDestroy(() => {
-    document.body.removeEventListener("click", handleClickOutside, true);
-  });
-
   function toggleCritical(): void {
     cards.updateCards((allCards) => {
       const newCards = allCards.map((card) => {
@@ -188,69 +168,54 @@
   }
 
   let timeoutId: ReturnType<typeof setTimeout>;
-  let preventClickAction = false; // Flag to prevent click action after long press or right click
 
-  function handleRightClick(event: MouseEvent) {
-    event.preventDefault(); // Stop the context menu
-    toggleMode(); // Toggle to menu mode
-    preventClickAction = true; // Set the flag to prevent click action
-  }
-
-  function handleMouseDown(event: MouseEvent) {
-    if (handleInteraction(event)) {
-      preventClickAction = false; // Reset the flag on mouse down
+  function handleInteractionStart(event: MouseEvent | TouchEvent): void {
+    const targetElement = event.target as HTMLElement;
+    // Check if the event was initiated from the card or its children
+    if (targetElement.closest(".card")) {
+      event.preventDefault(); // Prevent default only if it's within the card
       timeoutId = setTimeout(() => {
-        toggleMode(); // Long press logic here
-        preventClickAction = true; // Set the flag to prevent click action
-      }, 500); // Delay for long press detection
+        // Long press logic only triggers if the initial target was the card itself
+        if (targetElement.closest(".card")) {
+          toggleMode();
+        }
+      }, 500); // Long press delay
     }
   }
 
-  function handleMouseUp(event: MouseEvent) {
-    if (handleInteraction(event)) {
-      clearTimeout(timeoutId); // Ensure to clear the timer if the mouse leaves the element
-    }
-  }
-
-  function handleMouseLeave(event: MouseEvent) {
-    if (handleInteraction(event)) {
-      clearTimeout(timeoutId); // Ensure to clear the timer if the mouse leaves the element
-    }
-  }
-
-  function handleInteraction(event: MouseEvent) {
-    if (isMenuActive && $activeMenuCard !== id) {
-      event.stopPropagation(); // Prevent the event from propagating further
-      return false; // Block the interaction
-    }
-    return true; // Allow interaction
-  }
-
-  // Click handler
-  function handleClick(event: MouseEvent) {
-    const currentActive = $activeMenuCard;
-    if (currentActive !== null && currentActive !== id) {
-      // If another card is active, deactivate it
-      activeMenuCard.set(null);
-    } else if ($activeMenuCard === null) {
-      onSelect(id);
-    }
-  }
-
-  function handleTouchStart(event: TouchEvent) {
-    event.preventDefault(); // Prevent default touch-based behaviors, like content selection
-    startLongPress();
-  }
-
-  function handleTouchEnd() {
+  function handleInteractionEnd(event: MouseEvent | TouchEvent): void {
     clearTimeout(timeoutId);
+    const targetElement = event.target as HTMLElement;
+    // Handle tap or click on the card, ignoring menu button clicks
+    if (targetElement.closest('.card') && !targetElement.closest('.menu-button')) {
+      onSelect(id); // Selection logic if not a menu button
+    }
   }
 
-  function startLongPress() {
-    timeoutId = setTimeout(() => {
-      toggleMode(); // Your function to toggle to the menu
-    }, 500); // Adjust the time based on what feels right for a "long press"
+  function handleRightClick(event: MouseEvent): void {
+    const targetElement = event.target as HTMLElement;
+    if (targetElement.closest('.card')) {
+      event.preventDefault();
+      toggleMode();
+    }
   }
+
+  // Function to handle global clicks for closing the menu
+  function handleClickOutside(event: MouseEvent): void {
+    if (!$activeMenuCard) return; // Exit if no menu is active
+    const targetElement = event.target as HTMLElement;
+    if (!targetElement.closest('.card')) {
+      activeMenuCard.set(null); // Close the menu if clicked outside any card
+    }
+  }
+
+  onMount(() => {
+    document.body.addEventListener("click", handleClickOutside, true);
+  });
+
+  onDestroy(() => {
+    document.body.removeEventListener("click", handleClickOutside, true);
+  });
 </script>
 
 <div
@@ -259,14 +224,12 @@
     : ''} {selected ? 'selected' : ''}"
   tabindex="0"
   role="button"
-  on:click={(event) => handleClick(event)}
-  on:contextmenu|preventDefault={(event) => handleRightClick(event)}
-  on:mousedown={(event) => handleMouseDown(event)}
-  on:mouseup={(event) => handleMouseUp(event)}
-  on:mouseleave={(event) => handleMouseLeave(event)}
-  on:touchstart={handleTouchStart}
-  on:touchend={handleTouchEnd}
-  on:touchcancel={handleTouchEnd}
+  on:contextmenu|preventDefault={handleRightClick}
+  on:mousedown={handleInteractionStart}
+  on:mouseup={handleInteractionEnd}
+  on:touchstart={handleInteractionStart}
+  on:touchend={handleInteractionEnd}
+  on:touchcancel={handleInteractionEnd}
   style="border-color: {borderColour};"
 >
   {#if $activeMenuCard !== id}
@@ -319,17 +282,18 @@
         hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
         strokeColour={knownColour !== "yellow" ? "white" : "black"}
       />
-      <Blue 
-      hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)}
-      backgroundColour="mediumblue"
-       />
+      <Blue
+        hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)}
+        backgroundColour="mediumblue"
+      />
       <White
         hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
         strokeColour={knownColour !== "white" ? "white" : "black"}
       />
-      <Green 
-      hidden={!getSuits(colourInformation).includes(SuitEnum.Green)}
-      backgroundColour="green" />
+      <Green
+        hidden={!getSuits(colourInformation).includes(SuitEnum.Green)}
+        backgroundColour="green"
+      />
       <Rainbow
         hidden={!(
           getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
@@ -345,7 +309,9 @@
       <Black hidden={!getSuits(colourInformation).includes(SuitEnum.Black)} />
     </div>
   {:else}
-    <div class="menu no-{numberOfCards} {knownColour != null ? knownColour : ''}">
+    <div
+      class="menu no-{numberOfCards} {knownColour != null ? knownColour : ''}"
+    >
       <div class="menu-buttons">
         <button
           class="btn menu-button {isCritical ? 'selected' : ''}"
@@ -538,7 +504,7 @@
     border-radius: 5px;
     padding: 10px;
     cursor: pointer;
-    width: 90%
+    width: 90%;
   }
 
   .menu-button.selected {
