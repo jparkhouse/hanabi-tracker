@@ -236,6 +236,21 @@
       onSelect(id);
     }
   }
+
+  function handleTouchStart(event: TouchEvent) {
+    event.preventDefault(); // Prevent default touch-based behaviors, like content selection
+    startLongPress();
+  }
+
+  function handleTouchEnd() {
+    clearTimeout(timeoutId);
+  }
+
+  function startLongPress() {
+    timeoutId = setTimeout(() => {
+      toggleMode(); // Your function to toggle to the menu
+    }, 500); // Adjust the time based on what feels right for a "long press"
+  }
 </script>
 
 <div
@@ -249,6 +264,9 @@
   on:mousedown={(event) => handleMouseDown(event)}
   on:mouseup={(event) => handleMouseUp(event)}
   on:mouseleave={(event) => handleMouseLeave(event)}
+  on:touchstart={handleTouchStart}
+  on:touchend={handleTouchEnd}
+  on:touchcancel={handleTouchEnd}
   style="border-color: {borderColour};"
 >
   {#if $activeMenuCard !== id}
