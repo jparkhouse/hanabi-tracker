@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.2](https://github.com/jparkhouse/hanabi-tracker/compare/v1.3.1...v1.3.2) (2024-04-26)
+
+
+### Bug Fixes
+
+* added support for press-and-hold touch events ([9ce38e9](https://github.com/jparkhouse/hanabi-tracker/commit/9ce38e9b738737dabd76c5df9e9ddd14c942d454))
+* blocked interactions with other cards while a menu is open ([2744ee4](https://github.com/jparkhouse/hanabi-tracker/commit/2744ee4ef264d91ce3e04f5f4be4db300b094a7e))
+* on touch events now work ([2744ee4](https://github.com/jparkhouse/hanabi-tracker/commit/2744ee4ef264d91ce3e04f5f4be4db300b094a7e))
+
 ## [1.3.1](https://github.com/jparkhouse/hanabi-tracker/compare/v1.3.0...v1.3.1) (2024-04-23)
 
 
