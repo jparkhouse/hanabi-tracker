@@ -172,6 +172,9 @@
   function handleInteractionStart(event: MouseEvent | TouchEvent): void {
     const targetElement = event.target as HTMLElement;
     // Check if the event was initiated from the card or its children
+    if (targetElement.closest(".menu-button")) {
+      return;
+    }
     if (targetElement.closest(".card")) {
       event.preventDefault(); // Prevent default only if it's within the card
       timeoutId = setTimeout(() => {
@@ -187,24 +190,32 @@
     clearTimeout(timeoutId);
     const targetElement = event.target as HTMLElement;
     // Handle tap or click on the card, ignoring menu button clicks
-    if (targetElement.closest('.card') && !targetElement.closest('.menu-button')) {
+    if (
+      targetElement.closest(".card") &&
+      !targetElement.closest(".menu-button") &&
+      !$activeMenuCard
+    ) {
       onSelect(id); // Selection logic if not a menu button
-    }
+    } else if (targetElement.closest(".card") &&
+      !targetElement.closest(".menu-button") &&
+      $activeMenuCard !== id) {
+        activeMenuCard.set(null);
+      }
   }
 
   function handleRightClick(event: MouseEvent): void {
     const targetElement = event.target as HTMLElement;
-    if (targetElement.closest('.card')) {
+    if (targetElement.closest(".card")) {
       event.preventDefault();
       toggleMode();
     }
   }
 
   // Function to handle global clicks for closing the menu
-  function handleClickOutside(event: MouseEvent): void {
+  function handleClickOutside(event: MouseEvent | TouchEvent): void {
     if (!$activeMenuCard) return; // Exit if no menu is active
     const targetElement = event.target as HTMLElement;
-    if (!targetElement.closest('.card')) {
+    if (!targetElement.closest(".card")) {
       activeMenuCard.set(null); // Close the menu if clicked outside any card
     }
   }
