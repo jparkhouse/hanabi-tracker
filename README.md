@@ -8,7 +8,7 @@ Currently, the app features the ability to:
 - choose between 3-5 cards
 - apply hints
 - play or discard cards
-- mark cards as critical (red border), chop moved (white border), or finessed (aqua border)
+- mark cards as critical (red border), chop moved (white\blue border), or finessed (aqua border)
     - hinted is automatically marked (orange border)
 - undo actions (up to 5)
 
@@ -26,4 +26,6 @@ The app is built by me, Jake, and I am very much an amatuer coder. It uses Vite 
 
 Next on the roadmap:
 - Potentially improve UX
+- Local storage to track configuration/last state
 - Notes on cards
+- Review feature?
