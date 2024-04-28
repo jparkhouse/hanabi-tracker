@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.3.2...v1.4.0) (2024-04-28)
+
+
+### Features
+
+* updated gameconfig to use local storage ([6f0b5c6](https://github.com/jparkhouse/hanabi-tracker/commit/6f0b5c664fbc5d3c51463ef2aeb2669a6fef4ec4))
+
 ## [1.3.2](https://github.com/jparkhouse/hanabi-tracker/compare/v1.3.1...v1.3.2) (2024-04-26)
 
 
