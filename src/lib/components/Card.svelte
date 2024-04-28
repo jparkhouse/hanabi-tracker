@@ -193,7 +193,7 @@
     if (
       targetElement.closest(".card") &&
       !targetElement.closest(".menu-button") &&
-      !$activeMenuCard
+      $activeMenuCard === null
     ) {
       onSelect(id); // Selection logic if not a menu button
     } else if (targetElement.closest(".card") &&
