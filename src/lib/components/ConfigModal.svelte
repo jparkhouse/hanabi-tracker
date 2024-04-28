@@ -2,11 +2,11 @@
 <script lang="ts">
   import type { GameConfig } from "../stores/gameConfigStore";
   import gameConfig from "../stores/gameConfigStore";
-  import { Variant } from "../models/variantEnums";
+  import { SuitEnum, Variant } from "../models/variantEnums";
 
   export let isOpen = false;
 
-  let tempConfig: GameConfig = { numberOfCards: 4, variant: Variant.NoVariant }; // Initialize with default or current values
+  let tempConfig: GameConfig = { numberOfCards: 4, variant: SuitEnum.Red }; // Initialize with default or current values
   let get = false;
 
   // Subscribe to gameConfig to initialize tempConfig
