@@ -173,7 +173,7 @@
   function handleInteractionStart(event: MouseEvent | TouchEvent): void {
     const targetElement = event.target as HTMLElement;
     // Check if the event was initiated from the card or its children
-    if (targetElement.closest(".menu-button")) {
+    if (targetElement.closest(".menu")) {
       return;
     }
     if (targetElement.closest(".card")) {
@@ -197,11 +197,13 @@
       $activeMenuCard === null
     ) {
       onSelect(id); // Selection logic if not a menu button
-    } else if (targetElement.closest(".card") &&
+    } else if (
+      targetElement.closest(".card") &&
       !targetElement.closest(".menu-button") &&
-      $activeMenuCard !== id) {
-        activeMenuCard.set(null);
-      }
+      $activeMenuCard !== id
+    ) {
+      activeMenuCard.set(null);
+    }
   }
 
   function handleRightClick(event: MouseEvent): void {
@@ -245,7 +247,7 @@
   style="border-color: {borderColour};"
 >
   {#if $activeMenuCard !== id}
-    <p class="card-id">{note !== '' ? note : "Card " + (id + 1)}</p>
+    <p class="card-id">{note !== "" ? note : "Card " + (id + 1)}</p>
     <div class="number-icons">
       <One
         backgroundColour={numberIconStyles.backgroundColour}
@@ -324,6 +326,7 @@
     <div
       class="menu no-{numberOfCards} {knownColour != null ? knownColour : ''}"
     >
+      <p class="card-id">Card {id + 1}</p>
       <div class="menu-buttons">
         <button
           class="btn menu-button {isCritical ? 'selected' : ''}"
@@ -337,6 +340,17 @@
           class="btn menu-button {isFinessed ? 'selected' : ''}"
           on:click={() => toggleFinessed()}>Finessed</button
         >
+      </div>
+      <div class="note-config">
+        <input
+          class="note-field"
+          type="text"
+          bind:value={note}
+          placeholder="Its a..."
+        />
+        <button class="btn menu-button save-button" on:click={toggleMode}>
+          Save
+        </button>
       </div>
       <button class="btn menu-button close-button" on:click={toggleMode}>
         Close
@@ -372,6 +386,15 @@
 
   .card-id {
     height: 10%;
+    width: 100%; /* Full width to fit within the card */
+    padding: 4px;
+    font-size: 14px; /* Slightly smaller font for the note display */
+    word-wrap: break-word; /* Ensures long words do not overflow */
+    overflow: hidden; /* Hides text that overflows the y-axis */
+    text-overflow: ellipsis; /* Adds an ellipsis to indicate text overflow */
+    display: block;
+    max-height: 4.2em; /* Maximum height to show three lines */
+    margin-bottom: 10px; /* Space below the note for clarity */
   }
 
   .rainbow {
@@ -499,7 +522,19 @@
     justify-content: center;
     gap: 8px; /* Space between buttons */
     width: 100%;
-    height: 80%;
+    height: 40%;
+  }
+
+  .note-config {
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between buttons */
+    width: 100%;
+    height: 40%;
   }
 
   .menu {
@@ -517,6 +552,14 @@
     padding: 10px;
     cursor: pointer;
     width: 90%;
+  }
+
+  .note-field {
+    border: 2px solid #cccccc; /* Light grey border */
+    border-radius: 5px;
+    padding: 10px;
+    cursor: text;
+    width: 76%;
   }
 
   .menu-button.selected {
