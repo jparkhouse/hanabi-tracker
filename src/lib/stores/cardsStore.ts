@@ -46,6 +46,7 @@ function createCardsStore() {
       id: incrementAndGet(),
       numberInformation: NumberEnum.All, // set all numbers to possible
       colourInformation: config.variant, // get all posible suits from variant
+      note: '', // initialise with empty note
       isHinted: false,
       isChopMoved: false,
       isFinessed: false,
