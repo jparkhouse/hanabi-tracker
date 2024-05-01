@@ -30,6 +30,7 @@
       id={card.id}
       numberInformation={card.numberInformation}
       colourInformation={card.colourInformation}
+      note={card.note}
       selected={$cardsSelectedStore.has(card.id)}
       isHinted={card.isHinted}
       isChopMoved={card.isChopMoved}

@@ -25,6 +25,7 @@
   export let id: number;
   export let numberInformation: NumberEnum;
   export let colourInformation: SuitEnum;
+  export let note: string;
   export let selected: boolean = false;
   export let isHinted: boolean;
   export let isFinessed: boolean;
