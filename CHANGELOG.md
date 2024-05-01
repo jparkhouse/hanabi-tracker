@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/jparkhouse/hanabi-tracker/compare/v1.4.0...v1.4.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* stop allowing hints that would leave a card with no possibilities ([52759f1](https://github.com/jparkhouse/hanabi-tracker/commit/52759f126d75d3ea72957aeb9ca0eb635e917f66))
+
 ## [1.4.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.3.2...v1.4.0) (2024-04-28)
 
 
