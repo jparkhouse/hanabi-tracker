@@ -48,12 +48,13 @@
     const selectedCardIds = Array.from($cardsSelectedStore);
     const isValid = $cards.every((card) => {
       if (selectedCardIds.includes(card.id)) {
-        const hintModifier: SuitEnum = getPositiveColourHintModifier(card); // I hate this type assertion
-        return (card.colourInformation & (colourHint | hintModifier)) > 0; // the hint is applicable if one of the card's numbers is possible (1) and that hint also has a 1
+        const hintModifier: SuitEnum = getPositiveColourHintModifier(card);
+        return (card.colourInformation & (colourHint | hintModifier)) > 0; // the hint is applicable if one of the card's suits is possible (1) and that hint also has a 1
       } else {
         const hintModifier: SuitEnum = getNegativeColourHintModifier(card);
-        return (card.colourInformation & ~(colourHint | hintModifier)) > 0 // check that it doesnt leave any hints without numbers
-      }});
+        return (card.colourInformation & ~(colourHint | hintModifier)) > 0; // check that it doesnt leave any hints without any colours
+      }
+    });
     return isValid;
   }
 
@@ -61,12 +62,13 @@
     const selectedCardIds = Array.from($cardsSelectedStore);
     const isValid = $cards.every((card) => {
       if (selectedCardIds.includes(card.id)) {
-        const hintModifier: NumberEnum = getPositiveNumberHintModifier(card); // I hate this type assertion
+        const hintModifier: NumberEnum = getPositiveNumberHintModifier(card);
         return (card.numberInformation & (numberHint | hintModifier)) > 0; // the hint is applicable if one of the card's numbers is possible (1) and that hint also has a 1
       } else {
         const hintModifier: NumberEnum = getNegativeNumberHintModifier(card);
-        return (card.numberInformation & ~(numberHint | hintModifier)) > 0 // check that it doesnt leave any hints without numbers
-      }});
+        return (card.numberInformation & ~(numberHint | hintModifier)) > 0; // check that it doesnt leave any hints without any numbers
+      }
+    });
     return isValid;
   }
 

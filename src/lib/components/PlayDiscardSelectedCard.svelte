@@ -28,6 +28,7 @@
       id: id,
       numberInformation: NumberEnum.All,
       colourInformation: $gameConfig.variant,
+      note: '',
       isHinted: false,
       isChopMoved: false,
       isFinessed: false,
