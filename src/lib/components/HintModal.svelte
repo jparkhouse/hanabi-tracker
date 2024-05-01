@@ -52,8 +52,9 @@
         return (card.colourInformation & (colourHint | hintModifier)) > 0; // the hint is applicable if one of the card's numbers is possible (1) and that hint also has a 1
       } else {
         const hintModifier: SuitEnum = getNegativeColourHintModifier(card);
-        return (card.colourInformation & ~(colourHint | hintModifier)) > 0 // check that it doesnt leave any hints without numbers
-      }});
+        return (card.colourInformation & ~(colourHint | hintModifier)) > 0; // check that it doesnt leave any hints without numbers
+      }
+    });
     return isValid;
   }
 
@@ -65,8 +66,9 @@
         return (card.numberInformation & (numberHint | hintModifier)) > 0; // the hint is applicable if one of the card's numbers is possible (1) and that hint also has a 1
       } else {
         const hintModifier: NumberEnum = getNegativeNumberHintModifier(card);
-        return (card.numberInformation & ~(numberHint | hintModifier)) > 0 // check that it doesnt leave any hints without numbers
-      }});
+        return (card.numberInformation & ~(numberHint | hintModifier)) > 0; // check that it doesnt leave any hints without numbers
+      }
+    });
     return isValid;
   }
 
