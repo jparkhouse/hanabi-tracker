@@ -1,8 +1,11 @@
 // /lib/models/card.ts
 
+import type { NumberEnum } from "./numberEnums";
+import type { SuitEnum } from "./variantEnums";
+
 export interface Card {
-    numberInformation: number; // updated type for bitfuckery
-    colourInformation: number;
+    numberInformation: NumberEnum; // updated type for bitfuckery
+    colourInformation: SuitEnum;
     id: number; // Unique identifier for each card
     isHinted: boolean;
     isFinessed: boolean;
