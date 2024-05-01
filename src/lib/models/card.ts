@@ -7,6 +7,7 @@ export interface Card {
     numberInformation: NumberEnum; // updated type for bitfuckery
     colourInformation: SuitEnum;
     id: number; // Unique identifier for each card
+    note: string;
     isHinted: boolean;
     isFinessed: boolean;
     isChopMoved: boolean;
