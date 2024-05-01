@@ -245,7 +245,7 @@
   style="border-color: {borderColour};"
 >
   {#if $activeMenuCard !== id}
-    <p class="card-id">Card {id + 1}</p>
+    <p class="card-id">{note !== '' ? note : "Card " + (id + 1)}</p>
     <div class="number-icons">
       <One
         backgroundColour={numberIconStyles.backgroundColour}
