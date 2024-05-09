@@ -1,6 +1,9 @@
 <!-- /lib/components/Card.svelte -->
 
 <script lang="ts">
+  import { onMount, onDestroy } from "svelte";
+  import { createPress, createLongPress, LongPressEvent } from "svelte-interactions";
+
   import gameConfig from "../stores/gameConfigStore";
   import { Variant, SuitEnum, getSuits } from "../models/variantEnums";
   import { NumberEnum, getNumbers } from "../models/numberEnums";
@@ -20,7 +23,6 @@
   import { cards } from "../stores/cardsStore";
   import { activeMenuCard } from "../stores/menuStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { onMount, onDestroy } from "svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
@@ -168,43 +170,8 @@
     });
   }
 
-  let timeoutId: ReturnType<typeof setTimeout>;
-
-  function handleInteractionStart(event: MouseEvent | TouchEvent): void {
-    const targetElement = event.target as HTMLElement;
-    // Check if the event was initiated from the card or its children
-    if (targetElement.closest(".menu")) {
-      return;
-    }
-    if (targetElement.closest(".card")) {
-      event.preventDefault(); // Prevent default only if it's within the card
-      timeoutId = setTimeout(() => {
-        // Long press logic only triggers if the initial target was the card itself
-        if (targetElement.closest(".card")) {
-          toggleMode();
-        }
-      }, 500); // Long press delay
-    }
-  }
-
-  function handleInteractionEnd(event: MouseEvent | TouchEvent): void {
-    clearTimeout(timeoutId);
-    const targetElement = event.target as HTMLElement;
-    // Handle tap or click on the card, ignoring menu button clicks
-    if (
-      targetElement.closest(".card") &&
-      !targetElement.closest(".menu-button") &&
-      $activeMenuCard === null
-    ) {
-      onSelect(id); // Selection logic if not a menu button
-    } else if (
-      targetElement.closest(".card") &&
-      !targetElement.closest(".menu-button") &&
-      $activeMenuCard !== id
-    ) {
-      activeMenuCard.set(null);
-    }
-  }
+  const { pressAction } = createPress();
+  const { longPressAction } = createLongPress({ threshold: 500 });
 
   function handleRightClick(event: MouseEvent): void {
     const targetElement = event.target as HTMLElement;
@@ -212,6 +179,14 @@
       event.preventDefault();
       toggleMode();
     }
+  }
+
+  function handleLongPress(event: CustomEvent<LongPressEvent>): void {
+    if 
+  }
+
+  function handlePress(): void {
+
   }
 
   // Function to handle global clicks for closing the menu
@@ -238,12 +213,9 @@
     : ''} {selected ? 'selected' : ''}"
   tabindex="0"
   role="button"
+  use:pressAction on:press={e => handlePress(e)}
+  use:longPressAction on:longpress={e => handleLongPress(e)}
   on:contextmenu|preventDefault={handleRightClick}
-  on:mousedown={handleInteractionStart}
-  on:mouseup={handleInteractionEnd}
-  on:touchstart={handleInteractionStart}
-  on:touchend={handleInteractionEnd}
-  on:touchcancel={handleInteractionEnd}
   style="border-color: {borderColour};"
 >
   {#if $activeMenuCard !== id}

@@ -24,6 +24,7 @@
     "vite": "^5.1.6"
   },
   "dependencies": {
-    "@ungap/structured-clone": "^1.2.0"
+    "@ungap/structured-clone": "^1.2.0",
+    "svelte-interactions": "^0.2.0"
   }
 }
