@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { createPress, createLongPress, LongPressEvent } from "svelte-interactions";
+  import { createPress, createLongPress, type LongPressEvent, type PressEvent } from "svelte-interactions";
 
   import gameConfig from "../stores/gameConfigStore";
   import { Variant, SuitEnum, getSuits } from "../models/variantEnums";
@@ -146,7 +146,7 @@
     });
   }
 
-  function toggleChopMoved(): any {
+  function toggleChopMoved(): void {
     cards.updateCards((allCards) => {
       const newCards = allCards.map((card) => {
         if (card.id === id) {
@@ -158,7 +158,7 @@
     });
   }
 
-  function toggleFinessed(): any {
+  function toggleFinessed(): void {
     cards.updateCards((allCards) => {
       const newCards = allCards.map((card) => {
         if (card.id === id) {
@@ -182,11 +182,23 @@
   }
 
   function handleLongPress(event: CustomEvent<LongPressEvent>): void {
-    if 
+    console.log("A long press");
+    const targetElement = event.target as HTMLElement;
+    if (targetElement.closest(".card") && ($activeMenuCard === id || $activeMenuCard === null)) {
+      toggleMode();
+    } else {
+      activeMenuCard.set(null);
+    }
   }
 
-  function handlePress(): void {
-
+  function handlePress(event: CustomEvent<PressEvent>): void {
+    console.log("A press");
+    const targetElement = event.target as HTMLElement;
+    if (targetElement.closest(".card") && $activeMenuCard === null) {
+      onSelect(id);
+    } else if (!targetElement.closest(".menu")) {
+      activeMenuCard.set(null);
+    }
   }
 
   // Function to handle global clicks for closing the menu
@@ -213,8 +225,8 @@
     : ''} {selected ? 'selected' : ''}"
   tabindex="0"
   role="button"
-  use:pressAction on:press={e => handlePress(e)}
-  use:longPressAction on:longpress={e => handleLongPress(e)}
+  use:pressAction on:press={handlePress}
+  use:longPressAction on:longpress={handleLongPress}
   on:contextmenu|preventDefault={handleRightClick}
   style="border-color: {borderColour};"
 >
