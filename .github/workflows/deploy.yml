@@ -4,6 +4,10 @@ on:
   release:
     types: [created]
   workflow_dispatch:
+  push:
+    branches:
+      - main
+      - testing
 
 jobs:
   build-and-deploy:
@@ -16,18 +20,34 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '20' # Use the Node.js version that matches your development environment
+        node-version: '20'
 
     - name: Install Dependencies
       run: npm install
 
+    - name: Set Environment for Testing
+      if: github.ref == 'refs/heads/testing'
+      run: cp .env.testing .env
+
+    - name: Set Environment for Production
+      if: github.ref == 'refs/heads/main'
+      run: cp .env.production .env
+
     - name: Build
       run: npm run build
-      
+
     - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
-        branch: gh-pages  # The branch the action should deploy to.
-        folder: dist  # The folder the action should deploy.
-        token: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically creates this secret to use in your workflow.
-        base: '/hanabi-tracker/'  # Base directory path.
+        branch: gh-pages
+        folder: dist
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Deploy to GitHub Pages (Testing)
+      if: github.ref == 'refs/heads/testing'
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: gh-pages
+        folder: dist
+        token: ${{ secrets.GITHUB_TOKEN }}
