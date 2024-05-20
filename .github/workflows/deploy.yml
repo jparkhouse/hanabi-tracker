@@ -47,6 +47,6 @@ jobs:
       if: github.ref == 'refs/heads/testing'
       uses: JamesIves/github-pages-deploy-action@4.1.4
       with:
-        branch: gh-pages
-        folder: temp
+        branch: gh-pages-testing
+        folder: dist
         token: ${{ secrets.GITHUB_TOKEN }}
