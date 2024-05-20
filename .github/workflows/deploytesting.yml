@@ -44,6 +44,9 @@ jobs:
       - name: Save Build Output
         run: mv dist ../dist-testing
 
+      - name: Discard Local Changes
+        run: git reset --hard
+
       - name: Checkout gh-pages-testing Branch
         run: |
           git config --global user.name 'github-actions[bot]'
