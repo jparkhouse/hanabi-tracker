@@ -1,4 +1,4 @@
-# Workflow for deploying from testing branch to /hanabi-tracker/test
+# Workflow for deploying from testing branch to /hanabi-tracker/test and saving to gh-pages-testing branch
 name: Deploy to GitHub Pages (Testing)
 
 on:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -29,20 +29,34 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Set Environment for Testing
+        run: cp .env.testing .env
+
       - name: Install Dependencies
         run: npm install
 
       - name: Build
         run: npm run build
 
-      - name: Save Build to gh-pages-testing Branch
+      - name: Debug - List Dist Contents
+        run: ls -l dist
+
+      - name: Save Build Output
+        run: mv dist ../dist-testing
+
+      - name: Checkout gh-pages-testing Branch
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch origin
           git checkout gh-pages-testing || git checkout --orphan gh-pages-testing
           rm -rf *
-          cp -r dist/* .
+
+      - name: Restore Build Output
+        run: mv ../dist-testing/* .
+
+      - name: Commit and Push Changes
+        run: |
           git add .
           git commit -m 'Deploy to GitHub Pages from testing branch'
           git push origin gh-pages-testing
@@ -52,7 +66,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'dist'
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
