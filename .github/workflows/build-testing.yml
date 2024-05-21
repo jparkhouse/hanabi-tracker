@@ -1,0 +1,75 @@
+# Workflow for deploying from testing branch to /hanabi-tracker/test and saving to gh-pages-testing branch
+name: Build for GitHub Pages (Testing)
+
+on:
+  push:
+    branches:
+      - testing
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "build-testing"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    environment:
+      name: github-pages
+      url: "https://jparkhouse.github.io/hanabi-tracker/test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: testing
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Set Environment for Testing
+        run: cp .env.testing .env
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Debug - List Dist Contents
+        run: ls -l dist
+
+      - name: Save Build Output
+        run: mv dist ../dist-testing
+
+      - name: Discard Local Changes
+        run: git reset --hard
+
+      - name: Checkout gh-pages-testing Branch
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git fetch origin
+          git checkout gh-pages-testing || git checkout --orphan gh-pages-testing
+          rm -rf *
+
+      - name: Restore Build Output
+        run: mv ../dist-testing/* .
+
+      - name: Commit and Push Changes
+          # checks if there are changes, so that no changes does not result in a falsely failing build
+        run: |
+          if ! git diff --quiet; then 
+            git add .
+            git commit -m 'Deploy to GitHub Pages from testing branch'
+            git push origin gh-pages-testing
+          else
+            echo "No changes to commit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

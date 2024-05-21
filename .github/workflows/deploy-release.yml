@@ -1,0 +1,26 @@
+name: Deploy to GitHub Pages (Testing)
+
+on:
+    push:
+        branches:
+            - gh-pages
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        environment:
+            name: github-pages
+            url: "https://jparkhouse.github.io/hanabi-tracker"
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+            with:
+                ref: gh-pages
+
+          - name: Upload artifact
+            uses: actions/upload-pages-artifact@v3
+
+          - name: Deploy to GitHub pages
+            id: testing
+            uses: actions/deploy-pages@v4
