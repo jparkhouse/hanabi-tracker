@@ -1,5 +1,5 @@
 # Workflow for deploying from testing branch to /hanabi-tracker/test and saving to gh-pages-testing branch
-name: Deploy to GitHub Pages (Testing)
+name: Build for GitHub Pages (Testing)
 
 on:
   push:
@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}test
@@ -66,11 +66,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

@@ -1,0 +1,28 @@
+name: Deploy to GitHub Pages (Testing)
+
+on:
+    push:
+        branches:
+            - gh-pages-testing
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}test
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+            with:
+                ref: gh-pages-testing
+
+          - name: Upload artifact
+            uses: actions/upload-pages-artifact@v3
+            with:
+                path: 'dist'
+
+          - name: Deploy to GitHub pages
+            id: testing
+            uses: actions/deploy-pages@v4
