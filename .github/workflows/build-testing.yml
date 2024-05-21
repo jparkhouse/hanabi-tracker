@@ -13,8 +13,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages-testing"
-  cancel-in-progress: false
+  group: "build-testing"
+  cancel-in-progress: true
 
 jobs:
   build:
