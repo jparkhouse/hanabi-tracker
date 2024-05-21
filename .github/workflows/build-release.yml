@@ -1,5 +1,5 @@
 # Workflow for deploying from main branch to /hanabi-tracker
-name: Deploy to GitHub Pages (Production)
+name: Build for GitHub Pages (Production)
 
 on:
   release:
