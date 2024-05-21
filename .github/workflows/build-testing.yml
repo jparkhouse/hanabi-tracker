@@ -61,10 +61,14 @@ jobs:
         run: mv ../dist-testing/* .
 
       - name: Commit and Push Changes
+          # checks if there are changes, so that no changes does not result in a falsely failing build
         run: |
-          git add .
-          git commit -m 'Deploy to GitHub Pages from testing branch'
-          git push origin gh-pages-testing
+          if ! git diff --quiet; then 
+            git add .
+            git commit -m 'Deploy to GitHub Pages from testing branch'
+            git push origin gh-pages-testing
+          else
+            echo "No changes to commit"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

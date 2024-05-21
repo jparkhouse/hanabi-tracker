@@ -60,10 +60,14 @@ jobs:
         run: mv ../dist-production/* .
 
       - name: Commit and Push Changes
+        # checks if there are changes, so that no changes does not result in a falsely failing build
         run: |
-          git add .
-          git commit -m 'Deploy to GitHub Pages from main branch'
-          git push origin gh-pages
+          if ! git diff --quiet; then 
+            git add .
+            git commit -m 'Deploy to GitHub Pages from main branch'
+            git push origin gh-pages
+          else
+            echo "No changes to commit"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
