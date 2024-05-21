@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages (Production)
+name: Deploy to GitHub Pages (Release)
 
 on:
     push:
