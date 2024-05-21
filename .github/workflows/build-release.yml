@@ -19,14 +19,19 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}/hanabi-tracker
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
+      - name: Set Environment for Production
+        run: cp .env.production .env
 
       - name: Install Dependencies
         run: npm install
@@ -34,25 +39,31 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Save Build to gh-pages Branch
+      - name: Debug - List Dist Contents
+        run: ls -l dist
+
+      - name: Save Build Output
+        run: mv dist ../dist-production
+
+      - name: Discard Local Changes
+        run: git reset --hard
+
+      - name: Checkout gh-pages Branch
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch origin
           git checkout gh-pages || git checkout --orphan gh-pages
           rm -rf *
-          cp -r dist/* .
+
+      - name: Restore Build Output
+        run: mv ../dist-production/* .
+
+      - name: Commit and Push Changes
+        run: |
           git add .
           git commit -m 'Deploy to GitHub Pages from main branch'
           git push origin gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
