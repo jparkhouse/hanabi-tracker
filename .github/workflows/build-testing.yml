@@ -1,4 +1,4 @@
-# Workflow for deploying from testing branch to /hanabi-tracker/test and saving to gh-pages-testing branch
+# Workflow for building from testing branch to /hanabi-tracker/test and saving to gh-pages branch
 name: Build for GitHub Pages (Testing)
 
 on:
@@ -49,16 +49,15 @@ jobs:
       - name: Discard Local Changes
         run: git reset --hard
 
-      - name: Checkout gh-pages-testing Branch
+      - name: Checkout gh-pages Branch
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git fetch origin
-          git checkout gh-pages-testing || git checkout --orphan gh-pages-testing
-          rm -rf *
+          git checkout gh-pages || git checkout --orphan gh-pages
 
       - name: Restore Build Output
-        run: mv ../dist-testing/* .
+        run: mkdir ./test && mv ../dist-testing/* ./test/
 
       - name: Commit and Push Changes
           # checks if there are changes, so that no changes does not result in a falsely failing build
@@ -66,7 +65,7 @@ jobs:
           if ! git diff --quiet; then 
             git add .
             git commit -m 'Deploy to GitHub Pages from testing branch'
-            git push origin gh-pages-testing
+            git push origin gh-pages
           else
             echo "No changes to commit"
           fi
