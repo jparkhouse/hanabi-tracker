@@ -31,14 +31,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Set Environment for Testing
-        run: cp .env.testing .env
-
       - name: Install Dependencies
         run: npm install
 
       - name: Build
-        run: npm run build
+        run: npm run build -- --mode testing
 
       - name: Debug - List Dist Contents
         run: ls -l dist
@@ -47,7 +44,7 @@ jobs:
         run: mv dist ../dist-testing
 
       - name: Discard Local Changes
-        run: git reset --hard
+        run: git reset --hard && rm -rf
 
       - name: Checkout gh-pages Branch
         run: |
