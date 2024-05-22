@@ -53,8 +53,8 @@ jobs:
           git fetch origin
           git checkout gh-pages || git checkout --orphan gh-pages
 
-      - name: Restore Build Output
-        run: mkdir ./test && mv ../dist-testing/* ./test/
+      - name: Inject Build Output
+        run: mkdir -p ./test && mv ../dist-testing/* ./test/
 
       - name: Commit and Push Changes
           # checks if there are changes, so that no changes does not result in a falsely failing build
