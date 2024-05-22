@@ -61,7 +61,7 @@ jobs:
       - name: Commit and Push Changes
         # checks if there are changes, so that no changes does not result in a falsely failing build
         run: |
-          if ! git diff --quiet; then 
+          if ! git diff --quiet FETCH_HEAD; then 
             git add .
             git commit -m 'Deploy to GitHub Pages from main branch'
             git push origin gh-pages
