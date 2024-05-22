@@ -8,7 +8,7 @@
   <GameControls />
   <Hand />
   <div class="bottom-text">
-    version {version} ·
+    {import.meta.env.VITE_BASE_URL === '/hanabi-tracker' ? `Version ${version}` : `Beta ${version}`} ·
     <a href="https://github.com/jparkhouse/hanabi-tracker/" target="_blank"><u>Check out my code!</u></a>
   </div>
 </main>

@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 
 // Load environment variables based on the current mode
-const loadEnv = (mode) => {
+const loadEnv = (mode: string) => {
   const envPath = `.env.${mode}`;
   dotenv.config({ path: envPath });
 };
