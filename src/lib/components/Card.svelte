@@ -99,7 +99,7 @@
         break;
       default:
         numberIconStyles.backgroundColour = "lightgrey";
-        numberIconStyles.strokeColour = "black";
+        numberIconStyles.strokeColour = "white";
     }
   }
 
@@ -108,6 +108,33 @@
     if (localMode === "card" && !isMenuActive) {
       activeMenuCard.set(id);
     } else if (localMode === "menu") {
+      const noteField = document.getElementById("noteField") as HTMLInputElement;
+      cards.updateCards((cards) => {
+        return cards.map((card) => {
+          if (card.id === $activeMenuCard) {
+            return { ...card, note: noteField.value as string };
+          } else {
+            return { ...card };
+          }
+        });
+      });
+      activeMenuCard.set(null);
+    }
+    cardsSelectedStore.set(new Set<number>());
+  }
+
+  function closeMenu() {
+    const noteField = document.getElementById("noteField") as HTMLInputElement;
+    if ($activeMenuCard) {
+      cards.updateCards((cards) => {
+        return cards.map((card) => {
+          if (card.id === $activeMenuCard) {
+            return { ...card, note: noteField.value as string};
+          } else {
+            return { ...card };
+          }
+        });
+      });
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
@@ -202,7 +229,7 @@
       !targetElement.closest(".menu-button") &&
       $activeMenuCard !== id
     ) {
-      activeMenuCard.set(null);
+      closeMenu();
     }
   }
 
@@ -219,7 +246,7 @@
     if (!$activeMenuCard) return; // Exit if no menu is active
     const targetElement = event.target as HTMLElement;
     if (!targetElement.closest(".card")) {
-      activeMenuCard.set(null); // Close the menu if clicked outside any card
+      closeMenu(); // Close the menu if clicked outside any card
     }
   }
 
@@ -341,6 +368,7 @@
       >
       <input
         class="note-field"
+        id="noteField"
         type="text"
         bind:value={note}
         placeholder="Its a..."
