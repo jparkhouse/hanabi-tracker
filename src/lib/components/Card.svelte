@@ -373,6 +373,7 @@
         bind:value={note}
         placeholder="Its a..."
       />
+      <button class="btn menu-button close-button" on:click={toggleMode}>Close</button>
     </div>
   {/if}
 </div>
