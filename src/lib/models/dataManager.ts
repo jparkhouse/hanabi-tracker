@@ -1,6 +1,6 @@
 // /lib/models/dataManager.ts
 
-class DataManager<T> {
+export class DataManager<T> {
   private data: Record<number, T>;
   private default: T;
 
