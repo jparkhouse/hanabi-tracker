@@ -53,7 +53,8 @@ jobs:
           git checkout gh-pages || git checkout --orphan gh-pages
 
       - name: Restore Build Output
-        run: mv ./test ../test && rm -rf && mv ../dist-production/* . && mkdir ./test && mv ../test/* ./test/
+        run: # Move the test directory temporarily, clear, insert build, insert test
+          mv ./test ../test && rm -rf ./* && cp -r ../dist-production/* . && mkdir ./test && mv ../test/* ./test/
 
       - name: Commit and Push Changes
         # checks if there are changes, so that no changes does not result in a falsely failing build
