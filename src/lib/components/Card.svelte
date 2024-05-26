@@ -99,7 +99,7 @@
         break;
       default:
         numberIconStyles.backgroundColour = "lightgrey";
-        numberIconStyles.strokeColour = "black";
+        numberIconStyles.strokeColour = "white";
     }
   }
 
@@ -108,6 +108,33 @@
     if (localMode === "card" && !isMenuActive) {
       activeMenuCard.set(id);
     } else if (localMode === "menu") {
+      const noteField = document.getElementById("noteField") as HTMLInputElement;
+      cards.updateCards((cards) => {
+        return cards.map((card) => {
+          if (card.id === $activeMenuCard) {
+            return { ...card, note: noteField.value as string };
+          } else {
+            return { ...card };
+          }
+        });
+      });
+      activeMenuCard.set(null);
+    }
+    cardsSelectedStore.set(new Set<number>());
+  }
+
+  function closeMenu() {
+    const noteField = document.getElementById("noteField") as HTMLInputElement;
+    if ($activeMenuCard) {
+      cards.updateCards((cards) => {
+        return cards.map((card) => {
+          if (card.id === $activeMenuCard) {
+            return { ...card, note: noteField.value as string};
+          } else {
+            return { ...card };
+          }
+        });
+      });
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
@@ -202,7 +229,7 @@
       !targetElement.closest(".menu-button") &&
       $activeMenuCard !== id
     ) {
-      activeMenuCard.set(null);
+      closeMenu();
     }
   }
 
@@ -219,7 +246,7 @@
     if (!$activeMenuCard) return; // Exit if no menu is active
     const targetElement = event.target as HTMLElement;
     if (!targetElement.closest(".card")) {
-      activeMenuCard.set(null); // Close the menu if clicked outside any card
+      closeMenu(); // Close the menu if clicked outside any card
     }
   }
 
@@ -327,34 +354,26 @@
       class="menu no-{numberOfCards} {knownColour != null ? knownColour : ''}"
     >
       <p class="card-id">Card {id + 1}</p>
-      <div class="menu-buttons">
-        <button
-          class="btn menu-button {isCritical ? 'selected' : ''}"
-          on:click={() => toggleCritical()}>Critical</button
-        >
-        <button
-          class="btn menu-button {isChopMoved ? 'selected' : ''}"
-          on:click={() => toggleChopMoved()}>Chop moved</button
-        >
-        <button
-          class="btn menu-button {isFinessed ? 'selected' : ''}"
-          on:click={() => toggleFinessed()}>Finessed</button
-        >
-      </div>
-      <div class="note-config">
-        <input
-          class="note-field"
-          type="text"
-          bind:value={note}
-          placeholder="Its a..."
-        />
-        <button class="btn menu-button save-button" on:click={toggleMode}>
-          Save
-        </button>
-      </div>
-      <button class="btn menu-button close-button" on:click={toggleMode}>
-        Close
-      </button>
+      <button
+        class="btn menu-button {isCritical ? 'selected' : ''}"
+        on:click={() => toggleCritical()}>Critical</button
+      >
+      <button
+        class="btn menu-button {isChopMoved ? 'selected' : ''}"
+        on:click={() => toggleChopMoved()}>Chop moved</button
+      >
+      <button
+        class="btn menu-button {isFinessed ? 'selected' : ''}"
+        on:click={() => toggleFinessed()}>Finessed</button
+      >
+      <input
+        class="note-field"
+        id="noteField"
+        type="text"
+        bind:value={note}
+        placeholder="Its a..."
+      />
+      <button class="btn menu-button close-button" on:click={toggleMode}>Close</button>
     </div>
   {/if}
 </div>
@@ -544,22 +563,28 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
   }
 
   .menu-button {
     border: 2px solid #cccccc; /* Light grey border */
     border-radius: 5px;
-    padding: 10px;
+    padding: 8px;
     cursor: pointer;
     width: 90%;
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
 
   .note-field {
+    box-sizing: border-box;
     border: 2px solid #cccccc; /* Light grey border */
-    border-radius: 5px;
+    border-radius: 2px;
     padding: 10px;
     cursor: text;
-    width: 76%;
+    width: 90%;
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
 
   .menu-button.selected {
@@ -567,13 +592,8 @@
     color: black;
   }
 
-  /* Additional styling for the 'Close' button to make it stand out or appear at the bottom */
-  .btn.close-button {
-    background-color: #ff4136; /* Red background for the close button */
-    color: #ffffff; /* White text for contrast */
-  }
-
-  .btn.close-button:hover {
-    background-color: #e82c23; /* Darker red on hover */
+  .menu-button:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
   }
 </style>
