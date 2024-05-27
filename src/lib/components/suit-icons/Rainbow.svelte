@@ -3,6 +3,19 @@
 <script lang="ts">
   export let hidden: boolean = true;
   export let strokeColour: string = "white";
+  import { onMount } from 'svelte';
+  let key = 0;
+
+  function updateKey() {
+    key++;
+  }
+
+  onMount(() => {
+    window.addEventListener('resize', updateKey);
+    return () => {
+      window.removeEventListener('resize', updateKey);
+    };
+  });
 </script>
 
 {#if !hidden}

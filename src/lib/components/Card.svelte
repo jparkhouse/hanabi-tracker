@@ -318,7 +318,7 @@
         hidden={!getSuits(colourInformation).includes(SuitEnum.Red)}
         strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Red)
           ? "var(--border-hinted)"
-          : "white"}
+          : numberIconStyles.strokeColour}
       />
       <Yellow
         hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
@@ -326,30 +326,26 @@
           SuitEnum.Yellow
         )
           ? 'var(--border-hinted)'
-          : knownColour !== 'yellow'
-            ? 'white'
-            : 'black'}}"
+          : numberIconStyles.strokeColour}}"
       />
       <Blue
         hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)}
         strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Blue)
           ? "var(--border-hinted)"
-          : "white"}
+          : numberIconStyles.strokeColour}
         backgroundColour="mediumblue"
       />
       <White
         hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
         strokeColour={getSuits(knownColourInformation).includes(SuitEnum.White)
           ? "var(--border-hinted)"
-          : knownColour !== "white"
-            ? "white"
-            : "black"}
+          : numberIconStyles.strokeColour}
       />
       <Green
         hidden={!getSuits(colourInformation).includes(SuitEnum.Green)}
         strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Green)
           ? "var(--border-hinted)"
-          : "white"}
+          : numberIconStyles.strokeColour}
         backgroundColour="green"
       />
       <Rainbow
@@ -361,7 +357,7 @@
           SuitEnum.Rainbow
         )
           ? "var(--border-hinted)"
-          : "white"}
+          : numberIconStyles.strokeColour}
       />
       <RainbowEmpty
         hidden={!(
@@ -372,13 +368,13 @@
           SuitEnum.Rainbow
         )
           ? "var(--border-hinted)"
-          : "white"}
+          : numberIconStyles.strokeColour}
       />
       <Black
         hidden={!getSuits(colourInformation).includes(SuitEnum.Black)}
         strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Black)
           ? "var(--border-hinted)"
-          : "white"}
+          : numberIconStyles.strokeColour}
       />
     </div>
   {:else}
