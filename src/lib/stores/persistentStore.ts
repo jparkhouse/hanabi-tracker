@@ -11,5 +11,10 @@ export function createPersistentStore<T>(key: string, startValue: T) {
     localStorage.setItem(import.meta.env.BASE_URL + '/' + key, JSON.stringify(value));
   });
 
-  return store;
+  const get = () => {
+    const currentValue = localStorage.getItem(import.meta.env.BASE_URL + '/' + key)
+    return currentValue ? JSON.parse(localStorage.getItem(import.meta.env.BASE_URL + '/' + key) as string) : null;
+  }
+
+  return {store , get};
 }

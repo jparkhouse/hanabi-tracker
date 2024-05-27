@@ -9,9 +9,9 @@ export interface GameConfig {
 }
 
 // Initialize the store with a default value, adhering to the GameConfig interface
-const gameConfig = createPersistentStore<GameConfig>('gameConfig', {
+const gameConfigStore = createPersistentStore<GameConfig>('gameConfig', {
   numberOfCards: 4,
   variant: Variant.NoVariant as number as SuitEnum,
 });
 
-export default gameConfig;
+export default gameConfigStore;

@@ -1,7 +1,7 @@
 <!-- /lib/components/Card.svelte -->
 
 <script lang="ts">
-  import gameConfig from "../stores/gameConfigStore";
+  import gameConfigStore from "../stores/gameConfigStore";
   import { Variant, SuitEnum, getSuits } from "../models/variantEnums";
   import { NumberEnum, getNumbers } from "../models/numberEnums";
   import One from "./number-icons/One.svelte";
@@ -35,7 +35,7 @@
 
   $: localMode = $activeMenuCard === id ? "menu" : "card";
   $: isMenuActive = $activeMenuCard !== null;
-  $: numberOfCards = $gameConfig.numberOfCards;
+  $: numberOfCards = $gameConfigStore.numberOfCards;
   $: borderColour = selected
     ? "var(--border-selected)"
     : isCritical

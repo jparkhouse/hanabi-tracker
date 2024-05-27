@@ -5,11 +5,11 @@
   import { SuitEnum, getSuits, suitProperties } from "../models/variantEnums";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { cards } from "../stores/cardsStore";
-  import gameConfig from "../stores/gameConfigStore";
+  import gameConfigStore from "../stores/gameConfigStore";
 
   export let isOpen = false;
 
-  $: variant = $gameConfig.variant;
+  $: variant = $gameConfigStore.variant;
 
   interface SelectedHint {
     type: "colour" | "number" | null;

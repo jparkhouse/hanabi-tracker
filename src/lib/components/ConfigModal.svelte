@@ -1,7 +1,7 @@
 <!-- /lib/components/ConfigModal.svelte -->
 <script lang="ts">
   import type { GameConfig } from "../stores/gameConfigStore";
-  import gameConfig from "../stores/gameConfigStore";
+  import gameConfigStore from "../stores/gameConfigStore";
   import { SuitEnum, Variant } from "../models/variantEnums";
 
   export let isOpen = false;
@@ -11,7 +11,7 @@
 
   // Subscribe to gameConfig to initialize tempConfig
   $: if (isOpen && !get) {
-    tempConfig = { ...$gameConfig };
+    tempConfig = { ...$gameConfigStore };
     get = true;
   }
 
@@ -21,7 +21,7 @@
   }
 
   function saveConfig() {
-    gameConfig.set(tempConfig);
+    gameConfigStore.set(tempConfig);
     closePanel();
   }
 
@@ -38,7 +38,7 @@
   let updateButtonText = "Reset";
   let cancelButtonText = "Close";
   $: {
-    if (areGameConfigsEqual($gameConfig, tempConfig)) {
+    if (areGameConfigsEqual($gameConfigStore, tempConfig)) {
       updateButtonText = "Reset";
       cancelButtonText = "Close";
     } else {

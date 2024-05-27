@@ -13,3 +13,23 @@ export interface Card {
     isChopMoved: boolean;
     isCritical: boolean;
   }
+
+export interface CardInformation {
+  // number
+  numberInformation: NumberEnum;
+  knownNumberInformation: NumberEnum;
+  // then colour
+  colourInformation: SuitEnum;
+  knownColourInformation: SuitEnum;
+}
+
+export interface CardNote {
+  note: string;
+}
+
+export interface CardFlags {
+  isHinted: boolean;
+  isFinessed: boolean;
+  isChopMoved: boolean;
+  isCritical: boolean;
+}

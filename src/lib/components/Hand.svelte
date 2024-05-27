@@ -1,7 +1,7 @@
 <!-- /lib/components/Hand.svelte -->
 
 <script lang="ts">
-  import gameConfig from '../stores/gameConfigStore';
+  import gameConfigStore from '../stores/gameConfigStore';
   import { cards } from '../stores/cardsStore';
   import Card from './Card.svelte'
   import { cardsSelectedStore } from '../stores/cardsSelectedStore';

@@ -2,7 +2,7 @@
 import { writable } from 'svelte/store';
 import structuredClone from '@ungap/structured-clone';
 
-import gameConfig from './gameConfigStore';
+import gameConfigStore from './gameConfigStore';
 import type { GameConfig } from './gameConfigStore';
 import type { Card as CardType } from '../models/card';
 import { nextCardId, incrementAndGet } from '../stores/cardIDCounterStore';
@@ -56,7 +56,7 @@ function createCardsStore() {
   };
 
   // Subscribe to gameConfig and reset cards whenever it changes
-  const unsubscribe = gameConfig.subscribe($gameConfig => {
+  const unsubscribe = gameConfigStore.subscribe($gameConfig => {
     nextCardId.set(0);
     cardsSelectedStore.update(selected => {
       selected = new Set<number>();

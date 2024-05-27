@@ -3,10 +3,10 @@
     import { cardsSelectedStore } from "../stores/cardsSelectedStore";
     import { cards } from "../stores/cardsStore";
     import { incrementAndGet } from "../stores/cardIDCounterStore";
-    import gameConfig from "../stores/gameConfigStore";
+    import gameConfigStore from "../stores/gameConfigStore";
     import { NumberEnum } from "../models/numberEnums";
 
-    $: variant = $gameConfig.variant;
+    $: variant = $gameConfigStore.variant;
 
     function playDiscardSelectedCard() {
     if ($cardsSelectedStore.size === 1) {
@@ -27,7 +27,7 @@
     return {
       id: id,
       numberInformation: NumberEnum.All,
-      colourInformation: $gameConfig.variant,
+      colourInformation: $gameConfigStore.variant,
       note: '',
       isHinted: false,
       isChopMoved: false,
