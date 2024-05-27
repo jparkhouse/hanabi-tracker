@@ -2,11 +2,15 @@
 
 import { createManagedStore } from "./persistentDataManagerStore";
 import { type CardNote } from "../models/card";
+import type { GameConfig } from "./gameConfigStore";
 
-const defaultValue:CardNote =  {
-    note: '',
-}
+const defaultValue = (config: GameConfig) => {
+  return {
+    note: "",
+  };
+};
 
-const notesOnCardsStore = createManagedStore<CardNote>('cardNotes', defaultValue);
-
-export default notesOnCardsStore;
+export const notesOnCardsStore = createManagedStore<CardNote>(
+  "cardNotes",
+  defaultValue
+);

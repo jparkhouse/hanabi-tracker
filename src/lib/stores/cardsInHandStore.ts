@@ -1,9 +1,16 @@
 // /lib/stores/cardsInHandStore.ts
 
 import { createPersistentStore } from "./persistentStore";
-import { gameConfigStore } from 
-  
-// Initialize the store with a default value, which will be replaced if information already stored
-const cardsInHandStore = createPersistentStore<number[]>('cardsInHand', [1, 2, 3, 4]);
+import { type GameConfig } from './gameConfigStore'
+import { incrementAndGet } from "./cardIDCounterStore";
 
-export default cardsInHandStore;
+const defaultData = (config: GameConfig) => {
+    const numbers: number[] = [];
+    for (let i = 0; i < config.numberOfCards; i++) {
+        numbers.push(incrementAndGet());
+    }
+    return numbers
+}
+
+// Initialize the store with a default value, which will be replaced if information already stored
+export const cardsInHandStore = createPersistentStore<number[]>('cardsInHand', [1, 2, 3, 4], defaultData);

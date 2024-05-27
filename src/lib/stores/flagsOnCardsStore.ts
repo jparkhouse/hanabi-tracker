@@ -2,14 +2,15 @@
 
 import { createManagedStore } from "./persistentDataManagerStore";
 import { type CardFlags } from "../models/card";
+import type { GameConfig } from "./gameConfigStore";
 
-const defaultValue:CardFlags =  {
-    isHinted: false,
-    isChopMoved: false,
-    isCritical: false,
-    isFinessed: false,
+const defaultValue = (config: GameConfig) => {
+    return {
+        isHinted: false,
+        isChopMoved: false,
+        isCritical: false,
+        isFinessed: false,
+    }
 }
 
-const flagsOnCardsStore = createManagedStore<CardFlags>('cardFlags', defaultValue);
-
-export default flagsOnCardsStore;
+export const flagsOnCardsStore = createManagedStore<CardFlags>('cardFlags', defaultValue);

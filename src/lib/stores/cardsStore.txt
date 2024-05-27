@@ -5,7 +5,7 @@ import structuredClone from '@ungap/structured-clone';
 import gameConfigStore from './gameConfigStore';
 import type { GameConfig } from './gameConfigStore';
 import type { Card as CardType } from '../models/card';
-import { nextCardId, incrementAndGet } from '../stores/cardIDCounterStore';
+import { nextCardId, incrementAndGet } from './cardIDCounterStore';
 import { cardsSelectedStore } from './cardsSelectedStore';
 import { Stack } from '../models/stack';
 import { NumberEnum } from '../models/numberEnums';

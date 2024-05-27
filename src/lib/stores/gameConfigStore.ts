@@ -1,6 +1,6 @@
 // /lib/stores/gameConfigStore.ts
-import { createPersistentStore } from './persistentStore';
-import { SuitEnum, Variant } from '../models/variantEnums';
+import { createPersistentStore } from "./persistentStore";
+import { SuitEnum, Variant } from "../models/variantEnums";
 
 // Define an interface for your game configuration
 export interface GameConfig {
@@ -9,9 +9,7 @@ export interface GameConfig {
 }
 
 // Initialize the store with a default value, adhering to the GameConfig interface
-const gameConfigStore = createPersistentStore<GameConfig>('gameConfig', {
+export const gameConfigStore = createPersistentStore<GameConfig>("gameConfig", {
   numberOfCards: 4,
   variant: Variant.NoVariant as number as SuitEnum,
 });
-
-export default gameConfigStore;

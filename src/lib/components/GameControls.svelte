@@ -1,43 +1,43 @@
 <!-- /lib/components/GameControls.svelte -->
-<script lang=ts>
-  import PlayDiscardSelectedCard from "./PlayDiscardSelectedCard.svelte";
-  import ConfigModal from './ConfigModal.svelte';
+<script lang="ts">
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { cards, storeHistorySize } from "../stores/cardsStore";
+
+  import PlayDiscardSelectedCard from "./PlayDiscardSelectedCard.svelte";
+  import ConfigModal from "./ConfigModal.svelte";
   import HintModal from "./HintModal.svelte";
 
   let wakeLock: WakeLockSentinel | null = null;
-  let wakeLockSupported = 'wakeLock' in navigator;
-  let wakeLockButtonText = 'Wake Lock Off'; // Initial text
+  let wakeLockSupported = "wakeLock" in navigator;
+  let wakeLockButtonText = "Wake Lock Off"; // Initial text
 
   async function toggleWakeLock() {
     if (!wakeLock) {
       try {
-        wakeLock = await navigator.wakeLock.request('screen');
-        wakeLock.addEventListener('release', () => {
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => {
           wakeLock = null;
-          wakeLockButtonText = 'Wake Lock Off'; // Update text when the lock is released
+          wakeLockButtonText = "Wake Lock Off"; // Update text when the lock is released
         });
-        wakeLockButtonText = 'Wake Lock On'; // Update text to reflect status
+        wakeLockButtonText = "Wake Lock On"; // Update text to reflect status
       } catch (err) {
         console.error(`Could not acquire wake lock: ${err}`);
       }
     } else {
       wakeLock.release();
       wakeLock = null;
-      wakeLockButtonText = 'Wake Lock Off'; // Update text when the lock is released
+      wakeLockButtonText = "Wake Lock Off"; // Update text when the lock is released
     }
   }
 
   // Reactive statement to update the button text based on the wakeLock status
   $: if (wakeLock) {
-    wakeLockButtonText = 'Wake Lock On';
+    wakeLockButtonText = "Wake Lock On";
   } else {
-    wakeLockButtonText = 'Wake Lock Off';
+    wakeLockButtonText = "Wake Lock Off";
   }
-  
+
   let isConfigModalOpen = false;
-  
+
   function openConfigModal() {
     isConfigModalOpen = true;
   }
@@ -50,30 +50,44 @@
 
   let isMarkModalOpen = false;
 
-  $: historySize = $storeHistorySize;
+  // $: historySize = $storeHistorySize;
 
-  function handleRollback() {
-    cards.rollback()
-  }
+  // function handleRollback() {
+  //   cards.rollback()
+  // }
 </script>
 
 <div class="game-controls">
   <button class="configure" on:click={openConfigModal}>Configure Game</button>
-  <button class="wake-lock" on:click={toggleWakeLock} hidden={!wakeLockSupported}>{wakeLockButtonText}</button>
+  <button
+    class="wake-lock"
+    on:click={toggleWakeLock}
+    hidden={!wakeLockSupported}>{wakeLockButtonText}</button
+  >
   <PlayDiscardSelectedCard />
-  <button class="hint-panel" on:click={openHintModal} disabled={$cardsSelectedStore.size < 1}>Record Hint</button>
-  <button class="undo" on:click={handleRollback} disabled={historySize < 1}>Undo</button>
+  <button
+    class="hint-panel"
+    on:click={openHintModal}
+    disabled={$cardsSelectedStore.size < 1}>Record Hint</button
+  >
+  <button
+    class="undo"
+    on:click={() => {
+      console.log("fuck off mate");
+    }}
+    disabled={true}>Undo</button
+  >
 </div>
 <ConfigModal bind:isOpen={isConfigModalOpen} />
 <HintModal bind:isOpen={isHintModalOpen} />
 
 <style>
   .game-controls {
-      display: flex;
-      flex: 1;
-      padding: 5px;
-      gap: 5px;
-    }
+    display: flex;
+    flex: 1;
+    padding: 5px;
+    gap: 5px;
+  }
   .configure {
     align-self: left;
   }

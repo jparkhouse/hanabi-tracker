@@ -1,8 +1,10 @@
 <!-- /lib/components/ConfigModal.svelte -->
 <script lang="ts">
   import type { GameConfig } from "../stores/gameConfigStore";
-  import gameConfigStore from "../stores/gameConfigStore";
+  import { gameConfigStore } from "../stores/gameConfigStore";
   import { SuitEnum, Variant } from "../models/variantEnums";
+  import { createEventDispatcher } from "svelte";
+  import { resetGameStore } from "../stores/resetGameStore";
 
   export let isOpen = false;
 
@@ -15,6 +17,10 @@
     get = true;
   }
 
+  const resetDispatcher = createEventDispatcher();
+
+
+
   function closePanel() {
     isOpen = false;
     get = false;
@@ -22,6 +28,7 @@
 
   function saveConfig() {
     gameConfigStore.set(tempConfig);
+    resetGameStore.update((number) => {return number + 1})
     closePanel();
   }
 

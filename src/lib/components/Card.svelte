@@ -1,7 +1,7 @@
 <!-- /lib/components/Card.svelte -->
 
 <script lang="ts">
-  import gameConfigStore from "../stores/gameConfigStore";
+  import { gameConfigStore } from "../stores/gameConfigStore";
   import { Variant, SuitEnum, getSuits } from "../models/variantEnums";
   import { NumberEnum, getNumbers } from "../models/numberEnums";
   import One from "./number-icons/One.svelte";
@@ -17,14 +17,18 @@
   import Rainbow from "./suit-icons/Rainbow.svelte";
   import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
   import Black from "./suit-icons/Black.svelte";
-  import { cards } from "../stores/cardsStore";
   import { activeMenuCard } from "../stores/menuStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { onMount, onDestroy } from "svelte";
+  import { notesOnCardsStore } from "../stores/notesOnCardsStore";
+  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { informationOnCardsStore } from "../stores/informationOnCardsStore";
 
   export let id: number;
   export let numberInformation: NumberEnum;
+  export let knownNumberInformation: NumberEnum;
   export let colourInformation: SuitEnum;
+  export let knownColourInformation: SuitEnum;
   export let note: string;
   export let selected: boolean = false;
   export let isHinted: boolean;
@@ -32,6 +36,8 @@
   export let isChopMoved: boolean;
   export let isCritical: boolean;
   export let onSelect: (id: number) => void;
+
+  $: console.log(id, $informationOnCardsStore.get(id));
 
   $: localMode = $activeMenuCard === id ? "menu" : "card";
   $: isMenuActive = $activeMenuCard !== null;
@@ -108,33 +114,24 @@
     if (localMode === "card" && !isMenuActive) {
       activeMenuCard.set(id);
     } else if (localMode === "menu") {
-      const noteField = document.getElementById("noteField") as HTMLInputElement;
-      cards.updateCards((cards) => {
-        return cards.map((card) => {
-          if (card.id === $activeMenuCard) {
-            return { ...card, note: noteField.value as string };
-          } else {
-            return { ...card };
-          }
-        });
-      });
+      const noteField = (
+        document.getElementById("noteField") as HTMLInputElement
+      ).value as string;
+      if (noteField) {
+        notesOnCardsStore.set(id, { note: noteField });
+      }
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
   }
 
   function closeMenu() {
-    const noteField = document.getElementById("noteField") as HTMLInputElement;
+    const noteField = (document.getElementById("noteField") as HTMLInputElement)
+      .value as string;
     if ($activeMenuCard) {
-      cards.updateCards((cards) => {
-        return cards.map((card) => {
-          if (card.id === $activeMenuCard) {
-            return { ...card, note: noteField.value as string};
-          } else {
-            return { ...card };
-          }
-        });
-      });
+      if (noteField) {
+        notesOnCardsStore.set(id, { note: noteField });
+      }
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
@@ -160,39 +157,18 @@
   }
 
   function toggleCritical(): void {
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (card.id === id) {
-          return { ...card, isCritical: !isCritical };
-        }
-        return card;
-      });
-      return newCards;
-    });
+    const oldFlags = flagsOnCardsStore.get(id);
+    flagsOnCardsStore.set(id, { ...oldFlags, isCritical: !isCritical });
   }
 
   function toggleChopMoved(): any {
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (card.id === id) {
-          return { ...card, isChopMoved: !isChopMoved };
-        }
-        return card;
-      });
-      return newCards;
-    });
+    const oldFlags = flagsOnCardsStore.get(id);
+    flagsOnCardsStore.set(id, { ...oldFlags, isChopMoved: !isChopMoved });
   }
 
   function toggleFinessed(): any {
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (card.id === id) {
-          return { ...card, isFinessed: !isFinessed };
-        }
-        return card;
-      });
-      return newCards;
-    });
+    const oldFlags = flagsOnCardsStore.get(id);
+    flagsOnCardsStore.set(id, { ...oldFlags, isFinessed: !isFinessed });
   }
 
   let timeoutId: ReturnType<typeof setTimeout>;
@@ -278,7 +254,11 @@
     <div class="number-icons">
       <One
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
+        strokeColour={getNumbers(knownNumberInformation).includes(
+          NumberEnum.One
+        )
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
         hidden={!(
           getNumbers(numberInformation).includes(NumberEnum.One) ||
           getNumbers(numberInformation).includes(NumberEnum.All)
@@ -286,7 +266,11 @@
       />
       <Two
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
+        strokeColour={getNumbers(knownNumberInformation).includes(
+          NumberEnum.Two
+        )
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
         hidden={!(
           getNumbers(numberInformation).includes(NumberEnum.Two) ||
           getNumbers(numberInformation).includes(NumberEnum.All)
@@ -294,7 +278,11 @@
       />
       <Three
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
+        strokeColour={getNumbers(knownNumberInformation).includes(
+          NumberEnum.Three
+        )
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
         hidden={!(
           getNumbers(numberInformation).includes(NumberEnum.Three) ||
           getNumbers(numberInformation).includes(NumberEnum.All)
@@ -302,7 +290,11 @@
       />
       <Four
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
+        strokeColour={getNumbers(knownNumberInformation).includes(
+          NumberEnum.Four
+        )
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
         hidden={!(
           getNumbers(numberInformation).includes(NumberEnum.Four) ||
           getNumbers(numberInformation).includes(NumberEnum.All)
@@ -310,7 +302,11 @@
       />
       <Five
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
+        strokeColour={getNumbers(knownNumberInformation).includes(
+          NumberEnum.Five
+        )
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
         hidden={!(
           getNumbers(numberInformation).includes(NumberEnum.Five) ||
           getNumbers(numberInformation).includes(NumberEnum.All)
@@ -318,21 +314,42 @@
       />
     </div>
     <div class="colour-icons">
-      <Red hidden={!getSuits(colourInformation).includes(SuitEnum.Red)} />
+      <Red
+        hidden={!getSuits(colourInformation).includes(SuitEnum.Red)}
+        strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Red)
+          ? "var(--border-hinted)"
+          : "white"}
+      />
       <Yellow
         hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
-        strokeColour={knownColour !== "yellow" ? "white" : "black"}
+        strokeColour="{getSuits(knownColourInformation).includes(
+          SuitEnum.Yellow
+        )
+          ? 'var(--border-hinted)'
+          : knownColour !== 'yellow'
+            ? 'white'
+            : 'black'}}"
       />
       <Blue
         hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)}
+        strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Blue)
+          ? "var(--border-hinted)"
+          : "white"}
         backgroundColour="mediumblue"
       />
       <White
         hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
-        strokeColour={knownColour !== "white" ? "white" : "black"}
+        strokeColour={getSuits(knownColourInformation).includes(SuitEnum.White)
+          ? "var(--border-hinted)"
+          : knownColour !== "white"
+            ? "white"
+            : "black"}
       />
       <Green
         hidden={!getSuits(colourInformation).includes(SuitEnum.Green)}
+        strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Green)
+          ? "var(--border-hinted)"
+          : "white"}
         backgroundColour="green"
       />
       <Rainbow
@@ -340,14 +357,29 @@
           getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
           knownColour == null
         )}
+        strokeColour={getSuits(knownColourInformation).includes(
+          SuitEnum.Rainbow
+        )
+          ? "var(--border-hinted)"
+          : "white"}
       />
       <RainbowEmpty
         hidden={!(
           getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
           knownColour == "rainbow"
         )}
+        strokeColour={getSuits(knownColourInformation).includes(
+          SuitEnum.Rainbow
+        )
+          ? "var(--border-hinted)"
+          : "white"}
       />
-      <Black hidden={!getSuits(colourInformation).includes(SuitEnum.Black)} />
+      <Black
+        hidden={!getSuits(colourInformation).includes(SuitEnum.Black)}
+        strokeColour={getSuits(knownColourInformation).includes(SuitEnum.Black)
+          ? "var(--border-hinted)"
+          : "white"}
+      />
     </div>
   {:else}
     <div
@@ -373,7 +405,9 @@
         bind:value={note}
         placeholder="Its a..."
       />
-      <button class="btn menu-button close-button" on:click={toggleMode}>Close</button>
+      <button class="btn menu-button close-button" on:click={toggleMode}
+        >Close</button
+      >
     </div>
   {/if}
 </div>

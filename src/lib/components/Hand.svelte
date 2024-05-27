@@ -1,50 +1,53 @@
 <!-- /lib/components/Hand.svelte -->
 
 <script lang="ts">
-  import gameConfigStore from '../stores/gameConfigStore';
-  import { cards } from '../stores/cardsStore';
-  import Card from './Card.svelte'
-  import { cardsSelectedStore } from '../stores/cardsSelectedStore';
+  import Card from "./Card.svelte";
+  import { cardsSelectedStore } from "../stores/cardsSelectedStore";
+  import { cardsInHandStore } from "../stores/cardsInHandStore";
+  import { informationOnCardsStore } from "../stores/informationOnCardsStore";
+  import { notesOnCardsStore } from "../stores/notesOnCardsStore";
+  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
 
   function handleCardSelect(cardId: number) {
     // Simple toggle selection logic
     if ($cardsSelectedStore.has(cardId)) {
-      cardsSelectedStore.update(selected => {
+      cardsSelectedStore.update((selected) => {
         const updated = new Set(selected);
         updated.delete(cardId);
         return updated;
       });
     } else {
-      cardsSelectedStore.update(selected => {
+      cardsSelectedStore.update((selected) => {
         const updated = new Set(selected);
         updated.add(cardId);
         return updated;
       });
     }
-  };
+  }
 </script>
-  
+
 <div class="hand">
-  {#each $cards as card (card.id)}
+  {#each $cardsInHandStore as id}
     <Card
-      id={card.id}
-      numberInformation={card.numberInformation}
-      colourInformation={card.colourInformation}
-      note={card.note}
-      selected={$cardsSelectedStore.has(card.id)}
-      isHinted={card.isHinted}
-      isChopMoved={card.isChopMoved}
-      isFinessed={card.isFinessed}
-      isCritical={card.isCritical}
+      {id}
+      numberInformation={$informationOnCardsStore.get(id).numberInformation}
+      knownNumberInformation={$informationOnCardsStore.get(id)
+        .knownNumberInformation}
+      colourInformation={$informationOnCardsStore.get(id).colourInformation}
+      knownColourInformation={$informationOnCardsStore.get(id)
+        .knownColourInformation}
+      note={$notesOnCardsStore.get(id).note}
+      selected={$cardsSelectedStore.has(id)}
+      isHinted={$flagsOnCardsStore.get(id).isHinted}
+      isChopMoved={$flagsOnCardsStore.get(id).isChopMoved}
+      isFinessed={$flagsOnCardsStore.get(id).isFinessed}
+      isCritical={$flagsOnCardsStore.get(id).isCritical}
       onSelect={handleCardSelect}
     />
   {/each}
 </div>
-  
-  
-  
-<style>
 
+<style>
   .hand {
     display: flex;
     flex: 1;
@@ -54,6 +57,4 @@
     gap: 10px; /* Space between cards */
     width: 100%;
   }
-  </style>
-  
-  
+</style>
