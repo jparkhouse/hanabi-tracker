@@ -15,8 +15,6 @@
 
   $: variant = $gameConfigStore.variant;
 
-  $: console.log($cardsInHandStore);
-
   interface SelectedHint {
     type: "colour" | "number" | null;
     colourValue: SuitEnum | null;

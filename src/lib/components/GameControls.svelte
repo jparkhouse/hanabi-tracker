@@ -119,8 +119,6 @@
       }
     }
   }
-
-  $: console.log($actionStoreSize);
 </script>
 
 <div class="game-controls">
