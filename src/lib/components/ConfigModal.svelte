@@ -1,8 +1,10 @@
 <!-- /lib/components/ConfigModal.svelte -->
 <script lang="ts">
   import type { GameConfig } from "../stores/gameConfigStore";
-  import gameConfig from "../stores/gameConfigStore";
+  import { gameConfigStore } from "../stores/gameConfigStore";
   import { SuitEnum, Variant } from "../models/variantEnums";
+  import { createEventDispatcher } from "svelte";
+  import { resetGameStore } from "../stores/resetGameStore";
 
   export let isOpen = false;
 
@@ -11,9 +13,13 @@
 
   // Subscribe to gameConfig to initialize tempConfig
   $: if (isOpen && !get) {
-    tempConfig = { ...$gameConfig };
+    tempConfig = { ...$gameConfigStore };
     get = true;
   }
+
+  const resetDispatcher = createEventDispatcher();
+
+
 
   function closePanel() {
     isOpen = false;
@@ -21,7 +27,8 @@
   }
 
   function saveConfig() {
-    gameConfig.set(tempConfig);
+    gameConfigStore.set(tempConfig);
+    resetGameStore.update((number) => {return number + 1})
     closePanel();
   }
 
@@ -38,7 +45,7 @@
   let updateButtonText = "Reset";
   let cancelButtonText = "Close";
   $: {
-    if (areGameConfigsEqual($gameConfig, tempConfig)) {
+    if (areGameConfigsEqual($gameConfigStore, tempConfig)) {
       updateButtonText = "Reset";
       cancelButtonText = "Close";
     } else {

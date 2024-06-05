@@ -1,40 +1,31 @@
 <!-- /lib/components/PlayDiscardSelectedCard.svelte -->
 <script lang="ts">
-    import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-    import { cards } from "../stores/cardsStore";
-    import { incrementAndGet } from "../stores/cardIDCounterStore";
-    import gameConfig from "../stores/gameConfigStore";
-    import { NumberEnum } from "../models/numberEnums";
+  import { cardsSelectedStore } from "../stores/cardsSelectedStore";
+  import { cardsInHandStore } from "../stores/cardsInHandStore";
+  import { incrementAndGet } from "../stores/cardIDCounterStore";
+  import { get } from "svelte/store";
+  import type { PlayDiscard } from "../models/actions";
+  import { actionStore } from "../stores/actionsStore";
 
-    $: variant = $gameConfig.variant;
-
-    function playDiscardSelectedCard() {
+  function playDiscardSelectedCard() {
     if ($cardsSelectedStore.size === 1) {
+      let action: PlayDiscard = {
+        actionType: "PlayDiscard",
+        id: 0
+      }
       const selectedId = $cardsSelectedStore.values().next().value;
-      
-      cards.updateCards($cards => {
-        // Logic to remove the selected card
-        const updatedCards = $cards.filter(card => card.id !== selectedId);
-        updatedCards.push(createDefaultCard(incrementAndGet()));
-        return updatedCards;
-      });
-
+      const currentCards = Array.from(get(cardsInHandStore));
+      const newCards = currentCards.filter((card) => card !== selectedId); //remove the old card
+      newCards.push(incrementAndGet()); // add the new card
+      cardsInHandStore.set(newCards); // update store
+      action.id = selectedId;
       $cardsSelectedStore.clear(); // Clear selection after action
+      actionStore.push(action); // store the action
     }
-  }
-
-  function createDefaultCard(id: number) {
-    return {
-      id: id,
-      numberInformation: NumberEnum.All,
-      colourInformation: $gameConfig.variant,
-      note: '',
-      isHinted: false,
-      isChopMoved: false,
-      isFinessed: false,
-      isCritical: false,
-    };
   }
 </script>
 
-<button on:click={playDiscardSelectedCard} disabled={$cardsSelectedStore.size !== 1}>Play/Discard</button>
+<button
+  on:click={playDiscardSelectedCard}
+  disabled={$cardsSelectedStore.size !== 1}>Play/Discard</button
+>

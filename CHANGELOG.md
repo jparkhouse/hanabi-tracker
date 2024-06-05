@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.4.1...v1.5.0) (2024-05-26)
+
+
+### Features
+
+* add notes to cards ([1ef4f17](https://github.com/jparkhouse/hanabi-tracker/commit/1ef4f17bd2cbc65b9aa21a4991538b03b2a888bc))
+* added version number to test ([64c6cf1](https://github.com/jparkhouse/hanabi-tracker/commit/64c6cf19bc2ab91bccfe68e0efdb9a80dbcc324b))
+
+
+### Bug Fixes
+
+* broken icon now rainbow ([17990e4](https://github.com/jparkhouse/hanabi-tracker/commit/17990e4d0f0828f719adb1816151fbb4ea342989))
+* broken icon now rainbow ([d8ca500](https://github.com/jparkhouse/hanabi-tracker/commit/d8ca500475b6bb5c8b239dad3748de855100331c))
+* set svelte store note value ([7a3288c](https://github.com/jparkhouse/hanabi-tracker/commit/7a3288cf8906d6f22a3ec7e3ee2b63087531c0af))
+
 ## [1.4.1](https://github.com/jparkhouse/hanabi-tracker/compare/v1.4.0...v1.4.1) (2024-05-01)
 
 

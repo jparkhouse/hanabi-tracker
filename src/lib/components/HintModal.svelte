@@ -1,15 +1,19 @@
 <!-- /lib/components/HintModal.svelte -->
 <script lang="ts">
-  import type { Card } from "../models/card";
+  import type { CardInformation } from "../models/card";
   import { NumberEnum } from "../models/numberEnums";
   import { SuitEnum, getSuits, suitProperties } from "../models/variantEnums";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { cards } from "../stores/cardsStore";
-  import gameConfig from "../stores/gameConfigStore";
+  import { cardsInHandStore } from "../stores/cardsInHandStore";
+  import { informationOnCardsStore } from "../stores/informationOnCardsStore";
+  import { gameConfigStore } from "../stores/gameConfigStore";
+  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import type { ColourHint, NumberHint } from "../models/actions";
+  import { actionStore } from "../stores/actionsStore";
 
   export let isOpen = false;
 
-  $: variant = $gameConfig.variant;
+  $: variant = $gameConfigStore.variant;
 
   interface SelectedHint {
     type: "colour" | "number" | null;
@@ -46,13 +50,22 @@
 
   function isColourHintValid(colourHint: SuitEnum): boolean {
     const selectedCardIds = Array.from($cardsSelectedStore);
-    const isValid = $cards.every((card) => {
-      if (selectedCardIds.includes(card.id)) {
-        const hintModifier: SuitEnum = getPositiveColourHintModifier(card);
-        return (card.colourInformation & (colourHint | hintModifier)) > 0; // the hint is applicable if one of the card's suits is possible (1) and that hint also has a 1
+    const isValid = $cardsInHandStore.every((card) => {
+      const cardInformation = informationOnCardsStore.get(card);
+      if (selectedCardIds.includes(card)) {
+        const hintModifier: SuitEnum = getPositiveColourHintModifier(
+          cardInformation.colourInformation
+        );
+        return (
+          (cardInformation.colourInformation & (colourHint | hintModifier)) > 0
+        ); // the hint is applicable if one of the card's suits is possible (1) and that hint also has a 1
       } else {
-        const hintModifier: SuitEnum = getNegativeColourHintModifier(card);
-        return (card.colourInformation & ~(colourHint | hintModifier)) > 0; // check that it doesnt leave any hints without any colours
+        const hintModifier: SuitEnum = getNegativeColourHintModifier(
+          cardInformation.colourInformation
+        );
+        return (
+          (cardInformation.colourInformation & ~(colourHint | hintModifier)) > 0
+        ); // check that it doesnt leave any hints without any colours
       }
     });
     return isValid;
@@ -60,20 +73,31 @@
 
   function isNumberHintValid(numberHint: NumberEnum): boolean {
     const selectedCardIds = Array.from($cardsSelectedStore);
-    const isValid = $cards.every((card) => {
-      if (selectedCardIds.includes(card.id)) {
-        const hintModifier: NumberEnum = getPositiveNumberHintModifier(card);
-        return (card.numberInformation & (numberHint | hintModifier)) > 0; // the hint is applicable if one of the card's numbers is possible (1) and that hint also has a 1
+    const isValid = $cardsInHandStore.every((card) => {
+      const cardInformation = informationOnCardsStore.get(card);
+      if (selectedCardIds.includes(card)) {
+        const hintModifier: NumberEnum = getPositiveNumberHintModifier(
+          cardInformation.numberInformation
+        );
+        return (
+          (cardInformation.numberInformation & (numberHint | hintModifier)) > 0
+        ); // the hint is applicable if one of the card's numbers is possible (1) and that hint also has a 1
       } else {
-        const hintModifier: NumberEnum = getNegativeNumberHintModifier(card);
-        return (card.numberInformation & ~(numberHint | hintModifier)) > 0; // check that it doesnt leave any hints without any numbers
+        const hintModifier: NumberEnum = getNegativeNumberHintModifier(
+          cardInformation.numberInformation
+        );
+        return (
+          (cardInformation.numberInformation & ~(numberHint | hintModifier)) > 0
+        ); // check that it doesnt leave any hints without any numbers
       }
     });
     return isValid;
   }
 
-  function getPositiveColourHintModifier(card: Card): SuitEnum {
-    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+  function getPositiveColourHintModifier(
+    colourInformation: SuitEnum
+  ): SuitEnum {
+    return getSuits(colourInformation) // checks for any positive hint modifiers from suits (such as rainbow taking all colour clues)
       .map((value) => {
         return suitProperties[value].positiveColourHintModifier;
       })
@@ -85,8 +109,10 @@
       }, 0) as SuitEnum;
   }
 
-  function getPositiveNumberHintModifier(card: Card): NumberEnum {
-    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+  function getPositiveNumberHintModifier(
+    numberInformation: NumberEnum
+  ): NumberEnum {
+    return getSuits(numberInformation) // checks for any positive hint modifiers from suits (such as pink taking all number clues)
       .map((value) => {
         return suitProperties[value].positiveNumberHintModifier;
       })
@@ -98,8 +124,10 @@
       }, 0) as NumberEnum;
   }
 
-  function getNegativeColourHintModifier(card: Card): SuitEnum {
-    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+  function getNegativeColourHintModifier(
+    colourInformation: SuitEnum
+  ): SuitEnum {
+    return getSuits(colourInformation) // checks for any negative hint modifiers from suits (such as black taking no colour clues)
       .map((value) => {
         return suitProperties[value].negativeColourHintModifier;
       })
@@ -111,8 +139,10 @@
       }, 0) as SuitEnum;
   }
 
-  function getNegativeNumberHintModifier(card: Card): NumberEnum {
-    return getSuits(card.colourInformation) // checks for any positive hint modifiers from suits (such as brown taking all number clues)
+  function getNegativeNumberHintModifier(
+    numberInformation: NumberEnum
+  ): NumberEnum {
+    return getSuits(numberInformation) // checks for any negative hint modifiers from suits (such as brown taking no number clues)
       .map((value) => {
         return suitProperties[value].negativeNumberHintModifier;
       })
@@ -145,68 +175,172 @@
 
   function saveColourHint(colourHint: SuitEnum): void {
     const selectedCardIds = Array.from($cardsSelectedStore);
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (selectedCardIds.includes(card.id)) {
-          const hintModifier = getPositiveColourHintModifier(card);
-          const newColourInformation: SuitEnum =
-            card.colourInformation & (colourHint | hintModifier);
-          return {
-            ...card,
-            colourInformation: newColourInformation,
-            isHinted: true,
-          };
-        } else {
-          const hintModifier = getNegativeColourHintModifier(card);
-          const newColourInformation: SuitEnum =
-            card.colourInformation & ~(colourHint | hintModifier);
-          return {
-            ...card,
-            colourInformation: newColourInformation,
-          };
-        }
-      });
-      return newCards;
+    const currentCards = Array.from($cardsInHandStore);
+
+    let action: ColourHint = {
+      actionType: "ColourHint",
+      ids: currentCards,
+      previousHinted: getPreviousHinted(currentCards),
+      previousKnownColourInformation:
+        getPreviousKnownColourInformation(currentCards),
+      previousColourInformation: getPreviousColourInformation(currentCards),
+      newKnownColourInformation: [],
+      newColourInformation: [],
+      newHinted: [],
+    };
+
+    currentCards.forEach((card) => {
+      let cardInformation = { ...informationOnCardsStore.get(card) };
+      let cardFlags = { ...flagsOnCardsStore.get(card) };
+      let isSelected = selectedCardIds.includes(card);
+
+      if (isSelected) {
+        cardInformation.colourInformation = calculatePositiveColourHint(
+          cardInformation.colourInformation,
+          colourHint
+        );
+        cardInformation.knownColourInformation |= colourHint;
+        updateHintFlag(card, true);
+        action.newHinted.push(true); // it is always hinted if selected
+      } else {
+        cardInformation.colourInformation = calculateNegativeColourHint(
+          cardInformation.colourInformation,
+          colourHint
+        );
+        action.newHinted.push(cardFlags.isHinted); // here we must use the pre-existing value, since it may have been hinted before
+      }
+
+      action.newColourInformation.push(cardInformation.colourInformation);
+      action.newKnownColourInformation.push(
+        cardInformation.knownColourInformation
+      );
+
+      informationOnCardsStore.set(card, cardInformation);
     });
+
+    actionStore.push(action); // store the action
+  }
+
+  function getPreviousKnownColourInformation(cards: number[]): SuitEnum[] {
+    return cards.map(
+      (id) => informationOnCardsStore.get(id).knownColourInformation
+    );
+  }
+
+  function getPreviousColourInformation(cards: number[]): SuitEnum[] {
+    return cards.map((id) => informationOnCardsStore.get(id).colourInformation);
+  }
+
+  function calculatePositiveColourHint(
+    colourInformation: SuitEnum,
+    colourHint: SuitEnum
+  ): SuitEnum {
+    const hintModifier = getPositiveColourHintModifier(colourInformation);
+    return colourInformation & (colourHint | hintModifier);
+  }
+
+  function calculateNegativeColourHint(
+    colourInformation: SuitEnum,
+    colourHint: SuitEnum
+  ): SuitEnum {
+    const hintModifier = getNegativeColourHintModifier(colourInformation);
+    return colourInformation & ~(colourHint | hintModifier);
+  }
+
+  function updateHintFlag(card: number, isHinted: boolean): void {
+    const oldFlags = flagsOnCardsStore.get(card);
+    flagsOnCardsStore.set(card, { ...oldFlags, isHinted });
   }
 
   function saveNumberHint(numberHint: NumberEnum): void {
     const selectedCardIds = Array.from($cardsSelectedStore);
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (selectedCardIds.includes(card.id)) {
-          const hintModifier = getPositiveNumberHintModifier(card);
-          const newNumberInformation: NumberEnum =
-            card.numberInformation & (numberHint | hintModifier);
-          return {
-            ...card,
-            numberInformation: newNumberInformation,
-            isHinted: true,
-          };
-        } else {
-          const hintModifier = getNegativeNumberHintModifier(card);
-          const newNumberInformation: NumberEnum =
-            card.numberInformation & ~(numberHint | hintModifier);
-          return {
-            ...card,
-            numberInformation: newNumberInformation,
-          };
-        }
-      });
-      return newCards;
+    const currentCards = Array.from($cardsInHandStore);
+
+    let action: NumberHint = {
+      actionType: "NumberHint",
+      ids: currentCards,
+      previousHinted: getPreviousHinted(currentCards),
+      previousKnownNumberInformation:
+        getPreviousKnownNumberInformation(currentCards),
+      previousNumberInformation: getPreviousNumberInformation(currentCards),
+      newKnownNumberInformation: [],
+      newNumberInformation: [],
+      newHinted: [],
+    };
+
+    currentCards.forEach((card) => {
+      let cardInformation = { ...informationOnCardsStore.get(card) };
+      let cardFlags = { ...flagsOnCardsStore.get(card) };
+      let isSelected = selectedCardIds.includes(card);
+
+      if (isSelected) {
+        cardInformation.numberInformation = calculatePositiveNumberHint(
+          cardInformation.numberInformation,
+          numberHint
+        );
+        cardInformation.knownNumberInformation |= numberHint;
+        updateHintFlag(card, true);
+        action.newHinted.push(true); // it is always hinted if selected
+      } else {
+        cardInformation.numberInformation = calculateNegativeNumberHint(
+          cardInformation.numberInformation,
+          numberHint
+        );
+        action.newHinted.push(cardFlags.isHinted); // here we must use the pre-existing value, since it may have been hinted before
+      }
+
+      action.newNumberInformation.push(cardInformation.numberInformation);
+      action.newKnownNumberInformation.push(
+        cardInformation.knownNumberInformation
+      );
+
+      informationOnCardsStore.set(card, cardInformation);
     });
+
+    actionStore.push(action); // store the action
+  }
+
+  function getPreviousKnownNumberInformation(cards: number[]): NumberEnum[] {
+    return cards.map(
+      (id) => informationOnCardsStore.get(id).knownNumberInformation
+    );
+  }
+
+  function getPreviousNumberInformation(cards: number[]): NumberEnum[] {
+    return cards.map((id) => informationOnCardsStore.get(id).numberInformation);
+  }
+
+  function calculatePositiveNumberHint(
+    numberInformation: NumberEnum,
+    numberHint: NumberEnum
+  ): NumberEnum {
+    const hintModifier = getPositiveNumberHintModifier(numberInformation);
+    return numberInformation & (numberHint | hintModifier);
+  }
+
+  function calculateNegativeNumberHint(
+    numberInformation: NumberEnum,
+    numberHint: NumberEnum
+  ): NumberEnum {
+    const hintModifier = getNegativeNumberHintModifier(numberInformation);
+    return numberInformation & ~(numberHint | hintModifier);
+  }
+
+  function getPreviousHinted(cards: number[]): boolean[] {
+    return cards.map(card => {
+      const cardFlags = flagsOnCardsStore.get(card);
+      return cardFlags.isHinted;
+    })
   }
 
   function isSelectedHint(
     hint: SelectedHint,
     selectedHint: SelectedHint
   ): boolean {
-    console.log("Checking hint:", hint, "against selectedHint:", selectedHint);
     const result =
       hint.type === selectedHint.type &&
       hint.colourValue === selectedHint.colourValue &&
       hint.numberValue === selectedHint.numberValue;
-    console.log("Result:", result);
     return selectedHint && result;
   }
 
