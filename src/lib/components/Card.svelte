@@ -135,6 +135,8 @@
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
+    document.body.style.transform = 'scale(1)';
+    document.body.style.transformOrigin = '0 0';
   }
 
   function getColourCodeFromSuit(suit: SuitEnum): string {
