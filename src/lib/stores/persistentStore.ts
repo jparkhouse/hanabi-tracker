@@ -23,7 +23,6 @@ export function createPersistentStore<T>(
 
   const localKey = base + "/" + key;
   const storedValue = localStorage.getItem(localKey);
-  console.log(localKey, storedValue, typeof storedValue, typeof (JSON.parse(storedValue as string) as T));
   const initialValue =
     (storedValue !== "undefined" && storedValue)
       ? JSON.parse(storedValue as string) as T
@@ -42,10 +41,6 @@ export function createPersistentStore<T>(
       }
     });
   }
-
-  // If getResetData is provided, subscribe to gameConfig
-
-  
 
   return {
     subscribe: store.subscribe,

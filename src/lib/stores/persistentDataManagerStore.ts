@@ -22,10 +22,8 @@ export function createManagedStore<T>(
 
   // Initialize with local storage if available
   const storedData = localStorage.getItem(localKey);
-  console.log(storedData);
   if (storedData && storedData !== "undefined") {
     store.update((currentManager) => {
-      console.log(JSON.parse(storedData))
       currentManager.fromJSON(storedData);
       return currentManager;
     });
