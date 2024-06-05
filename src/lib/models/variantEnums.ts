@@ -16,7 +16,7 @@ export const enum Variant {
 }
 
 interface SuitProperties {
-  string: string,
+  string: string, // string for repr
   stringHint: string | null; // if this suit has an associated hint, string for the UI display, else null
   colourHint: number | null; // if this colour has an associated hint, the binary hint to be applied
   positiveColourHintModifier: number | null; // if this suit has any modifier for colour hints given - assume | with the colourHint
