@@ -518,7 +518,7 @@
     align-items: center; /* Center vertically */
     max-width: 100%;
     max-height: 100%;
-    transform: translate3d(0, 0, 0);
+    transform: rotate(1);
     pointer-events: none;
   }
 
