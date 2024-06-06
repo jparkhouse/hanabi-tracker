@@ -7,18 +7,6 @@
   import { afterUpdate } from 'svelte';
 
   let element: Element;
-
-  function forceUpdateSVG() {
-    const parent = element.parentNode;
-    if (parent) {
-      parent.removeChild(element);
-      setTimeout(() => parent.appendChild(element), 0);
-    }
-  }
-
-  afterUpdate(() => {
-    forceUpdateSVG();
-  })
 </script>
 
 {#if !hidden}
