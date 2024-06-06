@@ -13,4 +13,4 @@ const defaultData = (config: GameConfig) => {
 }
 
 // Initialize the store with a default value, which will be replaced if information already stored
-export const cardsInHandStore = createPersistentStore<number[]>('cardsInHand', [1, 2, 3, 4], defaultData);
+export const cardsInHandStore = createPersistentStore<number[]>('cardsInHand', [0, 1, 2, 3], defaultData);
