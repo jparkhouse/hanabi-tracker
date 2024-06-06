@@ -3,10 +3,6 @@
 <script lang="ts">
   export let hidden: boolean = true;
   export let strokeColour: string = "white";
-  import { onMount } from 'svelte';
-  import { afterUpdate } from 'svelte';
-
-  let element: Element;
 </script>
 
 {#if !hidden}
@@ -17,6 +13,7 @@
     viewBox="0 0 264 264"
     role="img"
     preserveAspectRatio="xMidYMid meet"
+    overflow="visible"
   >
     <title>Rainbow colour icon</title>
     <path
