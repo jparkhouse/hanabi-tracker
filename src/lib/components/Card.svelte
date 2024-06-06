@@ -140,7 +140,7 @@
   }
 
   function isSingleFlag(bitflag: SuitEnum | NumberEnum): boolean {
-    return (bitflag & (bitflag - 1)) == 0
+    return (bitflag & (bitflag - 1)) == 0;
   }
 
   function toggleCritical(): void {
@@ -241,35 +241,40 @@
     <div class="number-icons">
       <One
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.One && !(isSingleFlag(numberInformation))
+        strokeColour={knownNumberInformation & NumberEnum.One &&
+        !isSingleFlag(numberInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
         hidden={!(numberInformation & NumberEnum.One)}
       />
       <Two
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Two && !(isSingleFlag(numberInformation))
+        strokeColour={knownNumberInformation & NumberEnum.Two &&
+        !isSingleFlag(numberInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
         hidden={!(numberInformation & NumberEnum.Two)}
       />
       <Three
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Three && !(isSingleFlag(numberInformation))
+        strokeColour={knownNumberInformation & NumberEnum.Three &&
+        !isSingleFlag(numberInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
         hidden={!(numberInformation & NumberEnum.Three)}
       />
       <Four
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Four && !(isSingleFlag(numberInformation))
+        strokeColour={knownNumberInformation & NumberEnum.Four &&
+        !isSingleFlag(numberInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
         hidden={!(numberInformation & NumberEnum.Four)}
       />
       <Five
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Five && !(isSingleFlag(numberInformation))
+        strokeColour={knownNumberInformation & NumberEnum.Five &&
+        !isSingleFlag(numberInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
         hidden={!(numberInformation & NumberEnum.Five)}
@@ -278,51 +283,62 @@
     <div class="colour-icons">
       <Red
         hidden={!(colourInformation & SuitEnum.Red)}
-        strokeColour={knownColourInformation & SuitEnum.Red && !(isSingleFlag(colourInformation))
+        strokeColour={knownColourInformation & SuitEnum.Red &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
       />
       <Yellow
         hidden={!(colourInformation & SuitEnum.Yellow)}
-        strokeColour={knownColourInformation & SuitEnum.Yellow && !(isSingleFlag(colourInformation))
+        strokeColour={knownColourInformation & SuitEnum.Yellow &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
       />
       <Blue
         hidden={!(colourInformation & SuitEnum.Blue)}
-        strokeColour={knownColourInformation & SuitEnum.Blue && !(isSingleFlag(colourInformation))
+        strokeColour={knownColourInformation & SuitEnum.Blue &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
         backgroundColour="mediumblue"
       />
       <White
         hidden={!(colourInformation & SuitEnum.White)}
-        strokeColour={knownColourInformation & SuitEnum.White && !(isSingleFlag(colourInformation))
+        strokeColour={knownColourInformation & SuitEnum.White &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
       />
       <Green
         hidden={!(colourInformation & SuitEnum.Green)}
-        strokeColour={knownColourInformation & SuitEnum.Green && !(isSingleFlag(colourInformation))
+        strokeColour={knownColourInformation & SuitEnum.Green &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
         backgroundColour="green"
       />
       <Rainbow
-        hidden={!(colourInformation & SuitEnum.Rainbow) || knownColour === 'rainbow'}
-        strokeColour={knownColourInformation & SuitEnum.Rainbow && !(isSingleFlag(colourInformation))
+        hidden={!(colourInformation & SuitEnum.Rainbow) ||
+          knownColour === "rainbow"}
+        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : "white"}
       />
       <RainbowEmpty
-        hidden={!(colourInformation & SuitEnum.Rainbow && knownColour === 'rainbow')}
-        strokeColour={knownColourInformation & SuitEnum.Rainbow && !(isSingleFlag(colourInformation))
+        hidden={!(
+          colourInformation & SuitEnum.Rainbow && knownColour === "rainbow"
+        )}
+        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : "white"}
       />
       <Black
         hidden={!(colourInformation & SuitEnum.Black)}
-        strokeColour={knownColourInformation & SuitEnum.Black && !(isSingleFlag(colourInformation))
+        strokeColour={knownColourInformation & SuitEnum.Black &&
+        !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : "white"}
       />
@@ -502,6 +518,8 @@
     align-items: center; /* Center vertically */
     max-width: 100%;
     max-height: 100%;
+    transform: translate3d(0, 0, 0);
+    pointer-events: none;
   }
 
   @media (max-width: 600px) {
