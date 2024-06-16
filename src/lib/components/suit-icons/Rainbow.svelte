@@ -6,5 +6,5 @@
 </script>
 
 {#if !hidden}
-  <img src="/rainbow.svg" alt="Rainbow colour icon" style="width: 100%; height: auto;">
+  <img src={`${import.meta.env.BASE_URL}/rainbow.svg`} alt="Rainbow colour icon" style="width: 100%; height: auto;">
 {/if}
