@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.0.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.5.0...v2.0.0) (2024-06-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **store:** The refactoring of the card store into multiple stores changes the structure of the state management. Ensure all related code is updated to use the new stores.
+
+### Features
+
+* reset zoom on menu close ([4b9d20b](https://github.com/jparkhouse/hanabi-tracker/commit/4b9d20b4e636207591adecaa3f0351bdfee70a61))
+
+
+### Bug Fixes
+
+* forced rerender of rainbow icon ([611e62f](https://github.com/jparkhouse/hanabi-tracker/commit/611e62fc12da9296f8fbecead289eed822141046))
+
+
+### Code Refactoring
+
+* **store:** separate card store into multiple stores and add local storage support ([51f35a3](https://github.com/jparkhouse/hanabi-tracker/commit/51f35a371de1738f7271256a0cbaa29ba178fd7e))
+
 ## [1.5.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.4.1...v1.5.0) (2024-05-26)
 
 
