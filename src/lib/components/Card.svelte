@@ -520,6 +520,7 @@
     max-height: 100%;
     transform: rotate(1);
     pointer-events: none;
+    will-change: transform;
   }
 
   @media (max-width: 600px) {
