@@ -24,20 +24,7 @@ export class DataManager<T> {
   fromJSON(JSONData: string): void {
     try {
       const parsedData = JSON.parse(JSONData);
-      // Ensure data is correctly typed as Record<number, T>
-      this.data = Object.keys(parsedData).reduce((acc, key) => {
-        // Convert keys back to numbers since JSON keys are always strings
-        const numKey = Number(key);
-        const value: T = parsedData[key];
-
-        // Optionally, validate the structure of T if necessary
-        if (!this.isValidData(value)) {
-          throw new Error(`Invalid data structure for key ${key}: ${JSON.stringify(value)}`);
-        }
-
-        acc[numKey] = value;
-        return acc;
-      }, {} as Record<number, T>);
+      this.data = parsedData;
     } catch (error) {
       // Catch parsing errors or other unexpected issues
       throw new Error(`Failed to parse JSON Data: ${error instanceof Error ? error.message : String(error)}`);

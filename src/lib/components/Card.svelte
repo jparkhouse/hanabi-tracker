@@ -1,9 +1,15 @@
 <!-- /lib/components/Card.svelte -->
 
 <script lang="ts">
-  import gameConfig from "../stores/gameConfigStore";
-  import { Variant, SuitEnum, getSuits } from "../models/variantEnums";
-  import { NumberEnum, getNumbers } from "../models/numberEnums";
+  import { gameConfigStore } from "../stores/gameConfigStore";
+  import { SuitEnum, suitProperties } from "../models/variantEnums";
+  import { NumberEnum } from "../models/numberEnums";
+  import { activeMenuCard } from "../stores/menuStore";
+  import { cardsSelectedStore } from "../stores/cardsSelectedStore";
+  import { onMount, onDestroy } from "svelte";
+  import { notesOnCardsStore } from "../stores/notesOnCardsStore";
+  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+
   import One from "./number-icons/One.svelte";
   import Three from "./number-icons/Three.svelte";
   import Two from "./number-icons/Two.svelte";
@@ -17,14 +23,12 @@
   import Rainbow from "./suit-icons/Rainbow.svelte";
   import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
   import Black from "./suit-icons/Black.svelte";
-  import { cards } from "../stores/cardsStore";
-  import { activeMenuCard } from "../stores/menuStore";
-  import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { onMount, onDestroy } from "svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
+  export let knownNumberInformation: NumberEnum;
   export let colourInformation: SuitEnum;
+  export let knownColourInformation: SuitEnum;
   export let note: string;
   export let selected: boolean = false;
   export let isHinted: boolean;
@@ -35,7 +39,7 @@
 
   $: localMode = $activeMenuCard === id ? "menu" : "card";
   $: isMenuActive = $activeMenuCard !== null;
-  $: numberOfCards = $gameConfig.numberOfCards;
+  $: numberOfCards = $gameConfigStore.numberOfCards;
   $: borderColour = selected
     ? "var(--border-selected)"
     : isCritical
@@ -50,7 +54,7 @@
 
   let knownColour: string | null = null;
   $: {
-    if ((colourInformation & (colourInformation - 1)) == 0) {
+    if (isSingleFlag(colourInformation)) {
       knownColour = getColourCodeFromSuit(colourInformation);
     } else {
       knownColour = null;
@@ -82,8 +86,8 @@
         numberIconStyles.backgroundColour = "green";
         break;
       case "black":
-        numberIconStyles.strokeColour = "white";
-        numberIconStyles.backgroundColour = "black";
+        numberIconStyles.strokeColour = "none";
+        numberIconStyles.backgroundColour = "white";
         break;
       case "rainbow":
         numberIconStyles.strokeColour = "black";
@@ -108,91 +112,50 @@
     if (localMode === "card" && !isMenuActive) {
       activeMenuCard.set(id);
     } else if (localMode === "menu") {
-      const noteField = document.getElementById("noteField") as HTMLInputElement;
-      cards.updateCards((cards) => {
-        return cards.map((card) => {
-          if (card.id === $activeMenuCard) {
-            return { ...card, note: noteField.value as string };
-          } else {
-            return { ...card };
-          }
-        });
-      });
+      const noteField = (
+        document.getElementById("noteField") as HTMLInputElement
+      ).value as string;
+      if (noteField) {
+        notesOnCardsStore.set(id, { note: noteField });
+      }
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
   }
 
   function closeMenu() {
-    const noteField = document.getElementById("noteField") as HTMLInputElement;
+    const noteField = (document.getElementById("noteField") as HTMLInputElement)
+      .value as string;
     if ($activeMenuCard) {
-      cards.updateCards((cards) => {
-        return cards.map((card) => {
-          if (card.id === $activeMenuCard) {
-            return { ...card, note: noteField.value as string};
-          } else {
-            return { ...card };
-          }
-        });
-      });
+      if (noteField) {
+        notesOnCardsStore.set(id, { note: noteField });
+      }
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
   }
 
   function getColourCodeFromSuit(suit: SuitEnum): string {
-    switch (suit) {
-      case SuitEnum.Red:
-        return "red";
-      case SuitEnum.Yellow:
-        return "yellow";
-      case SuitEnum.Blue:
-        return "blue";
-      case SuitEnum.White:
-        return "white";
-      case SuitEnum.Green:
-        return "green";
-      case SuitEnum.Rainbow:
-        return "rainbow";
-      case SuitEnum.Black:
-        return "black";
-    }
+    return suitProperties[suit].string.toLowerCase();
+  }
+
+  function isSingleFlag(bitflag: SuitEnum | NumberEnum): boolean {
+    return (bitflag & (bitflag - 1)) == 0;
   }
 
   function toggleCritical(): void {
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (card.id === id) {
-          return { ...card, isCritical: !isCritical };
-        }
-        return card;
-      });
-      return newCards;
-    });
+    const oldFlags = flagsOnCardsStore.get(id);
+    flagsOnCardsStore.set(id, { ...oldFlags, isCritical: !isCritical });
   }
 
   function toggleChopMoved(): any {
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (card.id === id) {
-          return { ...card, isChopMoved: !isChopMoved };
-        }
-        return card;
-      });
-      return newCards;
-    });
+    const oldFlags = flagsOnCardsStore.get(id);
+    flagsOnCardsStore.set(id, { ...oldFlags, isChopMoved: !isChopMoved });
   }
 
   function toggleFinessed(): any {
-    cards.updateCards((allCards) => {
-      const newCards = allCards.map((card) => {
-        if (card.id === id) {
-          return { ...card, isFinessed: !isFinessed };
-        }
-        return card;
-      });
-      return newCards;
-    });
+    const oldFlags = flagsOnCardsStore.get(id);
+    flagsOnCardsStore.set(id, { ...oldFlags, isFinessed: !isFinessed });
   }
 
   let timeoutId: ReturnType<typeof setTimeout>;
@@ -278,76 +241,107 @@
     <div class="number-icons">
       <One
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
-        hidden={!(
-          getNumbers(numberInformation).includes(NumberEnum.One) ||
-          getNumbers(numberInformation).includes(NumberEnum.All)
-        )}
+        strokeColour={knownNumberInformation & NumberEnum.One &&
+        !isSingleFlag(numberInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
+        hidden={!(numberInformation & NumberEnum.One)}
       />
       <Two
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
-        hidden={!(
-          getNumbers(numberInformation).includes(NumberEnum.Two) ||
-          getNumbers(numberInformation).includes(NumberEnum.All)
-        )}
+        strokeColour={knownNumberInformation & NumberEnum.Two &&
+        !isSingleFlag(numberInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
+        hidden={!(numberInformation & NumberEnum.Two)}
       />
       <Three
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
-        hidden={!(
-          getNumbers(numberInformation).includes(NumberEnum.Three) ||
-          getNumbers(numberInformation).includes(NumberEnum.All)
-        )}
+        strokeColour={knownNumberInformation & NumberEnum.Three &&
+        !isSingleFlag(numberInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
+        hidden={!(numberInformation & NumberEnum.Three)}
       />
       <Four
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
-        hidden={!(
-          getNumbers(numberInformation).includes(NumberEnum.Four) ||
-          getNumbers(numberInformation).includes(NumberEnum.All)
-        )}
+        strokeColour={knownNumberInformation & NumberEnum.Four &&
+        !isSingleFlag(numberInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
+        hidden={!(numberInformation & NumberEnum.Four)}
       />
       <Five
         backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={numberIconStyles.strokeColour}
-        hidden={!(
-          getNumbers(numberInformation).includes(NumberEnum.Five) ||
-          getNumbers(numberInformation).includes(NumberEnum.All)
-        )}
+        strokeColour={knownNumberInformation & NumberEnum.Five &&
+        !isSingleFlag(numberInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
+        hidden={!(numberInformation & NumberEnum.Five)}
       />
     </div>
     <div class="colour-icons">
-      <Red hidden={!getSuits(colourInformation).includes(SuitEnum.Red)} />
+      <Red
+        hidden={!(colourInformation & SuitEnum.Red)}
+        strokeColour={knownColourInformation & SuitEnum.Red &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
+      />
       <Yellow
-        hidden={!getSuits(colourInformation).includes(SuitEnum.Yellow)}
-        strokeColour={knownColour !== "yellow" ? "white" : "black"}
+        hidden={!(colourInformation & SuitEnum.Yellow)}
+        strokeColour={knownColourInformation & SuitEnum.Yellow &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
       />
       <Blue
-        hidden={!getSuits(colourInformation).includes(SuitEnum.Blue)}
+        hidden={!(colourInformation & SuitEnum.Blue)}
+        strokeColour={knownColourInformation & SuitEnum.Blue &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
         backgroundColour="mediumblue"
       />
       <White
-        hidden={!getSuits(colourInformation).includes(SuitEnum.White)}
-        strokeColour={knownColour !== "white" ? "white" : "black"}
+        hidden={!(colourInformation & SuitEnum.White)}
+        strokeColour={knownColourInformation & SuitEnum.White &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
       />
       <Green
-        hidden={!getSuits(colourInformation).includes(SuitEnum.Green)}
+        hidden={!(colourInformation & SuitEnum.Green)}
+        strokeColour={knownColourInformation & SuitEnum.Green &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : numberIconStyles.strokeColour}
         backgroundColour="green"
       />
       <Rainbow
-        hidden={!(
-          getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
-          knownColour == null
-        )}
+        hidden={!(colourInformation & SuitEnum.Rainbow) ||
+          knownColour === "rainbow"}
+        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : "white"}
       />
       <RainbowEmpty
         hidden={!(
-          getSuits(colourInformation).includes(SuitEnum.Rainbow) &&
-          knownColour == "rainbow"
+          colourInformation & SuitEnum.Rainbow && knownColour === "rainbow"
         )}
+        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : "white"}
       />
-      <Black hidden={!getSuits(colourInformation).includes(SuitEnum.Black)} />
+      <Black
+        hidden={!(colourInformation & SuitEnum.Black)}
+        strokeColour={knownColourInformation & SuitEnum.Black &&
+        !isSingleFlag(colourInformation)
+          ? "var(--border-hinted)"
+          : "white"}
+      />
     </div>
   {:else}
     <div
@@ -373,7 +367,9 @@
         bind:value={note}
         placeholder="Its a..."
       />
-      <button class="btn menu-button close-button" on:click={toggleMode}>Close</button>
+      <button class="btn menu-button close-button" on:click={toggleMode}
+        >Close</button
+      >
     </div>
   {/if}
 </div>
@@ -522,6 +518,9 @@
     align-items: center; /* Center vertically */
     max-width: 100%;
     max-height: 100%;
+    transform: rotate(1);
+    pointer-events: none;
+    will-change: transform;
   }
 
   @media (max-width: 600px) {

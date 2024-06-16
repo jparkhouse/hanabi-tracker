@@ -2,18 +2,13 @@ import { defineConfig } from "vite";
 import * as dotenv from 'dotenv';
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 
-// Load environment variables based on the current mode
-const loadEnv = (mode: string) => {
-  const envPath = `.env.${mode}`;
-  dotenv.config({ path: envPath });
-};
 
 export default defineConfig(({ mode }) => {
-  // Load the environment variables for the specific mode
-  loadEnv(mode);
+  const envPath = `.env.${mode}`;
+  dotenv.config({ path: envPath });
 
   return {
-    base: mode === 'release' ? '/hanabi-tracker' : mode === 'testing' ? '/hanabi-tracker/test' : '/',
+    base: mode === 'release' ? '/hanabi-tracker' : mode === 'testing' ? '/hanabi-tracker/test' : '/dev',
     plugins: [svelte()],
   };
 });

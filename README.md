@@ -10,7 +10,7 @@ Currently, the app features the ability to:
 - play or discard cards
 - mark cards as critical (red border), chop moved (white\blue border), or finessed (aqua border)
     - hinted is automatically marked (orange border)
-- undo actions (up to 5)
+- undo actions
 
 Variants currently supported:
 - No variant (standard 5 suits)
@@ -25,7 +25,4 @@ The app is built by me, Jake, and I am very much an amatuer coder. It uses Vite 
 ## ToDo
 
 Next on the roadmap:
-- Potentially improve UX
-- Local storage to track configuration/last state
-- Notes on cards
-- Review feature?
+- Review feature

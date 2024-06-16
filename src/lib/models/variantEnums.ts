@@ -16,6 +16,7 @@ export const enum Variant {
 }
 
 interface SuitProperties {
+  string: string, // string for repr
   stringHint: string | null; // if this suit has an associated hint, string for the UI display, else null
   colourHint: number | null; // if this colour has an associated hint, the binary hint to be applied
   positiveColourHintModifier: number | null; // if this suit has any modifier for colour hints given - assume | with the colourHint
@@ -28,6 +29,7 @@ interface SuitProperties {
 
 export const suitProperties: Record<SuitEnum, SuitProperties> = {
   [SuitEnum.Red]: {
+    string: 'Red',
     stringHint: "Red",
     colourHint: SuitEnum.Red,
     positiveColourHintModifier: null,
@@ -36,6 +38,7 @@ export const suitProperties: Record<SuitEnum, SuitProperties> = {
     negativeNumberHintModifier: null,
   },
   [SuitEnum.Yellow]: {
+    string: 'Yellow',
     stringHint: "Yellow",
     colourHint: SuitEnum.Yellow,
     positiveColourHintModifier: null,
@@ -44,6 +47,7 @@ export const suitProperties: Record<SuitEnum, SuitProperties> = {
     negativeNumberHintModifier: null,
   },
   [SuitEnum.Blue]: {
+    string: 'Blue',
     stringHint: "Blue",
     colourHint: SuitEnum.Blue,
     positiveColourHintModifier: null,
@@ -52,6 +56,7 @@ export const suitProperties: Record<SuitEnum, SuitProperties> = {
     negativeNumberHintModifier: null,
   },
   [SuitEnum.White]: {
+    string: 'White',
     stringHint: "White",
     colourHint: SuitEnum.White,
     positiveColourHintModifier: null,
@@ -60,6 +65,7 @@ export const suitProperties: Record<SuitEnum, SuitProperties> = {
     negativeNumberHintModifier: null,
   },
   [SuitEnum.Green]: {
+    string: 'Green',
     stringHint: "Green",
     colourHint: SuitEnum.Green,
     positiveColourHintModifier: null,
@@ -68,6 +74,7 @@ export const suitProperties: Record<SuitEnum, SuitProperties> = {
     negativeNumberHintModifier: null,
   },
   [SuitEnum.Rainbow]: {
+    string: 'Rainbow',
     stringHint: null,
     colourHint: null,
     positiveColourHintModifier: SuitEnum.Rainbow, // apply rainbow on for any positive hints
@@ -76,6 +83,7 @@ export const suitProperties: Record<SuitEnum, SuitProperties> = {
     negativeNumberHintModifier: null,
   },
   [SuitEnum.Black]: {
+    string: 'Black',
     stringHint: null,
     colourHint: null,
     positiveColourHintModifier: null,
