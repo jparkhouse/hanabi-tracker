@@ -30,10 +30,10 @@
   {#each $cardsInHandStore as id}
     <Card
       {id}
-      numberInformation={$informationOnCardsStore.get(id).numberInformation}
+      numberInformation={$informationOnCardsStore.get(id).possibleNumberInformation}
       knownNumberInformation={$informationOnCardsStore.get(id)
         .knownNumberInformation}
-      colourInformation={$informationOnCardsStore.get(id).colourInformation}
+      colourInformation={$informationOnCardsStore.get(id).possibleColourInformation}
       knownColourInformation={$informationOnCardsStore.get(id)
         .knownColourInformation}
       note={$notesOnCardsStore.get(id).note}

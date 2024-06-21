@@ -60,7 +60,7 @@ export function createPersistentStackStore<T>(
       });
     },
     pop: () => {
-      let poppedItem: T | undefined;
+      let poppedItem: T | null = null;
       store.update(stack => {
         poppedItem = stack.pop();
         updateLocalStore(stack);

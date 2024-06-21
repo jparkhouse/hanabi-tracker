@@ -3,6 +3,9 @@
 import type { NumberEnum } from "./numberEnums";
 import type { SuitEnum } from "./variantEnums";
 
+/* 
+no longer used - separated into individual concerns
+
 export interface Card {
   numberInformation: NumberEnum; // updated type for bitfuckery
   colourInformation: SuitEnum;
@@ -12,14 +15,16 @@ export interface Card {
   isFinessed: boolean;
   isChopMoved: boolean;
   isCritical: boolean;
-}
+} */
 
 export interface CardInformation {
+  // possible starts with all and is narrowed down
+  // known starts with none and is filled in with only directly hintable information
   // number
-  numberInformation: NumberEnum;
+  possibleNumberInformation: NumberEnum;
   knownNumberInformation: NumberEnum;
   // then colour
-  colourInformation: SuitEnum;
+  possibleColourInformation: SuitEnum;
   knownColourInformation: SuitEnum;
 }
 

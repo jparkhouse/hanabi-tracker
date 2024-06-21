@@ -54,17 +54,17 @@
       const cardInformation = informationOnCardsStore.get(card);
       if (selectedCardIds.includes(card)) {
         const hintModifier: SuitEnum = getPositiveColourHintModifier(
-          cardInformation.colourInformation
+          cardInformation.possibleColourInformation
         );
         return (
-          (cardInformation.colourInformation & (colourHint | hintModifier)) > 0
+          (cardInformation.possibleColourInformation & (colourHint | hintModifier)) > 0
         ); // the hint is applicable if one of the card's suits is possible (1) and that hint also has a 1
       } else {
         const hintModifier: SuitEnum = getNegativeColourHintModifier(
-          cardInformation.colourInformation
+          cardInformation.possibleColourInformation
         );
         return (
-          (cardInformation.colourInformation & ~(colourHint | hintModifier)) > 0
+          (cardInformation.possibleColourInformation & ~(colourHint | hintModifier)) > 0
         ); // check that it doesnt leave any hints without any colours
       }
     });
@@ -77,17 +77,17 @@
       const cardInformation = informationOnCardsStore.get(card);
       if (selectedCardIds.includes(card)) {
         const hintModifier: NumberEnum = getPositiveNumberHintModifier(
-          cardInformation.numberInformation
+          cardInformation.possibleNumberInformation
         );
         return (
-          (cardInformation.numberInformation & (numberHint | hintModifier)) > 0
+          (cardInformation.possibleNumberInformation & (numberHint | hintModifier)) > 0
         ); // the hint is applicable if one of the card's numbers is possible (1) and that hint also has a 1
       } else {
         const hintModifier: NumberEnum = getNegativeNumberHintModifier(
-          cardInformation.numberInformation
+          cardInformation.possibleNumberInformation
         );
         return (
-          (cardInformation.numberInformation & ~(numberHint | hintModifier)) > 0
+          (cardInformation.possibleNumberInformation & ~(numberHint | hintModifier)) > 0
         ); // check that it doesnt leave any hints without any numbers
       }
     });
@@ -195,22 +195,22 @@
       let isSelected = selectedCardIds.includes(card);
 
       if (isSelected) {
-        cardInformation.colourInformation = calculatePositiveColourHint(
-          cardInformation.colourInformation,
+        cardInformation.possibleColourInformation = calculatePositiveColourHint(
+          cardInformation.possibleColourInformation,
           colourHint
         );
         cardInformation.knownColourInformation |= colourHint;
         updateHintFlag(card, true);
         action.newHinted.push(true); // it is always hinted if selected
       } else {
-        cardInformation.colourInformation = calculateNegativeColourHint(
-          cardInformation.colourInformation,
+        cardInformation.possibleColourInformation = calculateNegativeColourHint(
+          cardInformation.possibleColourInformation,
           colourHint
         );
         action.newHinted.push(cardFlags.isHinted); // here we must use the pre-existing value, since it may have been hinted before
       }
 
-      action.newColourInformation.push(cardInformation.colourInformation);
+      action.newColourInformation.push(cardInformation.possibleColourInformation);
       action.newKnownColourInformation.push(
         cardInformation.knownColourInformation
       );
@@ -228,7 +228,7 @@
   }
 
   function getPreviousColourInformation(cards: number[]): SuitEnum[] {
-    return cards.map((id) => informationOnCardsStore.get(id).colourInformation);
+    return cards.map((id) => informationOnCardsStore.get(id).possibleColourInformation);
   }
 
   function calculatePositiveColourHint(
@@ -274,22 +274,22 @@
       let isSelected = selectedCardIds.includes(card);
 
       if (isSelected) {
-        cardInformation.numberInformation = calculatePositiveNumberHint(
-          cardInformation.numberInformation,
+        cardInformation.possibleNumberInformation = calculatePositiveNumberHint(
+          cardInformation.possibleNumberInformation,
           numberHint
         );
         cardInformation.knownNumberInformation |= numberHint;
         updateHintFlag(card, true);
         action.newHinted.push(true); // it is always hinted if selected
       } else {
-        cardInformation.numberInformation = calculateNegativeNumberHint(
-          cardInformation.numberInformation,
+        cardInformation.possibleNumberInformation = calculateNegativeNumberHint(
+          cardInformation.possibleNumberInformation,
           numberHint
         );
         action.newHinted.push(cardFlags.isHinted); // here we must use the pre-existing value, since it may have been hinted before
       }
 
-      action.newNumberInformation.push(cardInformation.numberInformation);
+      action.newNumberInformation.push(cardInformation.possibleNumberInformation);
       action.newKnownNumberInformation.push(
         cardInformation.knownNumberInformation
       );
@@ -307,7 +307,7 @@
   }
 
   function getPreviousNumberInformation(cards: number[]): NumberEnum[] {
-    return cards.map((id) => informationOnCardsStore.get(id).numberInformation);
+    return cards.map((id) => informationOnCardsStore.get(id).possibleNumberInformation);
   }
 
   function calculatePositiveNumberHint(

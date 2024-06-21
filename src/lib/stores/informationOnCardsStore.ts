@@ -8,9 +8,9 @@ import { createManagedStore } from "./persistentDataManagerStore";
 
 const defaultData = (config: GameConfig) => {
   return {
-    numberInformation: NumberEnum.All,
+    possibleNumberInformation: NumberEnum.All,
     knownNumberInformation: 0 as NumberEnum,
-    colourInformation: config.variant,
+    possibleColourInformation: config.variant,
     knownColourInformation: 0 as SuitEnum,
   } as CardInformation;
 };

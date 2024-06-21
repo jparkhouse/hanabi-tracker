@@ -66,7 +66,7 @@
             let cardInformation = informationOnCardsStore.get(id);
             cardInformation = {
               ...cardInformation,
-              colourInformation: actionToUndo.previousColourInformation[index],
+              possibleColourInformation: actionToUndo.previousColourInformation[index],
               knownColourInformation:
                 actionToUndo.previousKnownColourInformation[index],
             };
@@ -85,7 +85,7 @@
             let cardInformation = informationOnCardsStore.get(id);
             cardInformation = {
               ...cardInformation,
-              numberInformation: actionToUndo.previousNumberInformation[index],
+              possibleNumberInformation: actionToUndo.previousNumberInformation[index],
               knownNumberInformation:
                 actionToUndo.previousKnownNumberInformation[index],
             };
