@@ -1,8 +1,8 @@
 //lib/src/models/stack.ts
 interface IStack<T> {
   push(item: T): void;
-  pop(): T | undefined;
-  peek(): T;
+  pop(): T | null;
+  peek(): T | null;
   size(): number;
   clear(): void;
   toJSON(): string;
@@ -23,15 +23,18 @@ export class Stack<T> implements IStack<T> {
     this.storage.push(item); // add new item to top of stack
   }
 
-  pop(): T | undefined {
+  pop(): T | null{
     if (this.size() > 0) {
-      return this.storage.pop(); // returns newest item and removes it from the stack
+      return this.storage.pop() as T; // returns newest item and removes it from the stack
     }
-    throw console.error("empty stack popped");
+    return null
   }
 
-  peek(): T {
-    return this.storage[this.storage.length - 1]; // returns newest item without removing it from the stack
+  peek(): T | null {
+    if (this.size() > 0) {
+      return this.storage[this.storage.length - 1]; // returns newest item without removing it from the stack
+    }
+    return null;
   }
 
   size(): number {
@@ -52,7 +55,7 @@ export class Stack<T> implements IStack<T> {
       if (item as T) {
         this.push(item);
       } else {
-        console.log('unknown item pushed into stack');
+        console.error("unknown item pushed into stack, skipping...");
       }
     });
   }
