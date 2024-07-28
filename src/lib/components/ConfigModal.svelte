@@ -2,33 +2,75 @@
 <script lang="ts">
   import type { GameConfig } from "../stores/gameConfigStore";
   import { gameConfigStore } from "../stores/gameConfigStore";
-  import { SuitEnum, Variant } from "../models/variantEnums";
-  import { createEventDispatcher } from "svelte";
+  import { SuitEnum } from "../models/variantEnums";
   import { resetGameStore } from "../stores/resetGameStore";
+  import { get } from "svelte/store";
 
   export let isOpen = false;
-
-  let tempConfig: GameConfig = { numberOfCards: 4, variant: SuitEnum.Red }; // Initialize with default or current values
-  let get = false;
-
-  // Subscribe to gameConfig to initialize tempConfig
-  $: if (isOpen && !get) {
-    tempConfig = { ...$gameConfigStore };
-    get = true;
+  interface ConfigOutput {
+    numberOfCards: number;
+    numberOfStandardSuits: number;
+    blacks: boolean;
+    rainbows: boolean;
   }
 
-  const resetDispatcher = createEventDispatcher();
+  let tempConfig: ConfigOutput = {
+    numberOfCards: 0,
+    numberOfStandardSuits: 0,
+    blacks: false,
+    rainbows: false,
+  };
+  let loaded = false;
 
+  function configOutputToGameConfig(input: ConfigOutput): GameConfig {
+    const output: GameConfig = {
+      numberOfCards: input.numberOfCards,
+      variant:
+        (2 ^ input.numberOfStandardSuits) -
+        1 +
+        (input.rainbows ? SuitEnum.Rainbow : 0) +
+        (input.blacks ? SuitEnum.Black : 0),
+    };
+    return output;
+  }
 
+  function gameConfigToConfigOutput(input: GameConfig): ConfigOutput {
+    const output: ConfigOutput = {
+      numberOfCards: input.numberOfCards,
+      numberOfStandardSuits: getStandardSuitAmount(input.variant),
+      blacks: (input.variant & SuitEnum.Black) > 0,
+      rainbows: (input.variant & SuitEnum.Rainbow) > 0,
+    };
+    return output;
+  }
+
+  function getStandardSuitAmount(suits: SuitEnum): number {
+    let output = 0;
+    let i = 1;
+    while (i <= 5) {
+      if ((suits & (1 << i)) > 0) {
+        output += 1;
+      }
+      i += 1;
+    }
+    return output;
+  }
+  // Subscribe to gameConfig to initialize tempConfig
+  $: if (isOpen && !loaded) {
+    tempConfig = gameConfigToConfigOutput(get(gameConfigStore));
+    loaded = true;
+  }
 
   function closePanel() {
     isOpen = false;
-    get = false;
+    loaded = false;
   }
 
   function saveConfig() {
-    gameConfigStore.set(tempConfig);
-    resetGameStore.update((number) => {return number + 1})
+    gameConfigStore.set(configOutputToGameConfig(tempConfig));
+    resetGameStore.update((number) => {
+      return number + 1;
+    });
     closePanel();
   }
 
@@ -45,7 +87,12 @@
   let updateButtonText = "Reset";
   let cancelButtonText = "Close";
   $: {
-    if (areGameConfigsEqual($gameConfigStore, tempConfig)) {
+    if (
+      areGameConfigsEqual(
+        get(gameConfigStore),
+        configOutputToGameConfig(tempConfig)
+      )
+    ) {
       updateButtonText = "Reset";
       cancelButtonText = "Close";
     } else {
@@ -65,13 +112,29 @@
           <option value="4">4</option>
           <option value="5">5</option>
         </select>
-        <label for="Variant">Variant:</label>
-        <select id="Variant" bind:value={tempConfig.variant}>
-          <option value={Variant.NoVariant}>No variant</option>
-          <option value={Variant.Rainbows}>Rainbows</option>
-          <option value={Variant.Blacks}>Blacks</option>
-          <option value={Variant.RainbowsAndBlacks}>Rainbows and Blacks</option>
+        <label for="StandardSuits">Number of standard suits</label>
+        <select
+          id="StandardSuits"
+          bind:value={tempConfig.numberOfStandardSuits}
+        >
+          <option value={0}>0</option>
+          <option value={1}>1</option>
+          <option value={2}>2</option>
+          <option value={3}>3</option>
+          <option value={4}>4</option>
+          <option value={4}>5</option>
         </select>
+        <div>
+          <p>Special suits</p>
+          <label>
+            <input type="checkbox" bind:checked={tempConfig.rainbows} />
+            Rainbows
+          </label>
+          <label>
+            <input type="checkbox" bind:checked={tempConfig.blacks} />
+            Blacks
+          </label>
+        </div>
       </div>
 
       <!-- Additional configuration options here -->
