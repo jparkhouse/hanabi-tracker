@@ -128,7 +128,7 @@
       .value as string;
     if ($activeMenuCard) {
       if (noteField) {
-        notesOnCardsStore.set(id, { note: noteField });
+        notesOnCardsStore.set($activeMenuCard, { note: noteField });
       }
       activeMenuCard.set(null);
     }
