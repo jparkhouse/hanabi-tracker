@@ -4,14 +4,16 @@
   import { actionStore } from "../stores/actionsStore";
 
   import PlayDiscardSelectedCard from "./PlayDiscardSelectedCard.svelte";
+  import MoreActionsMenu from "./MoreActionsMenu.svelte";
   import ConfigModal from "./ConfigModal.svelte";
   import HintModal from "./HintModal.svelte";
-  import type { Action } from "../models/actions";
+  import type { GameAction } from "../models/gameActions";
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
   import type { CardInformation } from "../models/card";
   import { cardsInHandStore } from "../stores/cardsInHandStore";
   import { get } from "svelte/store";
   import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import type { WebAction } from "../models/webAction";
 
   let wakeLock: WakeLockSentinel | null = null;
   let wakeLockSupported = "wakeLock" in navigator;
@@ -38,6 +40,13 @@
 
   let actionStoreSize = actionStore.size;
 
+  let actions: WebAction[] = [
+    {label: wakeLockButtonText, action: toggleWakeLock}
+  ]
+  $: {actions = [
+    {label: wakeLockButtonText, action: toggleWakeLock}
+  ];}
+
   // Reactive statement to update the button text based on the wakeLock status
   $: if (wakeLock) {
     wakeLockButtonText = "Wake Lock On";
@@ -59,7 +68,7 @@
 
   function handleRollback() {
     if ($actionStoreSize > 0) {
-      const actionToUndo: Action = $actionStore.pop() as Action;
+      const actionToUndo: GameAction = $actionStore.pop() as GameAction;
       switch (actionToUndo.actionType) {
         case "ColourHint": // undo a colour hint
           actionToUndo.ids.forEach((id, index) => {
@@ -122,36 +131,56 @@
 </script>
 
 <div class="game-controls">
-  <button class="configure" on:click={openConfigModal}>Configure Game</button>
-  <button
-    class="wake-lock"
-    on:click={toggleWakeLock}
-    hidden={!wakeLockSupported}>{wakeLockButtonText}</button
-  >
-  <PlayDiscardSelectedCard />
-  <button
-    class="hint-panel"
-    on:click={openHintModal}
-    disabled={$cardsSelectedStore.size < 1}>Record Hint</button
-  >
-  <button class="undo" on:click={handleRollback} disabled={$actionStoreSize < 1}
-    >Undo</button
-  >
+  <div class="primary-actions">
+    <button class="configure" on:click={openConfigModal}>⚙️</button>
+    <PlayDiscardSelectedCard />
+    <button
+      class="hint-panel"
+      on:click={openHintModal}
+      disabled={$cardsSelectedStore.size < 1}>Record Hint</button
+    >
+  </div>
+
+  <div class="secondary-actions">
+    <button
+      class="undo"
+      on:click={handleRollback}
+      disabled={$actionStoreSize < 1}
+    >
+      Undo
+    </button>
+    <MoreActionsMenu {actions} />
+  </div>
 </div>
+
 <ConfigModal bind:isOpen={isConfigModalOpen} />
 <HintModal bind:isOpen={isHintModalOpen} />
 
 <style>
   .game-controls {
     display: flex;
-    flex: 1;
+    justify-content: space-between; /* Ensures space between primary and secondary actions */
     padding: 5px;
     gap: 5px;
+    width: 100%; /* Ensure it uses the full width */
   }
+
+  .primary-actions {
+    display: flex;
+    gap: 5px; /* Space between buttons */
+  }
+
+  .secondary-actions {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+    margin-left: auto; /* Pushes secondary actions to the right */
+  }
+
   .configure {
-    align-self: left;
+    align-self: flex-start; /* Aligns the configure button at the start */
   }
+
   .hint-panel {
-    align-items: right;
+    align-self: flex-end; /* Aligns the hint panel button at the end */
   }
 </style>

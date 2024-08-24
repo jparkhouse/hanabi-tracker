@@ -1,7 +1,7 @@
-<!-- /lib/components/ConfigModal.svelte -->
+<!-- /lib/components/MarkModal.svelte -->
 <script lang="ts">
-  import { cards } from "../stores/cardsStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
+  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
 
   export let isOpen = false;
 
@@ -15,25 +15,29 @@
   function saveFlags() {
     const selectedCardIds = Array.from($cardsSelectedStore);
 
-    cards.updateCards((currentCards) => {
-      const updated = currentCards.map((card) => {
-        if (selectedCardIds.includes(card.id)) {
-          switch (flag) {
-            case "critical":
-              card.isCritical = !card.isCritical;
-              break;
-            case "chop-move":
-              card.isChopMoved = !card.isChopMoved;
-              break;
-            case "finesse":
-              card.isFinessed = !card.isFinessed;
-              break;
-          }
-        }
-        return card;
-      });
-      return updated;
-    });
+    selectedCardIds.forEach((id) => {
+      const oldCardFlags = flagsOnCardsStore.get(id);
+      switch (flag) {
+        case "critical":
+          flagsOnCardsStore.set(id, {
+            ...oldCardFlags,
+            isCritical: !oldCardFlags.isCritical,
+          })
+          break;
+        case "finesse":
+          flagsOnCardsStore.set(id, {
+            ...oldCardFlags,
+            isFinessed: !oldCardFlags.isFinessed,
+          })
+          break;
+        case "chop-move":
+          flagsOnCardsStore.set(id, {
+            ...oldCardFlags,
+            isChopMoved: !oldCardFlags.isChopMoved,
+          })
+          break;
+      }
+    })
     cardsSelectedStore.update((selected) => {
       selected = new Set<number>();
       return selected;

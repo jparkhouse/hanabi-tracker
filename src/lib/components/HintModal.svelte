@@ -8,7 +8,7 @@
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
   import { gameConfigStore } from "../stores/gameConfigStore";
   import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
-  import type { ColourHint, NumberHint } from "../models/actions";
+  import type { ColourHint, NumberHint } from "../models/gameActions";
   import { actionStore } from "../stores/actionsStore";
 
   export let isOpen = false;

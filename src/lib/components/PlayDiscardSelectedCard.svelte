@@ -4,7 +4,7 @@
   import { cardsInHandStore } from "../stores/cardsInHandStore";
   import { incrementAndGet } from "../stores/cardIDCounterStore";
   import { get } from "svelte/store";
-  import type { PlayDiscard } from "../models/actions";
+  import type { PlayDiscard } from "../models/gameActions";
   import { actionStore } from "../stores/actionsStore";
 
   function playDiscardSelectedCard() {

@@ -3,7 +3,7 @@
 import type { NumberEnum } from "./numberEnums";
 import type { SuitEnum } from "./variantEnums";
 
-export type Action = PlayDiscard | NumberHint | ColourHint;
+export type GameAction = PlayDiscard | NumberHint | ColourHint;
 
 export interface PlayDiscard {
   actionType: "PlayDiscard";
