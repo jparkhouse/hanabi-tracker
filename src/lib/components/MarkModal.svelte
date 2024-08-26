@@ -5,44 +5,66 @@
 
   export let isOpen = false;
 
-  let flag: "critical" | "chop-move" | "finesse" | null = null;
-
   function closePanel() {
-    flag = null;
     isOpen = false;
+    cardsSelectedStore.set(new Set<number>);
   }
 
-  function saveFlags() {
-    const selectedCardIds = Array.from($cardsSelectedStore);
-
-    selectedCardIds.forEach((id) => {
-      const oldCardFlags = flagsOnCardsStore.get(id);
-      switch (flag) {
-        case "critical":
-          flagsOnCardsStore.set(id, {
-            ...oldCardFlags,
-            isCritical: !oldCardFlags.isCritical,
-          })
-          break;
-        case "finesse":
-          flagsOnCardsStore.set(id, {
-            ...oldCardFlags,
-            isFinessed: !oldCardFlags.isFinessed,
-          })
-          break;
-        case "chop-move":
-          flagsOnCardsStore.set(id, {
-            ...oldCardFlags,
-            isChopMoved: !oldCardFlags.isChopMoved,
-          })
-          break;
-      }
-    })
-    cardsSelectedStore.update((selected) => {
-      selected = new Set<number>();
-      return selected;
+  function toggleFinessed() {
+    const cards = Array.from($cardsSelectedStore);
+    const cardsFinessedFlags: boolean[] = cards.map((id) => {
+      return flagsOnCardsStore.get(id).isFinessed;
     });
-    closePanel();
+    if (cardsFinessedFlags.every((i) => {return i})) {
+      cards.forEach((id) => {
+        const cardFlags = flagsOnCardsStore.get(id);
+        flagsOnCardsStore.set(id, {...cardFlags, isFinessed: false})
+      })
+    } else {
+      cards.forEach((id) => {
+        const cardFlags = flagsOnCardsStore.get(id);
+        flagsOnCardsStore.set(id, {...cardFlags, isFinessed: true})
+      })
+    }
+    closePanel()
+  }
+
+  function toggleChopMoved() {
+    const cards = Array.from($cardsSelectedStore);
+    const cardsChopMovedFlags: boolean[] = cards.map((id) => {
+      return flagsOnCardsStore.get(id).isChopMoved;
+    });
+    if (cardsChopMovedFlags.every((i) => {return i})) {
+      cards.forEach((id) => {
+        const cardFlags = flagsOnCardsStore.get(id);
+        flagsOnCardsStore.set(id, {...cardFlags, isChopMoved: false})
+      })
+    } else {
+      cards.forEach((id) => {
+        const cardFlags = flagsOnCardsStore.get(id);
+        flagsOnCardsStore.set(id, {...cardFlags, isChopMoved: true})
+      })
+    }
+    closePanel()
+  }
+
+  function toggleCritical() {
+    const cards = Array.from($cardsSelectedStore);
+    const cardsCriticalFlags: boolean[] = cards.map((id) => {
+      return flagsOnCardsStore.get(id).isCritical;
+    });
+    if (cardsCriticalFlags.every((i) => {return i})) {
+      cards.forEach((id) => {
+        const cardFlags = flagsOnCardsStore.get(id);
+        flagsOnCardsStore.set(id, {...cardFlags, isCritical: false})
+      })
+    } else {
+      cards.forEach((id) => {
+        const cardFlags = flagsOnCardsStore.get(id);
+        flagsOnCardsStore.set(id, {...cardFlags, isCritical: true})
+      })
+    }
+    closePanel()
   }
 </script>
 
@@ -50,17 +72,16 @@
   <div class="modal-overlay" on:click={closePanel}>
     <div class="mark-modal" on:click|stopPropagation>
       <div class="flags">
-        <button class="btn" on:click={() => (flag = "critical")}
+        <button class="btn" on:click={toggleCritical}
           >Critical</button
         >
-        <button class="btn" on:click={() => (flag = "chop-move")}
+        <button class="btn" on:click={toggleChopMoved}
           >Chop moved</button
         >
-        <button class="btn" on:click={() => (flag = "finesse")}>Finessed</button
+        <button class="btn" on:click={toggleFinessed}>Finessed</button
         >
       </div>
       <div class="actions">
-        <button on:click={saveFlags} disabled={!flag}>Save</button>
         <button on:click={closePanel}>Cancel</button>
       </div>
     </div>

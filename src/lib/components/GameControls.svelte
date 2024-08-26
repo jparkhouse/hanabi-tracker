@@ -174,6 +174,7 @@
     display: flex;
     align-items: center; /* Align items vertically in the center */
     margin-left: auto; /* Pushes secondary actions to the right */
+    gap: 5px
   }
 
   .configure {
