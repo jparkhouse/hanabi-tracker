@@ -2,7 +2,7 @@ import { writable, get } from "svelte/store";
 import { Stack } from "../models/stack";
 import { gameConfigStore, type GameConfig } from "./gameConfigStore";
 import { resetGameStore } from "./resetGameStore";
-import { type Action } from "../models/actions";
+import { type GameAction } from "../models/gameActions";
 
 // Creating a generic managed store that syncs with local storage and uses a Stack
 export function createPersistentStackStore<T>(
@@ -84,4 +84,4 @@ export function createPersistentStackStore<T>(
   };
 }
 
-export const actionStore = createPersistentStackStore<Action>('actionStore',(config: GameConfig) => [])
+export const actionStore = createPersistentStackStore<GameAction>('actionStore',(config: GameConfig) => [])
