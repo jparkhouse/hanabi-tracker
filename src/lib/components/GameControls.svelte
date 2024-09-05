@@ -2,6 +2,8 @@
 <script lang="ts">
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { actionStore } from "../stores/actionsStore";
+  import gameOrReviewStore from "../stores/gameOrReviewStore";
+  import { get } from "svelte/store";
 
   import PlayDiscardSelectedCard from "./PlayDiscardSelectedCard.svelte";
   import MoreActionsMenu from "./MoreActionsMenu.svelte";
@@ -9,9 +11,7 @@
   import HintModal from "./HintModal.svelte";
   import type { GameAction } from "../models/gameActions";
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
-  import type { CardInformation } from "../models/card";
   import { cardsInHandStore } from "../stores/cardsInHandStore";
-  import { get } from "svelte/store";
   import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
   import type { WebAction } from "../models/webAction";
 
@@ -41,17 +41,30 @@
   let actionStoreSize = actionStore.size;
 
   let actions: WebAction[] = [
-    {label: wakeLockButtonText, action: toggleWakeLock}
-  ]
-  $: {actions = [
-    {label: wakeLockButtonText, action: toggleWakeLock}
-  ];}
+    { label: wakeLockButtonText, action: toggleWakeLock },
+  ];
+  $: {
+    actions = [{ label: wakeLockButtonText, action: toggleWakeLock }];
+  }
 
   // Reactive statement to update the button text based on the wakeLock status
   $: if (wakeLock) {
     wakeLockButtonText = "Wake Lock On";
   } else {
     wakeLockButtonText = "Wake Lock Off";
+  }
+
+  let reviewLabel = "Review";
+  $: {
+    if ($gameOrReviewStore) {
+      reviewLabel = "Review";
+    } else {
+      reviewLabel = "Exit Review";
+    }
+  }
+
+  function toggleGameOrReview() {
+    gameOrReviewStore.set(!get(gameOrReviewStore))
   }
 
   let isConfigModalOpen = false;
@@ -131,7 +144,9 @@
 </script>
 
 <div class="game-controls">
+  
   <div class="primary-actions">
+    {#if $gameOrReviewStore}
     <button class="configure" on:click={openConfigModal}>⚙️</button>
     <PlayDiscardSelectedCard />
     <button
@@ -139,15 +154,19 @@
       on:click={openHintModal}
       disabled={$cardsSelectedStore.size < 1}>Record Hint</button
     >
-  </div>
-
-  <div class="secondary-actions">
     <button
       class="undo"
       on:click={handleRollback}
       disabled={$actionStoreSize < 1}
     >
       Undo
+    </button>
+    {/if}
+  </div>
+
+  <div class="secondary-actions">
+    <button on:click={toggleGameOrReview}>
+      {reviewLabel}
     </button>
     <MoreActionsMenu {actions} />
   </div>
@@ -174,7 +193,7 @@
     display: flex;
     align-items: center; /* Align items vertically in the center */
     margin-left: auto; /* Pushes secondary actions to the right */
-    gap: 5px
+    gap: 5px;
   }
 
   .configure {
