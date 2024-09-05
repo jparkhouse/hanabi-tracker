@@ -31,7 +31,7 @@
         Math.pow(2, input.numberOfStandardSuits) -
         1 +
         (input.rainbows ? SuitEnum.Rainbow : 0) +
-        (input.blacks ? SuitEnum.Black : 0),
+        (input.blacks ? SuitEnum.BlackPowder : 0),
     };
     return output;
   }
@@ -40,7 +40,7 @@
     const output: ConfigOutput = {
       numberOfCards: input.numberOfCards,
       numberOfStandardSuits: getStandardSuitAmount(input.variant),
-      blacks: (input.variant & SuitEnum.Black) > 0,
+      blacks: (input.variant & SuitEnum.BlackPowder) > 0,
       rainbows: (input.variant & SuitEnum.Rainbow) > 0,
     };
     return output;

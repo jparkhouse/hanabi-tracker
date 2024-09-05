@@ -22,7 +22,7 @@
   import Green from "./suit-icons/Green.svelte";
   import Rainbow from "./suit-icons/Rainbow.svelte";
   import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
-  import Black from "./suit-icons/Black.svelte";
+  import BlackPowder from "./suit-icons/BlackPowder.svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
@@ -136,7 +136,13 @@
   }
 
   function getColourCodeFromSuit(suit: SuitEnum): string {
-    return suitProperties[suit].string.toLowerCase();
+    let stringSuitName = suitProperties[suit].string.toLowerCase();
+    let noSpaces = [...stringSuitName].map((char) => {
+      if (char === ' ') {
+        return '-'
+      } return char
+    });
+    return noSpaces.join('');
   }
 
   function isSingleFlag(bitflag: SuitEnum | NumberEnum): boolean {
@@ -335,9 +341,9 @@
           ? "var(--border-hinted)"
           : "white"}
       />
-      <Black
-        hidden={!(colourInformation & SuitEnum.Black)}
-        strokeColour={knownColourInformation & SuitEnum.Black &&
+      <BlackPowder
+        hidden={!(colourInformation & SuitEnum.BlackPowder)}
+        strokeColour={knownColourInformation & SuitEnum.BlackPowder &&
         !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : "white"}
@@ -431,12 +437,12 @@
       1px 1px 0 #000; /* Black text shadow to create outline effect */
   }
 
-  .black {
+  .black-powder {
     background-color: #000;
     color: white;
   }
 
-  .black.selected {
+  .black-powder.selected {
     background-color: #151515;
   }
 

@@ -15,7 +15,7 @@
     role="img"
     preserveAspectRatio="xMidYMid meet"
   >
-    <title>Black colour icon</title>
+    <title>Black Powder suit icon</title>
     <path
       fill={backgroundColour}
       fill-rule="evenodd"
