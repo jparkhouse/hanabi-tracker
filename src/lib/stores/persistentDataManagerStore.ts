@@ -50,7 +50,7 @@ export function createManagedStore<T>(
       });
       updateLocalStore();
     },
-    get: (id: number) => {
+    get: (id: number): T => {
       let currentManager = get(store);
       return currentManager.get(id);
     },

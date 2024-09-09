@@ -5,7 +5,7 @@
   import { incrementAndGet } from "../stores/cardIDCounterStore";
   import { get } from "svelte/store";
   import type { PlayDiscard } from "../models/gameActions";
-  import { actionStore } from "../stores/actionsStore";
+  import { actionStore } from "../stores/actionStore";
 
   function playDiscardSelectedCard() {
     if ($cardsSelectedStore.size === 1) {

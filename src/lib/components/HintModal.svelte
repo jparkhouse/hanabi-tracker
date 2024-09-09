@@ -9,7 +9,7 @@
   import { gameConfigStore } from "../stores/gameConfigStore";
   import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
   import type { ColourHint, NumberHint } from "../models/gameActions";
-  import { actionStore } from "../stores/actionsStore";
+  import { actionStore } from "../stores/actionStore";
 
   export let isOpen = false;
 
