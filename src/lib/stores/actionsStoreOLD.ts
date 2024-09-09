@@ -4,6 +4,15 @@ import { gameConfigStore, type GameConfig } from "./gameConfigStore";
 import { resetGameStore } from "./resetGameStore";
 import { type GameAction } from "../models/gameActions";
 
+function safeJsonParse<T>(str: string): T | undefined {
+  try {
+    return JSON.parse(str) as T
+  } catch (error) {
+    console.error("Error parsing JSON: ", error);
+    return undefined
+  }
+}
+
 // Creating a generic managed store that syncs with local storage and uses a Stack
 export function createPersistentStackStore<T>(
   key: string,
@@ -19,16 +28,32 @@ export function createPersistentStackStore<T>(
   // Create a writable store with Stack
   let initialData = getDefaultData(get(gameConfigStore));
   const stack = new Stack<T>();
-  initialData.forEach(item => stack.push(item)); // Populate stack with initial data
+  initialData.forEach((item) => stack.push(item)); // Populate stack with initial data
   const store = writable(stack);
   const storeSize = writable(0);
 
   // Initialize with local storage if available
   const storedData = localStorage.getItem(localKey);
+  console.log("actionStore data: ", storedData);
+  if (storedData) {
+    try {
+      const debugParsed = safeJsonParse<T[]>(storedData);
+      console.log("parsed: ", debugParsed);
+      console.log("of Type: ", typeof debugParsed);
+    } catch (error) {
+      console.error("Error with parsing: ", error)
+    }
+    const debugTypeParsed: Object = JSON.parse(storedData);
+    console.log("parsed with type: ", debugTypeParsed);
+    console.log("of Type: ", typeof debugTypeParsed);
+  }
+
   if (storedData && storedData !== "undefined") {
     const items: T[] = JSON.parse(storedData);
-    store.set(new Stack<T>());
-    Array.from(items).forEach(item => stack.push(item));
+    console.log("type of items: ", typeof items)
+    const storedDataStack = new Stack<T>();
+    items.forEach((item) => storedDataStack.push(item));
+    store.set(storedDataStack);
     storeSize.set(get(store).size());
   }
 
@@ -37,9 +62,9 @@ export function createPersistentStackStore<T>(
   resetGameStore.subscribe(() => {
     if (!firstLoad) {
       const defaultData = getDefaultData(get(gameConfigStore));
-      store.update(stack => {
+      store.update((stack) => {
         stack.clear();
-        defaultData.forEach(item => stack.push(item));
+        defaultData.forEach((item) => stack.push(item));
         return stack;
       });
       updateLocalStore(get(store));
@@ -52,28 +77,28 @@ export function createPersistentStackStore<T>(
   return {
     subscribe: store.subscribe,
     push: (item: T) => {
-      store.update(stack => {
+      store.update((stack) => {
         stack.push(item);
         updateLocalStore(stack);
         storeSize.set(stack.size());
         return stack;
       });
     },
-    pop: () => {
+    pop: (): T => {
       let poppedItem: T | undefined;
-      store.update(stack => {
-        poppedItem = stack.pop();
+      store.update((stack) => {
+        poppedItem = stack.pop()!;
         updateLocalStore(stack);
         storeSize.set(stack.size());
         return stack;
       });
-      return poppedItem;
+      return poppedItem as T;
     },
-    peek: () => {
+    peek: (): T => {
       return get(store).peek();
     },
     clear: () => {
-      store.update(stack => {
+      store.update((stack) => {
         stack.clear();
         updateLocalStore(stack);
         storeSize.set(stack.size());
@@ -84,4 +109,7 @@ export function createPersistentStackStore<T>(
   };
 }
 
-export const actionStore = createPersistentStackStore<GameAction>('actionStore',(config: GameConfig) => [])
+export const actionStore = createPersistentStackStore<GameAction>(
+  "actionStore",
+  (config: GameConfig) => []
+);

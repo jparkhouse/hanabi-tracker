@@ -48,9 +48,9 @@ export function createPersistentStore<T>(
       store.set(value);
       updateLocalStore();
     },
-    get: () => {
+    get: (): T => {
       const currentValue = localStorage.getItem(localKey);
-      return currentValue ? JSON.parse(currentValue) : null;
+      return currentValue ? JSON.parse(currentValue) : get(store);
     },
     reset: () => {
       if (getResetValue) {

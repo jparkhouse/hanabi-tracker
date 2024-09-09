@@ -1,7 +1,7 @@
 <!-- /lib/components/GameControls.svelte -->
 <script lang="ts">
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { actionStore } from "../stores/actionsStore";
+  import { actionStore } from "../stores/actionStore";
   import gameOrReviewStore from "../stores/gameOrReviewStore";
   import { get } from "svelte/store";
 
@@ -14,6 +14,8 @@
   import { cardsInHandStore } from "../stores/cardsInHandStore";
   import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
   import type { WebAction } from "../models/webAction";
+  import reviewTurnStore from "../stores/reviewTurnStore";
+  import { nextCardId } from "../stores/cardIDCounterStore";
 
   let wakeLock: WakeLockSentinel | null = null;
   let wakeLockSupported = "wakeLock" in navigator;
@@ -64,7 +66,8 @@
   }
 
   function toggleGameOrReview() {
-    gameOrReviewStore.set(!get(gameOrReviewStore))
+    gameOrReviewStore.set(!get(gameOrReviewStore));
+    reviewTurnStore.set($actionStoreSize);
   }
 
   let isConfigModalOpen = false;
@@ -79,9 +82,10 @@
     isHintModalOpen = true;
   }
 
+  $: console.log("actionStoreSize is", $actionStoreSize)
   function handleRollback() {
     if ($actionStoreSize > 0) {
-      const actionToUndo: GameAction = $actionStore.pop() as GameAction;
+      const actionToUndo = actionStore.pop() as GameAction;
       switch (actionToUndo.actionType) {
         case "ColourHint": // undo a colour hint
           actionToUndo.ids.forEach((id, index) => {
@@ -137,10 +141,15 @@
           }
 
           cardsInHandStore.set(previousIds);
+
+          // remove one from the nextCardId store
+          nextCardId.set(Math.max(...ids) - 1);
           break;
       }
     }
   }
+
+  $: console.log($reviewTurnStore);
 </script>
 
 <div class="game-controls">
@@ -160,6 +169,13 @@
       disabled={$actionStoreSize < 1}
     >
       Undo
+    </button>
+    {:else}
+    <button class="review-button" disabled={$reviewTurnStore <= 0} on:click={() => reviewTurnStore.set(get(reviewTurnStore) - 1)}>
+      Previous
+    </button>
+    <button class="review-button" disabled={$reviewTurnStore >= $actionStoreSize} on:click={() => reviewTurnStore.set(get(reviewTurnStore) + 1)}>
+      Next
     </button>
     {/if}
   </div>
