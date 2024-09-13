@@ -143,7 +143,7 @@
           cardsInHandStore.set(previousIds);
 
           // remove one from the nextCardId store
-          nextCardId.set(Math.max(...ids) - 1);
+          nextCardId.set(Math.max(...ids));
           break;
       }
     }
