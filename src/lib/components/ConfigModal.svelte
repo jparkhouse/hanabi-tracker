@@ -8,7 +8,7 @@
 
   export let isOpen = false;
 
-  let tempConfig: GameConfig = { numberOfCards: 4, variant: SuitEnum.Red }; // Initialize with default or current values
+  let tempConfig: GameConfig = { numberOfCards: 4, variant: SuitEnum.Red, drawDirection: "Right" }; // Initialize with default or current values
   let get = false;
 
   // Subscribe to gameConfig to initialize tempConfig
@@ -38,7 +38,8 @@
   ): boolean {
     return (
       config1.numberOfCards === config2.numberOfCards &&
-      config1.variant === config2.variant
+      config1.variant === config2.variant &&
+      config1.drawDirection === config2.drawDirection
     );
   }
 
@@ -59,6 +60,11 @@
   <div class="modal-overlay" on:click={closePanel}>
     <div class="config-modal" on:click|stopPropagation>
       <div class="config-form">
+        <label for="drawDirection">Draw Direction:</label>
+        <select id="drawDirection" bind:value={tempConfig.drawDirection}>
+          <option value="Left">Left</option>
+          <option value="Right">Right</option>
+        </select>
         <label for="numberOfCards">Number of Cards:</label>
         <select id="numberOfCards" bind:value={tempConfig.numberOfCards}>
           <option value="3">3</option>
