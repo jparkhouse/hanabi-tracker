@@ -7,6 +7,7 @@
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
   import { notesOnCardsStore } from "../stores/notesOnCardsStore";
   import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { gameConfigStore } from "../stores/gameConfigStore";
 
   function handleCardSelect(cardId: number) {
     // Simple toggle selection logic
@@ -24,10 +25,12 @@
       });
     }
   }
+
+  $: processedHand = $gameConfigStore.drawDirection === "Left" ? [...$cardsInHandStore].reverse() : $cardsInHandStore;
 </script>
 
 <div class="hand">
-  {#each $cardsInHandStore as id}
+  {#each processedHand as id}
     <Card
       {id}
       numberInformation={$informationOnCardsStore.get(id).numberInformation}
