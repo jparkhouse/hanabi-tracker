@@ -16,7 +16,6 @@
   }
 
   let reversed = false;
-  $: console.log($reversedStore);
 
   let tempConfig: ConfigOutput = {
     numberOfCards: 0,
