@@ -13,7 +13,7 @@
         actionType: "PlayDiscard",
         id: 0
       }
-      const selectedId = $cardsSelectedStore.values().next().value;
+      const selectedId = $cardsSelectedStore.values().next().value as number;
       const currentCards = Array.from(get(cardsInHandStore));
       const newCards = currentCards.filter((card) => card !== selectedId); //remove the old card
       newCards.push(incrementAndGet()); // add the new card

@@ -8,7 +8,7 @@ import { gameConfigStore } from "./gameConfigStore";
 const nextCardId = createPersistentStore<number>(
   "nextCardID",
   get(gameConfigStore).numberOfCards,
-  (config) => 0
+  (_) => 0
 );
 
 // Function to increment and get the next id

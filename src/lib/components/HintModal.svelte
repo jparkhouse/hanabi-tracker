@@ -180,6 +180,8 @@
     let action: ColourHint = {
       actionType: "ColourHint",
       ids: currentCards,
+      hintString: suitProperties[colourHint].string,
+      affectedIds: [...selectedCardIds],
       previousHinted: getPreviousHinted(currentCards),
       previousKnownColourInformation:
         getPreviousKnownColourInformation(currentCards),
@@ -252,6 +254,23 @@
     flagsOnCardsStore.set(card, { ...oldFlags, isHinted });
   }
 
+  function numberEnumToString(number: NumberEnum): string {
+    switch (number) {
+      case NumberEnum.One:
+        return "one"
+      case NumberEnum.Two:
+        return "two"
+      case NumberEnum.Three:
+        return "three"
+      case NumberEnum.Four:
+        return "four"
+      case NumberEnum.Five:
+        return "five"
+      default:
+        return "unkown"
+    }
+  }
+
   function saveNumberHint(numberHint: NumberEnum): void {
     const selectedCardIds = Array.from($cardsSelectedStore);
     const currentCards = Array.from($cardsInHandStore);
@@ -259,6 +278,8 @@
     let action: NumberHint = {
       actionType: "NumberHint",
       ids: currentCards,
+      hintString: numberEnumToString(numberHint),
+      affectedIds: [...selectedCardIds],
       previousHinted: getPreviousHinted(currentCards),
       previousKnownNumberInformation:
         getPreviousKnownNumberInformation(currentCards),

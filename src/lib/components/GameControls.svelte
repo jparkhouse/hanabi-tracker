@@ -198,6 +198,7 @@
     padding: 5px;
     gap: 5px;
     width: 100%; /* Ensure it uses the full width */
+    box-sizing: border-box;
   }
 
   .primary-actions {
@@ -211,7 +212,6 @@
     margin-left: auto; /* Pushes secondary actions to the right */
     gap: 5px;
   }
-
   .configure {
     align-self: flex-start; /* Aligns the configure button at the start */
   }
