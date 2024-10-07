@@ -14,6 +14,8 @@ export interface NumberHint {
   actionType: "NumberHint";
 
   ids: number[];
+  hintString: string;
+  affectedIds: number[];
 
   previousHinted: boolean[];
 
@@ -29,6 +31,8 @@ export interface ColourHint {
   actionType: "ColourHint";
 
   ids: number[];
+  hintString: string;
+  affectedIds: number[];
 
   previousHinted: boolean[];
 

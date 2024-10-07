@@ -5,6 +5,7 @@
   import { SuitEnum } from "../models/variantEnums";
   import { resetGameStore } from "../stores/resetGameStore";
   import { get } from "svelte/store";
+  import { reversedStore } from "../stores/reversedStore";
 
   export let isOpen = false;
   interface ConfigOutput {
@@ -13,6 +14,9 @@
     blacks: boolean;
     rainbows: boolean;
   }
+
+  let reversed = false;
+  $: console.log($reversedStore);
 
   let tempConfig: ConfigOutput = {
     numberOfCards: 0,
@@ -63,28 +67,49 @@
     if (!loaded) {
       const gameConfig = get(gameConfigStore);
       tempConfig = gameConfigToConfigOutput(gameConfig);
+      reversed = get(reversedStore);
       loaded = true;
-      console.log("tempConfig initialized:", tempConfig); // Debug statement
     }
 
-    if (tempConfig.numberOfStandardSuits === 0 && !tempConfig.blacks && !tempConfig.rainbows) {
+    if (
+      tempConfig.numberOfStandardSuits === 0 &&
+      !tempConfig.blacks &&
+      !tempConfig.rainbows
+    ) {
       validConfig = false;
     } else {
       validConfig = true;
     }
   }
 
+  function saveAndClosePanel() {
+    if (
+      areGameConfigsEqual(
+        get(gameConfigStore),
+        configOutputToGameConfig(tempConfig)
+      ) &&
+      reversed == get(reversedStore)
+    ) {
+      // reset game state
+      gameConfigStore.set(configOutputToGameConfig(tempConfig));
+      resetGameStore.update((number) => {
+        return number + 1;
+      });
+    } else if (
+      areGameConfigsEqual(
+        get(gameConfigStore),
+        configOutputToGameConfig(tempConfig)
+      ) &&
+      reversed != get(reversedStore)
+    ) {
+      reversedStore.set(reversed);
+    }
+    closePanel()
+  }
+
   function closePanel() {
     isOpen = false;
     loaded = false;
-  }
-
-  function saveConfig() {
-    gameConfigStore.set(configOutputToGameConfig(tempConfig));
-    resetGameStore.update((number) => {
-      return number + 1;
-    });
-    closePanel();
   }
 
   // set button text correctly
@@ -106,10 +131,20 @@
       areGameConfigsEqual(
         get(gameConfigStore),
         configOutputToGameConfig(tempConfig)
-      )
+      ) &&
+      reversed == get(reversedStore)
     ) {
       updateButtonText = "Reset";
       cancelButtonText = "Close";
+    } else if (
+      areGameConfigsEqual(
+        get(gameConfigStore),
+        configOutputToGameConfig(tempConfig)
+      ) &&
+      reversed != get(reversedStore)
+    ) {
+      updateButtonText = "Save";
+      cancelButtonText = "Cancel";
     } else {
       updateButtonText = "Update";
       cancelButtonText = "Cancel";
@@ -128,6 +163,8 @@
             <option value={4}>4</option>
             <option value={5}>5</option>
           </select>
+          <label for="numberOfCards">Card order reversed: </label>
+          <input type="checkbox" id="toggleOrder" bind:checked={reversed} />
         </div>
         <div>
           <label for="StandardSuits">Number of standard suits</label>
@@ -142,15 +179,14 @@
             <option value={4}>4</option>
             <option value={5}>5</option>
           </select>
-        
-        
+
           <p>Special suits</p>
           <label>
-            Rainbows: 
+            Rainbows:
             <input type="checkbox" bind:checked={tempConfig.rainbows} />
           </label>
           <label>
-            Blacks: 
+            Blacks:
             <input type="checkbox" bind:checked={tempConfig.blacks} />
           </label>
         </div>
@@ -158,10 +194,13 @@
 
       <!-- Additional configuration options here -->
 
-      <button on:click={saveConfig} hidden={!validConfig}>{updateButtonText}</button>
-      <button on:click={closePanel} hidden={!validConfig}>{cancelButtonText}</button>
+      <button on:click={saveAndClosePanel} hidden={!validConfig}
+        >{updateButtonText}</button
+      >
+      <button on:click={closePanel} hidden={!validConfig}
+        >{cancelButtonText}</button
+      >
       <button class="error-button" hidden={validConfig}>Invalid config</button>
-
     </div>
   </div>
 {/if}
