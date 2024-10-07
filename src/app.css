@@ -18,6 +18,22 @@
   --border-finessed: aqua;
   --border-chopmoved: white; /* Default assuming dark mode */
   --border-default: gray;
+
+	--toast-background-color: #ffffff;
+	--toast-border-color: #dddddd;
+	--toast-text-color: #333333;
+	--toast-icon-primary: #2e86de;
+	--toast-icon-secondary: #eaf2fb;
+
+/* Dark Mode */
+[data-theme='dark'] {
+	--toast-background-color: #333333;
+	--toast-border-color: #555555;
+	--toast-text-color: #f1f1f1;
+	--toast-icon-primary: #2e86de;
+	--toast-icon-secondary: #1b1f22;
+}
+
 }
 
 a {

@@ -3,6 +3,7 @@ interface IStack<T> {
   push(item: T): void;
   pop(): T | undefined;
   peek(): T;
+  get(): T[];
   size(): number;
   clear(): void;
   toJSON(): string;
@@ -23,15 +24,20 @@ export class Stack<T> implements IStack<T> {
     this.storage.push(item); // add new item to top of stack
   }
 
-  pop(): T | undefined {
+  pop(): T {
     if (this.size() > 0) {
-      return this.storage.pop(); // returns newest item and removes it from the stack
+      const output =  this.storage.pop() as T; // returns newest item and removes it from the stack
+      return output
     }
     throw console.error("empty stack popped");
   }
 
   peek(): T {
     return this.storage[this.storage.length - 1]; // returns newest item without removing it from the stack
+  }
+
+  get(): T[] {
+      return [...this.storage]
   }
 
   size(): number {

@@ -1,17 +1,21 @@
 <!-- /lib/components/GameControls.svelte -->
 <script lang="ts">
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { actionStore } from "../stores/actionsStore";
+  import { actionStore } from "../stores/actionStore";
+  import gameOrReviewStore from "../stores/gameOrReviewStore";
+  import { get } from "svelte/store";
 
   import PlayDiscardSelectedCard from "./PlayDiscardSelectedCard.svelte";
+  import MoreActionsMenu from "./MoreActionsMenu.svelte";
   import ConfigModal from "./ConfigModal.svelte";
   import HintModal from "./HintModal.svelte";
-  import type { Action } from "../models/actions";
+  import type { GameAction } from "../models/gameActions";
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
-  import type { CardInformation } from "../models/card";
   import { cardsInHandStore } from "../stores/cardsInHandStore";
-  import { get } from "svelte/store";
   import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import type { WebAction } from "../models/webAction";
+  import reviewTurnStore from "../stores/reviewTurnStore";
+  import { nextCardId } from "../stores/cardIDCounterStore";
 
   let wakeLock: WakeLockSentinel | null = null;
   let wakeLockSupported = "wakeLock" in navigator;
@@ -38,11 +42,32 @@
 
   let actionStoreSize = actionStore.size;
 
+  let actions: WebAction[] = [
+    { label: wakeLockButtonText, action: toggleWakeLock },
+  ];
+  $: {
+    actions = [{ label: wakeLockButtonText, action: toggleWakeLock }];
+  }
+
   // Reactive statement to update the button text based on the wakeLock status
   $: if (wakeLock) {
     wakeLockButtonText = "Wake Lock On";
   } else {
     wakeLockButtonText = "Wake Lock Off";
+  }
+
+  let reviewLabel = "Review";
+  $: {
+    if ($gameOrReviewStore) {
+      reviewLabel = "Review";
+    } else {
+      reviewLabel = "Exit Review";
+    }
+  }
+
+  function toggleGameOrReview() {
+    gameOrReviewStore.set(!get(gameOrReviewStore));
+    reviewTurnStore.set($actionStoreSize);
   }
 
   let isConfigModalOpen = false;
@@ -57,9 +82,10 @@
     isHintModalOpen = true;
   }
 
+  $: console.log("actionStoreSize is", $actionStoreSize)
   function handleRollback() {
     if ($actionStoreSize > 0) {
-      const actionToUndo: Action = $actionStore.pop() as Action;
+      const actionToUndo = actionStore.pop() as GameAction;
       switch (actionToUndo.actionType) {
         case "ColourHint": // undo a colour hint
           actionToUndo.ids.forEach((id, index) => {
@@ -115,43 +141,82 @@
           }
 
           cardsInHandStore.set(previousIds);
+
+          // remove one from the nextCardId store
+          nextCardId.set(Math.max(...ids));
           break;
       }
     }
   }
+
+  $: console.log($reviewTurnStore);
 </script>
 
 <div class="game-controls">
-  <button class="configure" on:click={openConfigModal}>Configure Game</button>
-  <button
-    class="wake-lock"
-    on:click={toggleWakeLock}
-    hidden={!wakeLockSupported}>{wakeLockButtonText}</button
-  >
-  <PlayDiscardSelectedCard />
-  <button
-    class="hint-panel"
-    on:click={openHintModal}
-    disabled={$cardsSelectedStore.size < 1}>Record Hint</button
-  >
-  <button class="undo" on:click={handleRollback} disabled={$actionStoreSize < 1}
-    >Undo</button
-  >
+  
+  <div class="primary-actions">
+    {#if $gameOrReviewStore}
+    <button class="configure" on:click={openConfigModal}>⚙️</button>
+    <PlayDiscardSelectedCard />
+    <button
+      class="hint-panel"
+      on:click={openHintModal}
+      disabled={$cardsSelectedStore.size < 1}>Record Hint</button
+    >
+    <button
+      class="undo"
+      on:click={handleRollback}
+      disabled={$actionStoreSize < 1}
+    >
+      Undo
+    </button>
+    {:else}
+    <button class="review-button" disabled={$reviewTurnStore <= 0} on:click={() => reviewTurnStore.set(get(reviewTurnStore) - 1)}>
+      Previous
+    </button>
+    <button class="review-button" disabled={$reviewTurnStore >= $actionStoreSize} on:click={() => reviewTurnStore.set(get(reviewTurnStore) + 1)}>
+      Next
+    </button>
+    {/if}
+  </div>
+
+  <div class="secondary-actions">
+    <button on:click={toggleGameOrReview}>
+      {reviewLabel}
+    </button>
+    <MoreActionsMenu {actions} />
+  </div>
 </div>
+
 <ConfigModal bind:isOpen={isConfigModalOpen} />
 <HintModal bind:isOpen={isHintModalOpen} />
 
 <style>
   .game-controls {
     display: flex;
-    flex: 1;
+    justify-content: space-between; /* Ensures space between primary and secondary actions */
     padding: 5px;
+    gap: 5px;
+    width: 100%; /* Ensure it uses the full width */
+    box-sizing: border-box;
+  }
+
+  .primary-actions {
+    display: flex;
+    gap: 5px; /* Space between buttons */
+  }
+
+  .secondary-actions {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+    margin-left: auto; /* Pushes secondary actions to the right */
     gap: 5px;
   }
   .configure {
-    align-self: left;
+    align-self: flex-start; /* Aligns the configure button at the start */
   }
+
   .hint-panel {
-    align-items: right;
+    align-self: flex-end; /* Aligns the hint panel button at the end */
   }
 </style>

@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import * as dotenv from 'dotenv';
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-
+import sveltePreprocess from 'svelte-preprocess';
+import { resolve } from 'path';
 
 export default defineConfig(({ mode }) => {
   const envPath = `.env.${mode}`;
@@ -9,6 +10,19 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: mode === 'release' ? '/hanabi-tracker' : mode === 'testing' ? '/hanabi-tracker/test' : '/dev',
-    plugins: [svelte()],
+    plugins: [svelte({
+      preprocess: sveltePreprocess(),
+    })],
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './setupTests.ts',
+      include: ['src/**/*.test.ts'],
+    },
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, './src'),
+      },
+    },
   };
 });

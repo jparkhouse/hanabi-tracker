@@ -3,7 +3,7 @@
 import type { NumberEnum } from "./numberEnums";
 import type { SuitEnum } from "./variantEnums";
 
-export type Action = PlayDiscard | NumberHint | ColourHint;
+export type GameAction = PlayDiscard | NumberHint | ColourHint;
 
 export interface PlayDiscard {
   actionType: "PlayDiscard";
@@ -14,6 +14,8 @@ export interface NumberHint {
   actionType: "NumberHint";
 
   ids: number[];
+  hintString: string;
+  affectedIds: number[];
 
   previousHinted: boolean[];
 
@@ -29,6 +31,8 @@ export interface ColourHint {
   actionType: "ColourHint";
 
   ids: number[];
+  hintString: string;
+  affectedIds: number[];
 
   previousHinted: boolean[];
 
