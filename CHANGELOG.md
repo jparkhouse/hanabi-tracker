@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.1.0](https://github.com/jparkhouse/hanabi-tracker/compare/v2.0.0...v2.1.0) (2024-10-07)
+
+
+### Features
+
+* basic review functionality ([19ae810](https://github.com/jparkhouse/hanabi-tracker/commit/19ae810024895cce36588d5a7843c7f740305b3e))
+* **hand:** added reversed hand order ([8e100ee](https://github.com/jparkhouse/hanabi-tracker/commit/8e100ee514fadb4838c75cbab6323d62fa0bff7a))
+* improved actions ([29862f0](https://github.com/jparkhouse/hanabi-tracker/commit/29862f06f3e7b5aec5e7ad96efbcebe9276cdb34))
+* improved variant configurability ([45b1228](https://github.com/jparkhouse/hanabi-tracker/commit/45b1228dcd27a595a587c0b3d56d4336f239e588))
+* **review:** toasts for action change ([8e100ee](https://github.com/jparkhouse/hanabi-tracker/commit/8e100ee514fadb4838c75cbab6323d62fa0bff7a))
+
+
+### Bug Fixes
+
+* **gamecontrols:** button overhang ([8e100ee](https://github.com/jparkhouse/hanabi-tracker/commit/8e100ee514fadb4838c75cbab6323d62fa0bff7a))
+* **gamecontrols:** consistent styling on rhs ([b34ed31](https://github.com/jparkhouse/hanabi-tracker/commit/b34ed310f6ec58d5d3e3fce4d594bbcee887bb26))
+* notes save on correct card ([910b3dc](https://github.com/jparkhouse/hanabi-tracker/commit/910b3dc7b76ed97d3ee71f10e3f90710560a4e7a))
+* overwritting with empty note ([9df9871](https://github.com/jparkhouse/hanabi-tracker/commit/9df987190f691656abae5f872db2280215c42b87))
+* undoing a playdiscard could dupe card ids ([f4704dd](https://github.com/jparkhouse/hanabi-tracker/commit/f4704ddca6edcc41c858d6fa24703da851fe3317))
+
 ## [2.0.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.5.0...v2.0.0) (2024-06-16)
 
 
