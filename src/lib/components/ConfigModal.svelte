@@ -102,6 +102,9 @@
       reversed != get(reversedStore)
     ) {
       reversedStore.set(reversed);
+    } else {
+      // load new game config
+      gameConfigStore.set(configOutputToGameConfig(tempConfig));
     }
     closePanel()
   }
