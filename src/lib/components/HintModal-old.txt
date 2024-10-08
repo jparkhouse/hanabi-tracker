@@ -14,7 +14,6 @@
 
   function saveHint() {
     if (!selectedHint) return;
-    console.log("a hint!");
 
     if (typeof selectedHint === "string") {
       saveColourHint(selectedHint as string);
@@ -265,7 +264,6 @@
         break;
       default:
         output = "";
-        console.log("invalid colour given");
     }
     return output;
   }

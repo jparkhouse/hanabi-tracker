@@ -58,7 +58,6 @@ export class Stack<T> implements IStack<T> {
       if (item as T) {
         this.push(item);
       } else {
-        console.log('unknown item pushed into stack');
       }
     });
   }

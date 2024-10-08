@@ -22,7 +22,6 @@
 
   function handleCardSelect(cardId: number) {
     // Simple toggle selection logic
-    console.log("selected card id", cardId);
     if ($cardsSelectedStore.has(cardId)) {
       cardsSelectedStore.update((selected) => {
         const updated = new Set(selected);
@@ -36,7 +35,6 @@
         return updated;
       });
     }
-    console.log(get(cardsSelectedStore));
   }
 
   function getActionsFromActionStore(): GameAction[] {
@@ -60,12 +58,6 @@
   $: indexesForReview = $reversedStore
     ? cards.map((_, ind) => ind).reverse()
     : cards.map((_, ind) => ind);
-
-  $: {
-    console.log("card store: ", $cardsInHandStore);
-    console.log("local ids: ", localCardsInHandIds);
-    console.log("review inds: ", indexesForReview);
-  }
 
   let reviewSet: boolean = false;
   let cards: number[] = [];
@@ -145,7 +137,6 @@
       if (localReviewTurn < $reviewTurnStore) {
         // we are moving forwards, and need to apply an action
         const actionToProgress = localActionStore[get(reviewTurnStore) - 1];
-        console.log(actionToProgress);
 
         switch (actionToProgress.actionType) {
           case "PlayDiscard":
@@ -231,7 +222,6 @@
       } else {
         // we are moving backwards and need to undo an action
         const actionToUndo = localActionStore[get(reviewTurnStore)];
-        console.log(actionToUndo);
         const maxCardId = Math.max(...cards);
         switch (actionToUndo.actionType) {
           case "PlayDiscard":

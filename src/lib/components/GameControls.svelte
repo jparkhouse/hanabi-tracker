@@ -82,7 +82,6 @@
     isHintModalOpen = true;
   }
 
-  $: console.log("actionStoreSize is", $actionStoreSize)
   function handleRollback() {
     if ($actionStoreSize > 0) {
       const actionToUndo = actionStore.pop() as GameAction;
@@ -148,8 +147,6 @@
       }
     }
   }
-
-  $: console.log($reviewTurnStore);
 </script>
 
 <div class="game-controls">

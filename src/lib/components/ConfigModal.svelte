@@ -16,7 +16,6 @@
   }
 
   let reversed = false;
-  $: console.log($reversedStore);
 
   let tempConfig: ConfigOutput = {
     numberOfCards: 0,
@@ -103,6 +102,13 @@
       reversed != get(reversedStore)
     ) {
       reversedStore.set(reversed);
+    } else {
+      // load new game config
+      gameConfigStore.set(configOutputToGameConfig(tempConfig));
+      resetGameStore.update((number) => {
+        return number + 1;
+      });
+      reversed != get(reversedStore);
     }
     closePanel()
   }

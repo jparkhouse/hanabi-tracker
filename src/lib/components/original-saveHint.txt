@@ -1,6 +1,5 @@
 function saveHint() {
       if (selectedHint) {
-          console.log("a hint!")
           if (typeof selectedHint === 'string') {
             let colourHint = selectedHint;
             let colourIndex = colours.findIndex(element => {element === colourHint});
