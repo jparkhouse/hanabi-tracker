@@ -105,6 +105,10 @@
     } else {
       // load new game config
       gameConfigStore.set(configOutputToGameConfig(tempConfig));
+      resetGameStore.update((number) => {
+        return number + 1;
+      });
+      reversed != get(reversedStore);
     }
     closePanel()
   }
