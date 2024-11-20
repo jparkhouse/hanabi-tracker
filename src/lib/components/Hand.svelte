@@ -16,7 +16,7 @@
   import { get } from "svelte/store";
   import { actionStore } from "../stores/actionStore";
   import type { GameAction } from "../models/gameActions";
-  import { NumberEnum } from "../models/numberEnums";
+  import { allNumbers, NumberEnum } from "../models/numberEnums";
   import type { SuitEnum } from "../models/variantEnums";
   import { reversedStore } from "../stores/reversedStore";
 
@@ -161,7 +161,7 @@
               const newCardInformations = [
                 ...cardInformations.filter((_, ind) => ind !== oldCardIndex),
                 {
-                  numberInformation: NumberEnum.All,
+                  numberInformation: allNumbers,
                   knownNumberInformation: 0 as NumberEnum,
                   colourInformation: get(gameConfigStore).variant,
                   knownColourInformation: 0 as SuitEnum,

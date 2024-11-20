@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { gameConfigStore } from "../stores/gameConfigStore";
-  import { SuitEnum, suitProperties } from "../models/variantEnums";
+  import { getSuits, SuitEnum, suitProperties } from "../models/variantEnums";
   import { getNumbers, NumberEnum } from "../models/numberEnums";
   import { activeMenuCard } from "../stores/menuStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
@@ -24,6 +24,7 @@
   import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
   import Black from "./suit-icons/Black.svelte";
   import Number from "./Number.svelte";
+  import Colour from "./Colour.svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
@@ -250,65 +251,16 @@
       {/each}
     </div>
     <div class="colour-icons">
-      <Red
-        hidden={!(colourInformation & SuitEnum.Red)}
-        strokeColour={knownColourInformation & SuitEnum.Red &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <Yellow
-        hidden={!(colourInformation & SuitEnum.Yellow)}
-        strokeColour={knownColourInformation & SuitEnum.Yellow &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <Blue
-        hidden={!(colourInformation & SuitEnum.Blue)}
-        strokeColour={knownColourInformation & SuitEnum.Blue &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <White
-        hidden={!(colourInformation & SuitEnum.White)}
-        strokeColour={knownColourInformation & SuitEnum.White &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <Green
-        hidden={!(colourInformation & SuitEnum.Green)}
-        strokeColour={knownColourInformation & SuitEnum.Green &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <Rainbow
-        hidden={!(colourInformation & SuitEnum.Rainbow) ||
-          knownColour === "rainbow"}
-        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : "white"}
-      />
-      <RainbowEmpty
-        hidden={!(
-          colourInformation & SuitEnum.Rainbow && knownColour === "rainbow"
-        )}
-        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : "white"}
-      />
-      <Black
-        hidden={!(colourInformation & SuitEnum.Black)}
-        strokeColour={knownColourInformation & SuitEnum.Black &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : "white"}
-      />
+      {#each getSuits(colourInformation) as suitEnum}
+        <Colour
+          strokeColour={(knownColourInformation & suitEnum) &&
+          !isSingleFlag(colourInformation)
+            ? "var(--border-hinted)"
+            : numberIconStyles.strokeColour}
+          colour={suitEnum}
+          isOnlyRainbow={knownColour === "rainbow"}
+        />
+      {/each}
     </div>
   {:else}
     <div

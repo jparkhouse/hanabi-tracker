@@ -14,32 +14,17 @@
 </script>
 
 {#if numberEnum === NumberEnum.One}
-        <One
-            backgroundColour={backgroundColour}
-            strokeColour={strokeColour}
-        />
+  <One {backgroundColour} {strokeColour} />
 {/if}
 {#if numberEnum === NumberEnum.Two}
-        <Two
-            backgroundColour={backgroundColour}
-            strokeColour={strokeColour}
-        />
+  <Two {backgroundColour} {strokeColour} />
 {/if}
 {#if numberEnum === NumberEnum.Three}
-        <Three
-            backgroundColour={backgroundColour}
-            strokeColour={strokeColour}
-        />
+  <Three {backgroundColour} {strokeColour} />
 {/if}
 {#if numberEnum === NumberEnum.Four}
-        <Four
-            backgroundColour={backgroundColour}
-            strokeColour={strokeColour}
-        />
+  <Four {backgroundColour} {strokeColour} />
 {/if}
 {#if numberEnum === NumberEnum.Five}
-        <Five
-            backgroundColour={backgroundColour}
-            strokeColour={strokeColour}
-        />
+  <Five {backgroundColour} {strokeColour} />
 {/if}
