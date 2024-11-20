@@ -1,6 +1,6 @@
 // /lib/stores/managedStore.ts
 import { writable, get } from "svelte/store";
-import { DataManager } from "../models/dataManager";
+import { Dictionary } from "../models/dictionary";
 import { gameConfigStore, type GameConfig } from "./gameConfigStore";
 import { resetGameStore } from "./resetGameStore";
 
@@ -13,8 +13,8 @@ export function createManagedStore<T>(
 
   // Create a writable store
   let defaultData = getDefaultData(get(gameConfigStore));
-  const dataManager = new DataManager<T>(defaultData);
-  const store = writable(dataManager);
+  const dictionary = new Dictionary<T>(defaultData);
+  const store = writable(dictionary);
 
   function updateLocalStore() {
     localStorage.setItem(localKey, get(store).toJSON());
@@ -30,10 +30,10 @@ export function createManagedStore<T>(
   }
   let firstLoad = true;
   // Subscribe to gameConfig changes
-  resetGameStore.subscribe((number) => {
+  resetGameStore.subscribe((_number) => {
     if (!firstLoad) {
       const defaultData = getDefaultData(get(gameConfigStore));
-      store.set(new DataManager<T>(defaultData));
+      store.set(new Dictionary<T>(defaultData));
       updateLocalStore();
     } else {
       firstLoad = false;
@@ -52,11 +52,11 @@ export function createManagedStore<T>(
     },
     get: (id: number): T => {
       let currentManager = get(store);
-      return currentManager.get(id);
+      return currentManager.getValueOrDefault(id);
     },
     reset: () => {
       const defaultData = getDefaultData(get(gameConfigStore));
-      store.set(new DataManager<T>(defaultData));
+      store.set(new Dictionary<T>(defaultData));
       updateLocalStore();
     },
   };

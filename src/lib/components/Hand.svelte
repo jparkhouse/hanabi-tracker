@@ -317,12 +317,12 @@
         knownNumberInformation={cardInformations[ind].knownNumberInformation}
         colourInformation={cardInformations[ind].colourInformation}
         knownColourInformation={cardInformations[ind].knownColourInformation}
-        note={$notesOnCardsStore.get(cards[ind]).note}
+        note={$notesOnCardsStore.getValueOrDefault(cards[ind]).note}
         selected={$cardsSelectedStore.has(cards[ind])}
         isHinted={cardsHinted[ind]}
-        isChopMoved={$flagsOnCardsStore.get(cards[ind]).isChopMoved}
-        isFinessed={$flagsOnCardsStore.get(cards[ind]).isFinessed}
-        isCritical={$flagsOnCardsStore.get(cards[ind]).isCritical}
+        isChopMoved={$flagsOnCardsStore.getValueOrDefault(cards[ind]).isChopMoved}
+        isFinessed={$flagsOnCardsStore.getValueOrDefault(cards[ind]).isFinessed}
+        isCritical={$flagsOnCardsStore.getValueOrDefault(cards[ind]).isCritical}
         onSelect={handleCardSelect}
       />
     {/each}
@@ -330,18 +330,18 @@
     {#each localCardsInHandIds as id}
       <Card
         {id}
-        numberInformation={$informationOnCardsStore.get(id).numberInformation}
-        knownNumberInformation={$informationOnCardsStore.get(id)
+        numberInformation={$informationOnCardsStore.getValueOrDefault(id).numberInformation}
+        knownNumberInformation={$informationOnCardsStore.getValueOrDefault(id)
           .knownNumberInformation}
-        colourInformation={$informationOnCardsStore.get(id).colourInformation}
-        knownColourInformation={$informationOnCardsStore.get(id)
+        colourInformation={$informationOnCardsStore.getValueOrDefault(id).colourInformation}
+        knownColourInformation={$informationOnCardsStore.getValueOrDefault(id)
           .knownColourInformation}
-        note={$notesOnCardsStore.get(id).note}
+        note={$notesOnCardsStore.getValueOrDefault(id).note}
         selected={$cardsSelectedStore.has(id)}
-        isHinted={$flagsOnCardsStore.get(id).isHinted}
-        isChopMoved={$flagsOnCardsStore.get(id).isChopMoved}
-        isFinessed={$flagsOnCardsStore.get(id).isFinessed}
-        isCritical={$flagsOnCardsStore.get(id).isCritical}
+        isHinted={$flagsOnCardsStore.getValueOrDefault(id).isHinted}
+        isChopMoved={$flagsOnCardsStore.getValueOrDefault(id).isChopMoved}
+        isFinessed={$flagsOnCardsStore.getValueOrDefault(id).isFinessed}
+        isCritical={$flagsOnCardsStore.getValueOrDefault(id).isCritical}
         onSelect={handleCardSelect}
       />
     {/each}

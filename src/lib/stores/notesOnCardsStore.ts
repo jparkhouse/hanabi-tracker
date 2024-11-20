@@ -1,6 +1,6 @@
 // /lib/stores/notesOnCardsStore.ts
 
-import { createManagedStore } from "./persistentDataManagerStore";
+import { createManagedStore } from "./persistentDictionaryStore";
 import { type CardNote } from "../models/card";
 import type { GameConfig } from "./gameConfigStore";
 

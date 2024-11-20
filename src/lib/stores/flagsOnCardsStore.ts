@@ -1,6 +1,6 @@
 // /lib/stores/flagsOnCardsStore.ts
 
-import { createManagedStore } from "./persistentDataManagerStore";
+import { createManagedStore } from "./persistentDictionaryStore";
 import { type CardFlags } from "../models/card";
 import type { GameConfig } from "./gameConfigStore";
 

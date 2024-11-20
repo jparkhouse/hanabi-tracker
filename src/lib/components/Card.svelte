@@ -3,7 +3,7 @@
 <script lang="ts">
   import { gameConfigStore } from "../stores/gameConfigStore";
   import { SuitEnum, suitProperties } from "../models/variantEnums";
-  import { NumberEnum } from "../models/numberEnums";
+  import { getNumbers, NumberEnum } from "../models/numberEnums";
   import { activeMenuCard } from "../stores/menuStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { onMount, onDestroy } from "svelte";
@@ -23,6 +23,7 @@
   import Rainbow from "./suit-icons/Rainbow.svelte";
   import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
   import Black from "./suit-icons/Black.svelte";
+  import Number from "./Number.svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
@@ -237,46 +238,16 @@
   {#if $activeMenuCard !== id}
     <p class="card-id">{note !== "" ? note : "Card " + (id + 1)}</p>
     <div class="number-icons">
-      <One
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.One &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.One)}
-      />
-      <Two
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Two &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Two)}
-      />
-      <Three
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Three &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Three)}
-      />
-      <Four
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Four &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Four)}
-      />
-      <Five
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Five &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Five)}
-      />
+      {#each getNumbers(numberInformation) as numberEnum}
+        <Number
+          backgroundColour={numberIconStyles.backgroundColour}
+          strokeColour={knownNumberInformation & numberEnum &&
+          !isSingleFlag(numberInformation)
+            ? "var(--border-hinted)"
+            : numberIconStyles.strokeColour}
+          numberEnum={numberEnum}
+        />
+      {/each}
     </div>
     <div class="colour-icons">
       <Red
@@ -299,7 +270,6 @@
         !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
-        backgroundColour="mediumblue"
       />
       <White
         hidden={!(colourInformation & SuitEnum.White)}
@@ -314,7 +284,6 @@
         !isSingleFlag(colourInformation)
           ? "var(--border-hinted)"
           : numberIconStyles.strokeColour}
-        backgroundColour="green"
       />
       <Rainbow
         hidden={!(colourInformation & SuitEnum.Rainbow) ||

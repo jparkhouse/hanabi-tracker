@@ -1,7 +1,7 @@
 <!-- /lib/components/colour-icons/Green.svelte -->
 
 <script lang="ts">
-  export let backgroundColour: string = "darkgreen";
+  let backgroundColour: string = "green";
   export let strokeColour: string = "white";
   export let hidden: boolean = true;
 </script>
