@@ -3,7 +3,6 @@
   import type { GameConfig } from "../stores/gameConfigStore";
   import { gameConfigStore } from "../stores/gameConfigStore";
   import { SuitEnum } from "../models/variantEnums";
-  import { resetGameStore } from "../stores/resetGameStore";
   import { get } from "svelte/store";
   import { reversedStore } from "../stores/reversedStore";
 
@@ -91,9 +90,6 @@
     ) {
       // reset game state
       gameConfigStore.set(configOutputToGameConfig(tempConfig));
-      resetGameStore.update((number) => {
-        return number + 1;
-      });
     } else if (
       areGameConfigsEqual(
         get(gameConfigStore),
@@ -105,9 +101,6 @@
     } else {
       // load new game config
       gameConfigStore.set(configOutputToGameConfig(tempConfig));
-      resetGameStore.update((number) => {
-        return number + 1;
-      });
       reversed != get(reversedStore);
     }
     closePanel()

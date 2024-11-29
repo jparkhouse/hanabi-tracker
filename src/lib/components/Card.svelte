@@ -117,7 +117,7 @@
       const noteField = (
         document.getElementById("noteField") as HTMLInputElement
       ).value as string;
-      if (noteField) {
+      if (noteField != notesOnCardsStore.get(id).note) {
         notesOnCardsStore.set(id, { note: noteField });
       }
       activeMenuCard.set(null);
