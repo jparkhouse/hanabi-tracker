@@ -1,7 +1,6 @@
 // /lib/stores/persistentStore.ts
 import { writable, get } from "svelte/store";
 import { gameConfigStore } from "./gameConfigStore";
-import { resetGameStore } from "./resetGameStore";
 
 export function createPersistentStore<T>(
   key: string,
@@ -31,7 +30,7 @@ export function createPersistentStore<T>(
 
   if (getResetValue) {
     // if there is a reset value, then we reset the store on resetGameStore change
-    resetGameStore.subscribe((number) => {
+    gameConfigStore.subscribe(() => {
       if (!firstLoad) {
         const resetValue = getResetValue(get(gameConfigStore));
         store.set(resetValue);

@@ -2,7 +2,6 @@
 import { writable, get } from "svelte/store";
 import { Dictionary } from "../models/dictionary";
 import { gameConfigStore, type GameConfig } from "./gameConfigStore";
-import { resetGameStore } from "./resetGameStore";
 
 // Creating a generic managed store that syncs with local storage
 export function createManagedStore<T>(
@@ -30,7 +29,7 @@ export function createManagedStore<T>(
   }
   let firstLoad = true;
   // Subscribe to gameConfig changes
-  resetGameStore.subscribe((_number) => {
+  gameConfigStore.subscribe(() => {
     if (!firstLoad) {
       const defaultData = getDefaultData(get(gameConfigStore));
       store.set(new Dictionary<T>(defaultData));
