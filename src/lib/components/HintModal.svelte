@@ -7,7 +7,7 @@
   import { cardsInHandStore } from "../stores/cardsInHandStore";
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
   import { gameConfigStore } from "../stores/gameConfigStore";
-  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { contextOnCardsStore } from "../stores/contextOnCardsStore";
   import type { ColourHint, NumberHint } from "../models/gameActions";
   import { actionStore } from "../stores/actionStore";
 
@@ -193,7 +193,7 @@
 
     currentCards.forEach((card) => {
       let cardInformation = { ...informationOnCardsStore.get(card) };
-      let cardFlags = { ...flagsOnCardsStore.get(card) };
+      let cardContext = { ...contextOnCardsStore.get(card) };
       let isSelected = selectedCardIds.includes(card);
 
       if (isSelected) {
@@ -209,7 +209,7 @@
           cardInformation.colourInformation,
           colourHint
         );
-        action.newHinted.push(cardFlags.isHinted); // here we must use the pre-existing value, since it may have been hinted before
+        action.newHinted.push(cardContext.isHinted); // here we must use the pre-existing value, since it may have been hinted before
       }
 
       action.newColourInformation.push(cardInformation.colourInformation);
@@ -250,8 +250,8 @@
   }
 
   function updateHintFlag(card: number, isHinted: boolean): void {
-    const oldFlags = flagsOnCardsStore.get(card);
-    flagsOnCardsStore.set(card, { ...oldFlags, isHinted });
+    const oldContext = contextOnCardsStore.get(card);
+    contextOnCardsStore.set(card, { ...oldContext, isHinted });
   }
 
   function numberEnumToString(number: NumberEnum): string {
@@ -291,7 +291,7 @@
 
     currentCards.forEach((card) => {
       let cardInformation = { ...informationOnCardsStore.get(card) };
-      let cardFlags = { ...flagsOnCardsStore.get(card) };
+      let cardContext = { ...contextOnCardsStore.get(card) };
       let isSelected = selectedCardIds.includes(card);
 
       if (isSelected) {
@@ -307,7 +307,7 @@
           cardInformation.numberInformation,
           numberHint
         );
-        action.newHinted.push(cardFlags.isHinted); // here we must use the pre-existing value, since it may have been hinted before
+        action.newHinted.push(cardContext.isHinted); // here we must use the pre-existing value, since it may have been hinted before
       }
 
       action.newNumberInformation.push(cardInformation.numberInformation);
@@ -349,8 +349,8 @@
 
   function getPreviousHinted(cards: number[]): boolean[] {
     return cards.map(card => {
-      const cardFlags = flagsOnCardsStore.get(card);
-      return cardFlags.isHinted;
+      const cardContext = contextOnCardsStore.get(card);
+      return cardContext.isHinted;
     })
   }
 

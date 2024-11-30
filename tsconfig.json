@@ -16,6 +16,6 @@
     "checkJs": true,
     "isolatedModules": true
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "tests/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte", "tests/**/*.ts", "src/lib/stores/actionsStoreOLD.txt"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

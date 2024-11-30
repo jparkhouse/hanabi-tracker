@@ -1,14 +1,14 @@
-import { DataManager } from "../dataManager";
-describe("DataManager", () => {
+import { Dictionary } from "../dictionary";
+describe("Dictionary", () => {
   describe("initialisation", () => {
     it("should initialize and return the default object", () => {
       // arrange
       const defaultData = false;
-      const freshDataManager = new DataManager<boolean>(defaultData);
+      const freshDictionary = new Dictionary<boolean>(defaultData);
       // act
-      const result1 = freshDataManager.get(1);
-      const result2 = freshDataManager.get(10);
-      const result3 = freshDataManager.get(99);
+      const result1 = freshDictionary.getValueOrDefault(1);
+      const result2 = freshDictionary.getValueOrDefault(10);
+      const result3 = freshDictionary.getValueOrDefault(99);
       // assert
       expect(result1).toEqual(defaultData);
       expect(result2).toEqual(defaultData);
@@ -19,12 +19,12 @@ describe("DataManager", () => {
     it("should retrieve an existing record", () => {
       // arrange
       const defaultData = false;
-      const freshDataManager = new DataManager<boolean>(defaultData);
+      const freshDictionary = new Dictionary<boolean>(defaultData);
       const testRecord = 0;
       const newData = true;
-      freshDataManager.set(testRecord, newData);
+      freshDictionary.set(testRecord, newData);
       // act
-      const result = freshDataManager.get(testRecord);
+      const result = freshDictionary.getValueOrDefault(testRecord);
       // assert
       expect(result).toEqual(newData);
     });
@@ -33,26 +33,26 @@ describe("DataManager", () => {
     it("should create a new record", () => {
       // arrange
       const defaultData = false;
-      const freshDataManager = new DataManager<boolean>(defaultData);
+      const freshDictionary = new Dictionary<boolean>(defaultData);
       const testRecord = 0;
       const newData = true;
       // act
-      freshDataManager.set(testRecord, newData);
-      const result = freshDataManager.get(testRecord);
+      freshDictionary.set(testRecord, newData);
+      const result = freshDictionary.getValueOrDefault(testRecord);
       // assert
       expect(result).toEqual(newData);
     });
     it("should update an existing record", () => {
       // arrange
       const defaultData = 0;
-      const freshDataManager = new DataManager<number>(defaultData);
+      const freshDictionary = new Dictionary<number>(defaultData);
       const testRecord = 0;
       const setData = 1;
       const updateData = 2;
       // act
-      freshDataManager.set(testRecord, setData);
-      freshDataManager.set(testRecord, updateData);
-      const result = freshDataManager.get(testRecord);
+      freshDictionary.set(testRecord, setData);
+      freshDictionary.set(testRecord, updateData);
+      const result = freshDictionary.getValueOrDefault(testRecord);
       // assert
       expect(result).toEqual(updateData);
     });
@@ -61,7 +61,7 @@ describe("DataManager", () => {
     it("should output correct JSON from the data inside", () => {
       // arrange
       const defaultData: number[] = [0, 1, 2];
-      const manager = new DataManager<number[]>(defaultData);
+      const manager = new Dictionary<number[]>(defaultData);
       const record1 = [1, 2, 3, 4];
       const record2 = [2, 3];
       manager.set(1, record1);
@@ -80,15 +80,15 @@ describe("DataManager", () => {
     it("should correctly load data from a valid JSON string", () => {
       // arrange
       const defaultData = "Jake";
-      const manager = new DataManager(defaultData);
+      const manager = new Dictionary(defaultData);
       const jsonData = JSON.stringify({
         1: "Alice",
         2: "Bob",
       });
       // act
       manager.fromJSON(jsonData);
-      const result1 = manager.get(1);
-      const result2 = manager.get(2);
+      const result1 = manager.getValueOrDefault(1);
+      const result2 = manager.getValueOrDefault(2);
       // assert
       expect(result1).toEqual('Alice');
       expect(result2).toEqual('Bob');
@@ -96,7 +96,7 @@ describe("DataManager", () => {
     it('should throw an error when loading data from an invalid JSON string', () => {
       // Arrange
       const defaultData = 4;
-      const manager = new DataManager(defaultData);
+      const manager = new Dictionary(defaultData);
       const invalidJsonData = "{ invalid JSON }";
 
       // Act & Assert

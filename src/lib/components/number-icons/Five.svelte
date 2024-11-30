@@ -3,10 +3,8 @@
 <script lang="ts">
   export let backgroundColour: string = "none";
   export let strokeColour: string = "none";
-  export let hidden: boolean = true;
 </script>
 
-{#if !hidden}
 <svg
   xmlns="http://www.w3.org/2000/svg"
   height="100%"
@@ -28,4 +26,3 @@
     />
   </g>
 </svg>
-{/if}
