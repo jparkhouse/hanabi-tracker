@@ -23,11 +23,8 @@ export interface CardInformation {
   knownColourInformation: SuitEnum;
 }
 
-export interface CardNote {
+export interface CardContext {
   note: string;
-}
-
-export interface CardFlags {
   isHinted: boolean;
   isFinessed: boolean;
   isChopMoved: boolean;

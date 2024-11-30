@@ -7,8 +7,7 @@
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { cardsInHandStore } from "../stores/cardsInHandStore";
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
-  import { notesOnCardsStore } from "../stores/notesOnCardsStore";
-  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { contextOnCardsStore } from "../stores/contextOnCardsStore";
   import gameOrReviewStore from "../stores/gameOrReviewStore";
   import { gameConfigStore } from "../stores/gameConfigStore";
   import type { CardInformation } from "../models/card";
@@ -71,7 +70,7 @@
       // populate local cards in hand information
       cards = cardsInHandStore.get();
       cardInformations = cards.map((id) => informationOnCardsStore.get(id));
-      cardsHinted = cards.map((id) => flagsOnCardsStore.get(id).isHinted);
+      cardsHinted = cards.map((id) => contextOnCardsStore.get(id).isHinted);
       // populate local copies of game state
       localReviewTurn = get(reviewTurnStore);
       localActionStore = getActionsFromActionStore();
@@ -238,7 +237,7 @@
             // insert the correct isHinted flag
             const previousCardsHinted = [
               ...extractValues(cards, cardsHinted, (id) => id < cardId),
-              flagsOnCardsStore.get(cardId).isHinted, // the inserted cards most up to date flag
+              contextOnCardsStore.get(cardId).isHinted, // the inserted cards most up to date flag
               ...extractValues(
                 cards,
                 cardsHinted,
@@ -317,12 +316,12 @@
         knownNumberInformation={cardInformations[ind].knownNumberInformation}
         colourInformation={cardInformations[ind].colourInformation}
         knownColourInformation={cardInformations[ind].knownColourInformation}
-        note={$notesOnCardsStore.getValueOrDefault(cards[ind]).note}
+        note={$contextOnCardsStore.getValueOrDefault(cards[ind]).note}
         selected={$cardsSelectedStore.has(cards[ind])}
         isHinted={cardsHinted[ind]}
-        isChopMoved={$flagsOnCardsStore.getValueOrDefault(cards[ind]).isChopMoved}
-        isFinessed={$flagsOnCardsStore.getValueOrDefault(cards[ind]).isFinessed}
-        isCritical={$flagsOnCardsStore.getValueOrDefault(cards[ind]).isCritical}
+        isChopMoved={$contextOnCardsStore.getValueOrDefault(cards[ind]).isChopMoved}
+        isFinessed={$contextOnCardsStore.getValueOrDefault(cards[ind]).isFinessed}
+        isCritical={$contextOnCardsStore.getValueOrDefault(cards[ind]).isCritical}
         onSelect={handleCardSelect}
       />
     {/each}
@@ -336,12 +335,12 @@
         colourInformation={$informationOnCardsStore.getValueOrDefault(id).colourInformation}
         knownColourInformation={$informationOnCardsStore.getValueOrDefault(id)
           .knownColourInformation}
-        note={$notesOnCardsStore.getValueOrDefault(id).note}
+        note={$contextOnCardsStore.getValueOrDefault(cards[id]).note}
         selected={$cardsSelectedStore.has(id)}
-        isHinted={$flagsOnCardsStore.getValueOrDefault(id).isHinted}
-        isChopMoved={$flagsOnCardsStore.getValueOrDefault(id).isChopMoved}
-        isFinessed={$flagsOnCardsStore.getValueOrDefault(id).isFinessed}
-        isCritical={$flagsOnCardsStore.getValueOrDefault(id).isCritical}
+        isHinted={$contextOnCardsStore.getValueOrDefault(id).isHinted}
+        isChopMoved={$contextOnCardsStore.getValueOrDefault(id).isChopMoved}
+        isFinessed={$contextOnCardsStore.getValueOrDefault(id).isFinessed}
+        isCritical={$contextOnCardsStore.getValueOrDefault(id).isCritical}
         onSelect={handleCardSelect}
       />
     {/each}

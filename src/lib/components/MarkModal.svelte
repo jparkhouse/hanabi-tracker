@@ -1,7 +1,7 @@
 <!-- /lib/components/MarkModal.svelte -->
 <script lang="ts">
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { contextOnCardsStore } from "../stores/contextOnCardsStore";
 
   export let isOpen = false;
 
@@ -13,17 +13,17 @@
   function toggleFinessed() {
     const cards = Array.from($cardsSelectedStore);
     const cardsFinessedFlags: boolean[] = cards.map((id) => {
-      return flagsOnCardsStore.get(id).isFinessed;
+      return contextOnCardsStore.get(id).isFinessed;
     });
     if (cardsFinessedFlags.every((i) => {return i})) {
       cards.forEach((id) => {
-        const cardFlags = flagsOnCardsStore.get(id);
-        flagsOnCardsStore.set(id, {...cardFlags, isFinessed: false})
+        const cardContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, {...cardContext, isFinessed: false})
       })
     } else {
       cards.forEach((id) => {
-        const cardFlags = flagsOnCardsStore.get(id);
-        flagsOnCardsStore.set(id, {...cardFlags, isFinessed: true})
+        const cardContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, {...cardContext, isFinessed: true})
       })
     }
     closePanel()
@@ -32,17 +32,17 @@
   function toggleChopMoved() {
     const cards = Array.from($cardsSelectedStore);
     const cardsChopMovedFlags: boolean[] = cards.map((id) => {
-      return flagsOnCardsStore.get(id).isChopMoved;
+      return contextOnCardsStore.get(id).isChopMoved;
     });
     if (cardsChopMovedFlags.every((i) => {return i})) {
       cards.forEach((id) => {
-        const cardFlags = flagsOnCardsStore.get(id);
-        flagsOnCardsStore.set(id, {...cardFlags, isChopMoved: false})
+        const cardContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, {...cardContext, isChopMoved: false})
       })
     } else {
       cards.forEach((id) => {
-        const cardFlags = flagsOnCardsStore.get(id);
-        flagsOnCardsStore.set(id, {...cardFlags, isChopMoved: true})
+        const cardContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, {...cardContext, isChopMoved: true})
       })
     }
     closePanel()
@@ -51,17 +51,17 @@
   function toggleCritical() {
     const cards = Array.from($cardsSelectedStore);
     const cardsCriticalFlags: boolean[] = cards.map((id) => {
-      return flagsOnCardsStore.get(id).isCritical;
+      return contextOnCardsStore.get(id).isCritical;
     });
     if (cardsCriticalFlags.every((i) => {return i})) {
       cards.forEach((id) => {
-        const cardFlags = flagsOnCardsStore.get(id);
-        flagsOnCardsStore.set(id, {...cardFlags, isCritical: false})
+        const cardContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, {...cardContext, isCritical: false})
       })
     } else {
       cards.forEach((id) => {
-        const cardFlags = flagsOnCardsStore.get(id);
-        flagsOnCardsStore.set(id, {...cardFlags, isCritical: true})
+        const cardContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, {...cardContext, isCritical: true})
       })
     }
     closePanel()

@@ -1,11 +1,12 @@
 // /lib/stores/flagsOnCardsStore.ts
 
 import { createManagedStore } from "./persistentDictionaryStore";
-import { type CardFlags } from "../models/card";
+import { type CardContext } from "../models/card";
 import type { GameConfig } from "./gameConfigStore";
 
-const defaultValue = (config: GameConfig) => {
+const defaultValue = (_config: GameConfig) => {
     return {
+        note: "",
         isHinted: false,
         isChopMoved: false,
         isCritical: false,
@@ -13,4 +14,4 @@ const defaultValue = (config: GameConfig) => {
     }
 }
 
-export const flagsOnCardsStore = createManagedStore<CardFlags>('cardFlags', defaultValue);
+export const contextOnCardsStore = createManagedStore<CardContext>('cardContext', defaultValue);

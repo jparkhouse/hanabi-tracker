@@ -7,8 +7,7 @@
   import { activeMenuCard } from "../stores/menuStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { onMount, onDestroy } from "svelte";
-  import { notesOnCardsStore } from "../stores/notesOnCardsStore";
-  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { contextOnCardsStore } from "../stores/contextOnCardsStore";
 
   import One from "./number-icons/One.svelte";
   import Three from "./number-icons/Three.svelte";
@@ -117,8 +116,9 @@
       const noteField = (
         document.getElementById("noteField") as HTMLInputElement
       ).value as string;
-      if (noteField != notesOnCardsStore.get(id).note) {
-        notesOnCardsStore.set(id, { note: noteField });
+      if (noteField != contextOnCardsStore.get(id).note) {
+        const oldContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, { ...oldContext, note: noteField });
       }
       activeMenuCard.set(null);
     }
@@ -129,7 +129,8 @@
     const noteField = (document.getElementById("noteField") as HTMLInputElement)
       .value as string;
     if ($activeMenuCard) {
-      notesOnCardsStore.set($activeMenuCard, { note: noteField });
+      const oldContext = contextOnCardsStore.get($activeMenuCard);
+      contextOnCardsStore.set($activeMenuCard, { ...oldContext, note: noteField });
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
@@ -144,18 +145,18 @@
   }
 
   function toggleCritical(): void {
-    const oldFlags = flagsOnCardsStore.get(id);
-    flagsOnCardsStore.set(id, { ...oldFlags, isCritical: !isCritical });
+    const oldContext = contextOnCardsStore.get(id);
+    contextOnCardsStore.set(id, { ...oldContext, isCritical: !isCritical });
   }
 
   function toggleChopMoved(): any {
-    const oldFlags = flagsOnCardsStore.get(id);
-    flagsOnCardsStore.set(id, { ...oldFlags, isChopMoved: !isChopMoved });
+    const oldContext = contextOnCardsStore.get(id);
+    contextOnCardsStore.set(id, { ...oldContext, isChopMoved: !isChopMoved });
   }
 
   function toggleFinessed(): any {
-    const oldFlags = flagsOnCardsStore.get(id);
-    flagsOnCardsStore.set(id, { ...oldFlags, isFinessed: !isFinessed });
+    const oldContext = contextOnCardsStore.get(id);
+    contextOnCardsStore.set(id, { ...oldContext, isFinessed: !isFinessed });
   }
 
   let timeoutId: ReturnType<typeof setTimeout>;
