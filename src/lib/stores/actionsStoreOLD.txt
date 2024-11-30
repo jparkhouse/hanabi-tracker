@@ -34,23 +34,17 @@ export function createPersistentStackStore<T>(
 
   // Initialize with local storage if available
   const storedData = localStorage.getItem(localKey);
-  console.log("actionStore data: ", storedData);
   if (storedData) {
     try {
       const debugParsed = safeJsonParse<T[]>(storedData);
-      console.log("parsed: ", debugParsed);
-      console.log("of Type: ", typeof debugParsed);
     } catch (error) {
       console.error("Error with parsing: ", error)
     }
     const debugTypeParsed: Object = JSON.parse(storedData);
-    console.log("parsed with type: ", debugTypeParsed);
-    console.log("of Type: ", typeof debugTypeParsed);
   }
 
   if (storedData && storedData !== "undefined") {
     const items: T[] = JSON.parse(storedData);
-    console.log("type of items: ", typeof items)
     const storedDataStack = new Stack<T>();
     items.forEach((item) => storedDataStack.push(item));
     store.set(storedDataStack);

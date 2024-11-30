@@ -3,7 +3,6 @@
   import type { GameConfig } from "../stores/gameConfigStore";
   import { gameConfigStore } from "../stores/gameConfigStore";
   import { SuitEnum } from "../models/variantEnums";
-  import { resetGameStore } from "../stores/resetGameStore";
   import { get } from "svelte/store";
   import { reversedStore } from "../stores/reversedStore";
 
@@ -16,7 +15,6 @@
   }
 
   let reversed = false;
-  $: console.log($reversedStore);
 
   let tempConfig: ConfigOutput = {
     numberOfCards: 0,
@@ -92,9 +90,6 @@
     ) {
       // reset game state
       gameConfigStore.set(configOutputToGameConfig(tempConfig));
-      resetGameStore.update((number) => {
-        return number + 1;
-      });
     } else if (
       areGameConfigsEqual(
         get(gameConfigStore),
@@ -103,6 +98,10 @@
       reversed != get(reversedStore)
     ) {
       reversedStore.set(reversed);
+    } else {
+      // load new game config
+      gameConfigStore.set(configOutputToGameConfig(tempConfig));
+      reversed != get(reversedStore);
     }
     closePanel()
   }

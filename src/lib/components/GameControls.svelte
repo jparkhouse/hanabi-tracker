@@ -12,7 +12,7 @@
   import type { GameAction } from "../models/gameActions";
   import { informationOnCardsStore } from "../stores/informationOnCardsStore";
   import { cardsInHandStore } from "../stores/cardsInHandStore";
-  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { contextOnCardsStore } from "../stores/contextOnCardsStore";
   import type { WebAction } from "../models/webAction";
   import reviewTurnStore from "../stores/reviewTurnStore";
   import { nextCardId } from "../stores/cardIDCounterStore";
@@ -27,16 +27,16 @@
         wakeLock = await navigator.wakeLock.request("screen");
         wakeLock.addEventListener("release", () => {
           wakeLock = null;
-          wakeLockButtonText = "Wake Lock Off"; // Update text when the lock is released
+          wakeLockButtonText = "Turn Wake Lock On"; // Update text when the lock is released
         });
-        wakeLockButtonText = "Wake Lock On"; // Update text to reflect status
+        wakeLockButtonText = "Turn Wake Lock Off"; // Update text to reflect status
       } catch (err) {
         console.error(`Could not acquire wake lock: ${err}`);
       }
     } else {
       wakeLock.release();
       wakeLock = null;
-      wakeLockButtonText = "Wake Lock Off"; // Update text when the lock is released
+      wakeLockButtonText = "Turn Wake Lock on"; // Update text when the lock is released
     }
   }
 
@@ -47,13 +47,6 @@
   ];
   $: {
     actions = [{ label: wakeLockButtonText, action: toggleWakeLock }];
-  }
-
-  // Reactive statement to update the button text based on the wakeLock status
-  $: if (wakeLock) {
-    wakeLockButtonText = "Wake Lock On";
-  } else {
-    wakeLockButtonText = "Wake Lock Off";
   }
 
   let reviewLabel = "Review";
@@ -82,7 +75,6 @@
     isHintModalOpen = true;
   }
 
-  $: console.log("actionStoreSize is", $actionStoreSize)
   function handleRollback() {
     if ($actionStoreSize > 0) {
       const actionToUndo = actionStore.pop() as GameAction;
@@ -98,12 +90,12 @@
             };
             informationOnCardsStore.set(id, cardInformation);
 
-            let cardFlags = flagsOnCardsStore.get(id);
-            cardFlags = {
-              ...cardFlags,
+            let cardContext = contextOnCardsStore.get(id);
+            cardContext = {
+              ...cardContext,
               isHinted: actionToUndo.previousHinted[index],
             };
-            flagsOnCardsStore.set(id, cardFlags);
+            contextOnCardsStore.set(id, cardContext);
           });
           break;
         case "NumberHint": // undo a number hint
@@ -117,12 +109,12 @@
             };
             informationOnCardsStore.set(id, cardInformation);
 
-            let cardFlags = flagsOnCardsStore.get(id);
-            cardFlags = {
-              ...cardFlags,
+            let cardContext = contextOnCardsStore.get(id);
+            cardContext = {
+              ...cardContext,
               isHinted: actionToUndo.previousHinted[index],
             };
-            flagsOnCardsStore.set(id, cardFlags);
+            contextOnCardsStore.set(id, cardContext);
           });
           break;
         case "PlayDiscard": // undo a play/discard
@@ -148,8 +140,6 @@
       }
     }
   }
-
-  $: console.log($reviewTurnStore);
 </script>
 
 <div class="game-controls">

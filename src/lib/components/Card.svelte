@@ -2,27 +2,16 @@
 
 <script lang="ts">
   import { gameConfigStore } from "../stores/gameConfigStore";
-  import { SuitEnum, suitProperties } from "../models/variantEnums";
-  import { NumberEnum } from "../models/numberEnums";
+  import { getSuits, SuitEnum, suitProperties } from "../models/variantEnums";
+  import { getNumbers, NumberEnum } from "../models/numberEnums";
   import { activeMenuCard } from "../stores/menuStore";
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
   import { onMount, onDestroy } from "svelte";
-  import { notesOnCardsStore } from "../stores/notesOnCardsStore";
-  import { flagsOnCardsStore } from "../stores/flagsOnCardsStore";
+  import { contextOnCardsStore } from "../stores/contextOnCardsStore";
 
-  import One from "./number-icons/One.svelte";
-  import Three from "./number-icons/Three.svelte";
-  import Two from "./number-icons/Two.svelte";
-  import Four from "./number-icons/Four.svelte";
-  import Five from "./number-icons/Five.svelte";
-  import Red from "./suit-icons/Red.svelte";
-  import Yellow from "./suit-icons/Yellow.svelte";
-  import Blue from "./suit-icons/Blue.svelte";
-  import White from "./suit-icons/White.svelte";
-  import Green from "./suit-icons/Green.svelte";
-  import Rainbow from "./suit-icons/Rainbow.svelte";
-  import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
-  import Black from "./suit-icons/Black.svelte";
+  
+  import Number from "./Number.svelte";
+  import Colour from "./Colour.svelte";
 
   export let id: number;
   export let numberInformation: NumberEnum;
@@ -111,12 +100,14 @@
   function toggleMode() {
     if (localMode === "card" && !isMenuActive) {
       activeMenuCard.set(id);
+      cardsSelectedStore.set(new Set<number>());
     } else if (localMode === "menu") {
       const noteField = (
         document.getElementById("noteField") as HTMLInputElement
       ).value as string;
-      if (noteField) {
-        notesOnCardsStore.set(id, { note: noteField });
+      if (noteField != contextOnCardsStore.get(id).note) {
+        const oldContext = contextOnCardsStore.get(id);
+        contextOnCardsStore.set(id, { ...oldContext, note: noteField });
       }
       activeMenuCard.set(null);
     }
@@ -127,7 +118,8 @@
     const noteField = (document.getElementById("noteField") as HTMLInputElement)
       .value as string;
     if ($activeMenuCard) {
-      notesOnCardsStore.set($activeMenuCard, { note: noteField });
+      const oldContext = contextOnCardsStore.get($activeMenuCard);
+      contextOnCardsStore.set($activeMenuCard, { ...oldContext, note: noteField });
       activeMenuCard.set(null);
     }
     cardsSelectedStore.set(new Set<number>());
@@ -142,18 +134,18 @@
   }
 
   function toggleCritical(): void {
-    const oldFlags = flagsOnCardsStore.get(id);
-    flagsOnCardsStore.set(id, { ...oldFlags, isCritical: !isCritical });
+    const oldContext = contextOnCardsStore.get(id);
+    contextOnCardsStore.set(id, { ...oldContext, isCritical: !isCritical });
   }
 
   function toggleChopMoved(): any {
-    const oldFlags = flagsOnCardsStore.get(id);
-    flagsOnCardsStore.set(id, { ...oldFlags, isChopMoved: !isChopMoved });
+    const oldContext = contextOnCardsStore.get(id);
+    contextOnCardsStore.set(id, { ...oldContext, isChopMoved: !isChopMoved });
   }
 
   function toggleFinessed(): any {
-    const oldFlags = flagsOnCardsStore.get(id);
-    flagsOnCardsStore.set(id, { ...oldFlags, isFinessed: !isFinessed });
+    const oldContext = contextOnCardsStore.get(id);
+    contextOnCardsStore.set(id, { ...oldContext, isFinessed: !isFinessed });
   }
 
   let timeoutId: ReturnType<typeof setTimeout>;
@@ -237,109 +229,28 @@
   {#if $activeMenuCard !== id}
     <p class="card-id">{note !== "" ? note : "Card " + (id + 1)}</p>
     <div class="number-icons">
-      <One
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.One &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.One)}
-      />
-      <Two
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Two &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Two)}
-      />
-      <Three
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Three &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Three)}
-      />
-      <Four
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Four &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Four)}
-      />
-      <Five
-        backgroundColour={numberIconStyles.backgroundColour}
-        strokeColour={knownNumberInformation & NumberEnum.Five &&
-        !isSingleFlag(numberInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        hidden={!(numberInformation & NumberEnum.Five)}
-      />
+      {#each getNumbers(numberInformation) as numberEnum}
+        <Number
+          backgroundColour={numberIconStyles.backgroundColour}
+          strokeColour={knownNumberInformation & numberEnum &&
+          !isSingleFlag(numberInformation)
+            ? "var(--border-hinted)"
+            : numberIconStyles.strokeColour}
+          numberEnum={numberEnum}
+        />
+      {/each}
     </div>
     <div class="colour-icons">
-      <Red
-        hidden={!(colourInformation & SuitEnum.Red)}
-        strokeColour={knownColourInformation & SuitEnum.Red &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <Yellow
-        hidden={!(colourInformation & SuitEnum.Yellow)}
-        strokeColour={knownColourInformation & SuitEnum.Yellow &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <Blue
-        hidden={!(colourInformation & SuitEnum.Blue)}
-        strokeColour={knownColourInformation & SuitEnum.Blue &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        backgroundColour="mediumblue"
-      />
-      <White
-        hidden={!(colourInformation & SuitEnum.White)}
-        strokeColour={knownColourInformation & SuitEnum.White &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-      />
-      <Green
-        hidden={!(colourInformation & SuitEnum.Green)}
-        strokeColour={knownColourInformation & SuitEnum.Green &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : numberIconStyles.strokeColour}
-        backgroundColour="green"
-      />
-      <Rainbow
-        hidden={!(colourInformation & SuitEnum.Rainbow) ||
-          knownColour === "rainbow"}
-        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : "white"}
-      />
-      <RainbowEmpty
-        hidden={!(
-          colourInformation & SuitEnum.Rainbow && knownColour === "rainbow"
-        )}
-        strokeColour={knownColourInformation & SuitEnum.Rainbow &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : "white"}
-      />
-      <Black
-        hidden={!(colourInformation & SuitEnum.Black)}
-        strokeColour={knownColourInformation & SuitEnum.Black &&
-        !isSingleFlag(colourInformation)
-          ? "var(--border-hinted)"
-          : "white"}
-      />
+      {#each getSuits(colourInformation) as suitEnum}
+        <Colour
+          strokeColour={(knownColourInformation & suitEnum) &&
+          !isSingleFlag(colourInformation)
+            ? "var(--border-hinted)"
+            : numberIconStyles.strokeColour}
+          colour={suitEnum}
+          isOnlyRainbow={knownColour === "rainbow"}
+        />
+      {/each}
     </div>
   {:else}
     <div

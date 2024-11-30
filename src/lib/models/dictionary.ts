@@ -1,15 +1,15 @@
-// /lib/models/dataManager.ts
+// /lib/models/dictionary.ts
 /**
- * A data manager to keep track of a set of records of any type.
+ * A Dictionary to keep track of a set of records of any type.
  * If a record exists, it gets or updates it
- * If a record does not exist, it gets a default value or sets it by creating a new record
+ * If a record does not exist, it gets a default value or sets it by creating a new record.
  * It also has support for writing itself to and from JSON
  *
  * @export
- * @class DataManager
+ * @class Dictionary
  * @template T
  */
-export class DataManager<T> {
+export class Dictionary<T> {
   private data: Record<number, T>;
   private default: T;
 
@@ -18,7 +18,7 @@ export class DataManager<T> {
     this.default = defaultData;
   }
 
-  get(id: number): T {
+  getValueOrDefault(id: number): T {
     return this.data[id] || this.default;
   }
 
