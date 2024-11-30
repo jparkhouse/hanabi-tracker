@@ -1,7 +1,7 @@
 <!-- /lib/components/NotesModal.svelte -->
 <script lang="ts">
   import { cardsSelectedStore } from "../stores/cardsSelectedStore";
-  import { notesOnCardsStore } from "../stores/notesOnCardsStore";
+  import { contextOnCardsStore } from "../stores/contextOnCardsStore";
 
   export let isOpen = false;
 
@@ -16,13 +16,15 @@
     const selectedCardIds = Array.from($cardsSelectedStore);
 
     selectedCardIds.forEach((id) => {
-      const oldCardNotes = notesOnCardsStore.get(id);
-      if (oldCardNotes.note) {
-        notesOnCardsStore.set(id, {
-          note: oldCardNotes.note + " | " + noteField,
+      const oldCardContext = contextOnCardsStore.get(id);
+      if (oldCardContext.note) {
+        contextOnCardsStore.set(id, {
+          ...oldCardContext,
+          note: oldCardContext.note + " | " + noteField,
         });
       } else {
-        notesOnCardsStore.set(id, {
+        contextOnCardsStore.set(id, {
+          ...oldCardContext,
           note: noteField,
         });
       }
@@ -38,7 +40,11 @@
     const selectedCardIds = Array.from($cardsSelectedStore);
 
     selectedCardIds.forEach((id) => {
-      notesOnCardsStore.set(id, { note: "" });
+      const oldCardContext = contextOnCardsStore.get(id);
+      contextOnCardsStore.set(id, { 
+        ...oldCardContext,
+        note: "",
+      });
     });
     cardsSelectedStore.update((selected) => {
       selected = new Set<number>();

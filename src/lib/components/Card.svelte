@@ -9,19 +9,7 @@
   import { onMount, onDestroy } from "svelte";
   import { contextOnCardsStore } from "../stores/contextOnCardsStore";
 
-  import One from "./number-icons/One.svelte";
-  import Three from "./number-icons/Three.svelte";
-  import Two from "./number-icons/Two.svelte";
-  import Four from "./number-icons/Four.svelte";
-  import Five from "./number-icons/Five.svelte";
-  import Red from "./suit-icons/Red.svelte";
-  import Yellow from "./suit-icons/Yellow.svelte";
-  import Blue from "./suit-icons/Blue.svelte";
-  import White from "./suit-icons/White.svelte";
-  import Green from "./suit-icons/Green.svelte";
-  import Rainbow from "./suit-icons/Rainbow.svelte";
-  import RainbowEmpty from "./suit-icons/RainbowEmpty.svelte";
-  import Black from "./suit-icons/Black.svelte";
+  
   import Number from "./Number.svelte";
   import Colour from "./Colour.svelte";
 
@@ -112,6 +100,7 @@
   function toggleMode() {
     if (localMode === "card" && !isMenuActive) {
       activeMenuCard.set(id);
+      cardsSelectedStore.set(new Set<number>());
     } else if (localMode === "menu") {
       const noteField = (
         document.getElementById("noteField") as HTMLInputElement

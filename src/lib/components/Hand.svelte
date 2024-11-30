@@ -335,7 +335,7 @@
         colourInformation={$informationOnCardsStore.getValueOrDefault(id).colourInformation}
         knownColourInformation={$informationOnCardsStore.getValueOrDefault(id)
           .knownColourInformation}
-        note={$contextOnCardsStore.getValueOrDefault(cards[id]).note}
+        note={$contextOnCardsStore.getValueOrDefault(id).note}
         selected={$cardsSelectedStore.has(id)}
         isHinted={$contextOnCardsStore.getValueOrDefault(id).isHinted}
         isChopMoved={$contextOnCardsStore.getValueOrDefault(id).isChopMoved}
