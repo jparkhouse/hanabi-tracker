@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/jparkhouse/hanabi-tracker/compare/v2.1.0...v2.1.1) (2024-12-02)
+
+
+### Bug Fixes
+
+* broken code link ([5bb7d47](https://github.com/jparkhouse/hanabi-tracker/commit/5bb7d47ae13077a7603dc3948db3b11d3fbac263))
+
 ## [2.1.0](https://github.com/jparkhouse/hanabi-tracker/compare/v2.0.0...v2.1.0) (2024-11-30)
 
 
