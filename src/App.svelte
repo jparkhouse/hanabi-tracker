@@ -9,7 +9,7 @@
   $: {switch (import.meta.env.BASE_URL) {
     case '/hanabi-tracker':
       versionText = `Version ${version}`
-      href = `https://github.com/jparkhouse/hanabi-tracker/tree/v{version}`
+      href = `https://github.com/jparkhouse/hanabi-tracker/tree/v${version}`
       break;
     case '/hanabi-tracker/test':
       versionText = `Beta ${version}`;

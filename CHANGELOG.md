@@ -1,5 +1,34 @@
 # Changelog
 
+## [2.1.1](https://github.com/jparkhouse/hanabi-tracker/compare/v2.1.0...v2.1.1) (2024-12-02)
+
+
+### Bug Fixes
+
+* broken code link ([5bb7d47](https://github.com/jparkhouse/hanabi-tracker/commit/5bb7d47ae13077a7603dc3948db3b11d3fbac263))
+
+## [2.1.0](https://github.com/jparkhouse/hanabi-tracker/compare/v2.0.0...v2.1.0) (2024-11-30)
+
+
+### Features
+
+* basic review functionality ([19ae810](https://github.com/jparkhouse/hanabi-tracker/commit/19ae810024895cce36588d5a7843c7f740305b3e))
+* **hand:** added reversed hand order ([8e100ee](https://github.com/jparkhouse/hanabi-tracker/commit/8e100ee514fadb4838c75cbab6323d62fa0bff7a))
+* improved actions ([29862f0](https://github.com/jparkhouse/hanabi-tracker/commit/29862f06f3e7b5aec5e7ad96efbcebe9276cdb34))
+* improved variant configurability ([45b1228](https://github.com/jparkhouse/hanabi-tracker/commit/45b1228dcd27a595a587c0b3d56d4336f239e588))
+* **review:** toasts for action change ([8e100ee](https://github.com/jparkhouse/hanabi-tracker/commit/8e100ee514fadb4838c75cbab6323d62fa0bff7a))
+
+
+### Bug Fixes
+
+* card note not clearing ([e47c13f](https://github.com/jparkhouse/hanabi-tracker/commit/e47c13fce7ba3277c33653d704b287bc8e8eadda))
+* **gamecontrols:** button overhang ([8e100ee](https://github.com/jparkhouse/hanabi-tracker/commit/8e100ee514fadb4838c75cbab6323d62fa0bff7a))
+* **gamecontrols:** consistent styling on rhs ([b34ed31](https://github.com/jparkhouse/hanabi-tracker/commit/b34ed310f6ec58d5d3e3fce4d594bbcee887bb26))
+* notes save on correct card ([910b3dc](https://github.com/jparkhouse/hanabi-tracker/commit/910b3dc7b76ed97d3ee71f10e3f90710560a4e7a))
+* overwritting with empty note ([9df9871](https://github.com/jparkhouse/hanabi-tracker/commit/9df987190f691656abae5f872db2280215c42b87))
+* unable to change gameconfig ([f36aaa2](https://github.com/jparkhouse/hanabi-tracker/commit/f36aaa27bb1d5f54f46d0c9fbf65ee4d70459dbd))
+* undoing a playdiscard could dupe card ids ([f4704dd](https://github.com/jparkhouse/hanabi-tracker/commit/f4704ddca6edcc41c858d6fa24703da851fe3317))
+
 ## [2.0.0](https://github.com/jparkhouse/hanabi-tracker/compare/v1.5.0...v2.0.0) (2024-06-16)
 
 
