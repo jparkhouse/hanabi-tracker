@@ -1,0 +1,7 @@
+This project is a little bit my baby, and so I reserve the right to review, refactor, or refuse any PRs opened. That said, I am super excited to hear your ideas for improvements, new features, or anything else.
+
+I try and keep the issues up to date, and encourage others to do the same as and when they find bugs or suggest new things. If you have an issue you would like to pick up, feel free to take a stab at it, assign yourself, and ask any questions you may have.
+
+Because of the way the workflows are set up, all PRs should be merged into and forked from the `testing` branch. This is then deployed on change to the [testing environment](https://jparkhouse.github.io/hanabi-tracker/test) where it can be QAed. I will merge changes down to main and release (this repo uses the release please bot and the github release tags) when I am happy that new features are of a good quality.
+
+Commit messages should use the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) conventions. Note that I often use `build:` to signify ongoing build work rather than specifically more DevOps focus tasks - feel free to do the same. The release notes/changelog are built using these commit messages, so please do pay attention to them.

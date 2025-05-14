@@ -75,7 +75,7 @@
         numberIconStyles.backgroundColour = "green";
         break;
       case "black":
-        numberIconStyles.strokeColour = "none";
+        numberIconStyles.strokeColour = "white";
         numberIconStyles.backgroundColour = "white";
         break;
       case "rainbow":
