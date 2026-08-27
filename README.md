@@ -29,7 +29,8 @@ with an H-Group convention bot reading the table alongside you — see
   replay or a convention-aware review of a game played on cardboard.
 - **Survives refreshes** — every tap writes straight to the device, and
   reopening the app drops you back on the table you were recording.
-- **491 variants**, named exactly as hanab.live names them.
+- **All 2,426 variants** hanab.live offers, named exactly as it names them —
+  see [Variants](#variants).
 
 ## Recording a game
 
@@ -210,15 +211,59 @@ directly rather than translating at the end:
 - A card's index in `deck` is its **order**, and that is what a play or discard
   points at.
 - `actions[].type` is `0` play, `1` discard, `2` colour clue, `3` rank clue,
-  `4` end game. For clues, `target` is the seat and `value` is the rank, or the
-  index of the colour among the variant's *colourable* suits (Rainbow and White
-  have no colour of their own, so they are skipped).
+  `4` end game. For clues, `target` is the seat and `value` is the rank, or an
+  index into the variant's colour list. That list is built the way hanab.live
+  builds it: each suit's colours in suit order, deduplicated, skipping suits
+  every colour touches. So Rainbow and White add no button, Ambiguous puts two
+  suits on one colour, and Dual-Color puts one suit on two.
+- A START card in Up or Down is `rank: 7`.
 - An unidentified card is `{"suitIndex": -1, "rank": -1}`.
 - Draws are not actions: they are implied by the deck growing, one per play or
   discard while cards remain.
 
 `src/lib/hanabi/hanabLive.ts` is the whole of the format handling, and the tests
 round-trip a real four-player game byte for byte.
+
+## Variants
+
+Every variant on hanab.live is here, under its own name, and the rules that make
+each one different are implemented rather than approximated:
+
+- **Suits that clue oddly** — Rainbow, Pink, White, Brown, Omni, Null, Prism,
+  Muddy Rainbow, their Dark and Light forms, and the ambiguous and dual-colour
+  families, where one colour names two suits or one suit answers to two colours.
+- **Ranks that clue oddly** — the `-Ones` and `-Fives` families (Rainbow-Ones,
+  Pink-Fives, Deceptive-Ones and the rest), Funnels and Chimneys, where a rank
+  clue takes a whole range, Odds and Evens, and Synesthesia, where a colour clue
+  doubles as a rank.
+- **Decks that differ** — Critical Fours, Scarce Ones, and the one-of-each
+  Dark suits.
+- **Clues that are restricted** — Clue Starved (a discard is worth half a clue),
+  Alternating Clues, Color Blind, Number Blind, Totally Blind, Color Mute,
+  Number Mute, and Cow &amp; Pig and Duck, where the clue points at cards but the
+  colour or number behind it never reaches the player.
+- **Stacks that do not run 1-to-5** — Reversed suits, Up or Down with its START
+  cards and undecided direction, and Sudoku, where every stack starts on a
+  different rank and wraps.
+
+Picking a variant on the setup screen lists what makes it unusual, so you do not
+have to remember what "Chimneys &amp; Dark Omni (4 Suits)" means. The clue-touch
+and deck rules are ports of hanab.live's own `isCardTouchedByClue` and
+`getNumCopiesOfCard`, and a test holds the whole deck table against hanab.live's
+second, independent deck-size formula across all 2,426 variants.
+
+Two caveats worth knowing:
+
+- **The bot stands down outside ordinary play.** H-Group's conventions assume
+  ordinary stacks and ordinary clues, so on Up or Down, Sudoku, the special-rank
+  families, Funnels, Chimneys, Odds and Evens, Synesthesia, Clue Starved,
+  Alternating Clues, Throw It in a Hole, Cow &amp; Pig, Duck and the Blind and Mute
+  variants it says so and withholds its notes rather than guessing. Variants
+  whose oddness is only in the suits — including Ambiguous and Dual-Color — it
+  still reads.
+- **Analysis by [scala-bot](https://github.com/WillFlame14/scala-bot) is not
+  guaranteed** for the variants beyond the ordinary ones. The export is still
+  valid hanab.live JSON and replays there.
 
 ## Development
 
@@ -235,8 +280,9 @@ Source: *GitHub Actions*). The build uses relative asset paths, so it works at a
 project path, at a custom domain, or straight off disk.
 
 `npm run gen:variants` regenerates `src/lib/hanabi/variantData.ts` from
-hanab.live's upstream `variants.json`. The generated file is committed, so the
-app never touches the network.
+hanab.live's upstream `variants.json`, `suits.json` and `colors.json`. The
+generated file is committed, so the app never touches the network. Run it when
+hanab.live adds variants; it prints how many it wrote.
 
 See [docs/architecture.md](docs/architecture.md) for how the pieces fit together.
 

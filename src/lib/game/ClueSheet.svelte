@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { previewClue, type GameState } from "../hanabi/engine";
-  import type { Clue } from "../hanabi/types";
-  import { RANKS } from "../hanabi/variants";
-  import { suitBackground, suitInk } from "../ui/colors";
+  import { allowedClueKinds, previewClue, type GameState } from "../hanabi/engine";
+  import type { Clue, ClueKind } from "../hanabi/types";
+  import { clueName, clueValueIsPublic } from "../hanabi/variants";
+  import { inkOn } from "../ui/colors";
   import Sheet from "../ui/Sheet.svelte";
   import HandRow from "./HandRow.svelte";
 
@@ -25,6 +25,21 @@
   let manualTouched = $state<Set<number>>(new Set());
 
   let cluingUs = $derived(target === game.ourPlayerIndex);
+  // Alternating Clues bars whichever kind was given last; the Mute and Blind
+  // variants remove one for the whole game.
+  let allowed = $derived(allowedClueKinds(game));
+  let barred = $derived(
+    game.variant.rules.alternatingClues && game.lastClueKind !== null
+      ? game.lastClueKind
+      : undefined,
+  );
+  // Under Cow & Pig and Duck the giver still picks a real clue; only the word
+  // they are allowed to say for it changes.
+  let spoken = $derived(clue && !clueValueIsPublic(game.variant) ? clueName(game.variant, clue) : undefined);
+
+  function offers(kind: ClueKind) {
+    return allowed.includes(kind);
+  }
   let touched = $derived(
     clue === undefined
       ? []
@@ -74,37 +89,56 @@
     </div>
   </div>
 
-  <div class="stack">
-    <h3>Colour</h3>
-    <div class="clue-grid">
-      {#each game.variant.clueColors as color, value (color.name)}
-        <button
-          class="clue"
-          class:on={clue?.kind === "color" && clue.value === value}
-          style:background={suitBackground(game.variant.suits[color.suitIndex])}
-          style:color={suitInk(game.variant.suits[color.suitIndex])}
-          onclick={() => (clue = { kind: "color", value })}
-        >
-          {color.name}
-        </button>
-      {/each}
+  {#if game.variant.clueColors.length > 0}
+    <div class="stack">
+      <h3>Colour</h3>
+      <div class="clue-grid">
+        {#each game.variant.clueColors as color, value (color.name)}
+          <button
+            class="clue"
+            class:on={clue?.kind === "color" && clue.value === value}
+            style:background={color.fill}
+            style:color={inkOn([color.fill])}
+            disabled={!offers("color")}
+            onclick={() => (clue = { kind: "color", value })}
+          >
+            {color.name}
+          </button>
+        {/each}
+      </div>
+      {#if barred === "color"}
+        <p class="muted small">Last clue was a colour, so this one must be a rank.</p>
+      {/if}
     </div>
-  </div>
+  {/if}
 
-  <div class="stack">
-    <h3>Rank</h3>
-    <div class="clue-grid ranks">
-      {#each RANKS as rank (rank)}
-        <button
-          class="clue rank"
-          class:on={clue?.kind === "rank" && clue.value === rank}
-          onclick={() => (clue = { kind: "rank", value: rank })}
-        >
-          {rank}
-        </button>
-      {/each}
+  {#if game.variant.clueRanks.length > 0}
+    <div class="stack">
+      <h3>{game.variant.rules.oddsAndEvens ? "Parity" : "Rank"}</h3>
+      <div class="clue-grid ranks">
+        {#each game.variant.clueRanks as rank (rank)}
+          <button
+            class="clue rank"
+            class:on={clue?.kind === "rank" && clue.value === rank}
+            disabled={!offers("rank")}
+            onclick={() => (clue = { kind: "rank", value: rank })}
+          >
+            {clueName(game.variant, { kind: "rank", value: rank })}
+          </button>
+        {/each}
+      </div>
+      {#if barred === "rank"}
+        <p class="muted small">Last clue was a rank, so this one must be a colour.</p>
+      {/if}
     </div>
-  </div>
+  {/if}
+
+  {#if spoken}
+    <p class="muted small">
+      All they hear is &ldquo;{spoken}&rdquo; — record which cards were pointed at, not the
+      colour or number behind it.
+    </p>
+  {/if}
 
   <HandRow
     {game}
@@ -167,8 +201,9 @@
     gap: 6px;
   }
 
+  /* Sudoku offers four ranks and Odds and Evens two, so let them share the row. */
   .clue-grid.ranks {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
   }
 
   .clue {
@@ -188,6 +223,10 @@
 
   .clue.on {
     box-shadow: 0 0 0 3px var(--accent);
+  }
+
+  .clue:disabled {
+    opacity: 0.35;
   }
 
   .warn {

@@ -79,6 +79,15 @@
   let dealConfirmed = $state(untrack(() => setupComplete(record)));
   let dealing = $derived(!setupComplete(record) || !dealConfirmed);
   let game = $derived(stateOf(record));
+  let clueBlockedReason = $derived(
+    canGiveClue(game)
+      ? undefined
+      : game.clueTokens < 1
+        ? "No clue tokens left"
+        : `Alternating Clues: the last clue was a ${
+            game.lastClueKind === "color" ? "colour" : "rank"
+          }, so this one must be the other`,
+  );
   let counts = $derived(unseenCounts(game));
   let possibilities = $derived.by(() => {
     const map = new Map<number, Identity[]>();
@@ -235,7 +244,7 @@
         <button
           class="btn btn-primary"
           disabled={!canGiveClue(game)}
-          title={canGiveClue(game) ? undefined : "No clue tokens left"}
+          title={clueBlockedReason}
           onclick={() => (pending = { kind: "clue" })}>Clue</button
         >
       </div>

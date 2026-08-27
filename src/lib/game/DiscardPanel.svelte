@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { discardedCopies, type GameState } from "../hanabi/engine";
-  import { RANKS, copiesOf, suitAbbreviation } from "../hanabi/variants";
+  import { discardedCopies, isOnStack, type GameState } from "../hanabi/engine";
+  import { copiesOf, rankLabel, suitAbbreviation } from "../hanabi/variants";
   import { suitBackground, suitInk } from "../ui/colors";
 
   interface Props {
@@ -15,11 +15,11 @@
    */
   let grid = $derived(
     game.variant.suits.map((suit, suitIndex) =>
-      RANKS.map((rank) => {
+      game.variant.ranks.map((rank) => {
         const identity = { suitIndex, rank };
         const total = copiesOf(game.variant, identity);
         const gone = discardedCopies(game, identity);
-        const played = game.playStacks[suitIndex] >= rank;
+        const played = isOnStack(game, identity);
         return {
           rank,
           suit,
@@ -40,7 +40,7 @@
     <span class="muted small">{game.discards.length} card{game.discards.length === 1 ? "" : "s"}</span>
   </div>
 
-  <div class="grid" style:--cols={RANKS.length}>
+  <div class="grid" style:--cols={game.variant.ranks.length}>
     {#each grid as row, suitIndex (game.variant.suits[suitIndex].name)}
       <div
         class="suit"
@@ -55,7 +55,7 @@
           class:dead={cell.dead}
           class:critical={cell.critical}
           class:none={cell.gone === 0}
-          aria-label="{cell.suit.display} {cell.rank}: {cell.gone} of {cell.total} discarded"
+          aria-label="{cell.suit.display} {rankLabel(cell.rank)}: {cell.gone} of {cell.total} discarded"
         >
           {cell.gone}/{cell.total}
         </div>

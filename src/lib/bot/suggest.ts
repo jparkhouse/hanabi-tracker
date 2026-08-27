@@ -359,6 +359,9 @@ function evaluateClue(
  * Only meaningful when it is our turn; the caller checks that.
  */
 export function suggestMoves(record: GameRecord, analysis: BotAnalysis): Suggestion[] {
+  // The scoring below is H-Group's, all the way down. On a variant the reader
+  // stood down from there is nothing behind it, so it has nothing to say.
+  if (analysis.unsupported) return [];
   const { state } = analysis;
   if (state.finished) return [];
 

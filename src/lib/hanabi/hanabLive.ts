@@ -20,7 +20,13 @@ import {
   type GameRecord,
   type Identity,
 } from "./types";
-import { getVariant, variantExists, DEFAULT_VARIANT_NAME } from "./variants";
+import {
+  copiesOf,
+  getVariant,
+  rankLabel,
+  variantExists,
+  DEFAULT_VARIANT_NAME,
+} from "./variants";
 
 export interface HanabLiveGame {
   id: number;
@@ -100,11 +106,11 @@ export function exportIssues(record: GameRecord): ExportIssue[] {
   }
   for (const [key, count] of counts) {
     const [suitIndex, rank] = key.split(":").map(Number);
-    const allowed = variant.cardCounts[suitIndex]?.[rank - 1] ?? 0;
+    const allowed = copiesOf(variant, { suitIndex, rank });
     if (count > allowed) {
       issues.push({
         severity: "error",
-        message: `${count} copies of ${variant.suits[suitIndex]?.display ?? "?"} ${rank} recorded, but the variant only has ${allowed}.`,
+        message: `${count} copies of ${variant.suits[suitIndex]?.display ?? "?"} ${rankLabel(rank)} recorded, but the variant only has ${allowed}.`,
       });
     }
   }
@@ -175,7 +181,7 @@ export function fromHanabLive(
     typeof rawOptions.variant === "string" ? rawOptions.variant : DEFAULT_VARIANT_NAME;
   if (!variantExists(variantName)) {
     throw new ImportError(
-      `Variant "${variantName}" is not supported here (variants with special ranks are not bundled).`,
+      `Variant "${variantName}" is not one hanab.live offers, so it cannot be replayed here.`,
     );
   }
 

@@ -1,5 +1,38 @@
 # Changelog
 
+## Unreleased
+
+### Features
+
+- **Every variant hanab.live offers**, up from 491 to all 2,426, with the rules
+  behind them implemented rather than approximated:
+  - Ambiguous and dual-colour suits, so a colour may name two suits and a suit
+    answer to two colours.
+  - The `-Ones` and `-Fives` families, Funnels, Chimneys, Odds and Evens and
+    Synesthesia, which change what a clue touches.
+  - Critical Fours and Scarce Ones, which change the deck.
+  - Clue Starved, Alternating Clues, Throw It in a Hole, Cow &amp; Pig, Duck, and
+    the Blind and Mute variants, which change what a clue costs, when it may be
+    given, or whether its value reaches the player at all.
+  - Reversed suits, Up or Down and Sudoku, which change what playing means: a
+    stack is now a list of cards with a direction rather than a high-water mark,
+    and every legality question goes through `nextPlayableRanks()`.
+- The setup screen lists what makes the chosen variant unusual, so the name does
+  not have to carry it.
+- The clue sheet only offers the clues a variant has, labels them the way the
+  variant does (Odd/Even, Moo/Oink/Quack), and says why a kind is barred under
+  Alternating Clues.
+
+### Changed
+
+- The clue returned for finishing a stack is paid on stack *completion* rather
+  than on playing a 5 — identical everywhere except where stacks run downwards.
+- The bot names the rule that puts a variant beyond H-Group and withholds its
+  notes there, instead of reading it wrongly. Variants whose oddness is only in
+  the suits, Ambiguous and Dual-Color included, it still reads.
+- Analysis by scala-bot is not guaranteed for the newly added variants; the
+  export is still valid hanab.live JSON and replays there.
+
 ## 3.0.0
 
 Rewritten to track a whole in-person game rather than a single player's hand.
@@ -17,7 +50,7 @@ Rewritten to track a whole in-person game rather than a single player's hand.
   and settling the forced ones in one tap.
 - Games persist to the device on every tap, and reopening returns you to the
   table you were recording. Whole-history backup and restore.
-- 491 variants, generated from hanab.live's own data.
+- Variants generated from hanab.live's own data.
 - Installable and offline-capable; deploys to GitHub Pages from `main`.
 
 ### Breaking

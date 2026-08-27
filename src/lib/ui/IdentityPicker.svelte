@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Identity } from "../hanabi/types";
   import { identityKey } from "../hanabi/deduce";
-  import { RANKS, suitAbbreviation, type Variant } from "../hanabi/variants";
+  import { rankLabel, suitAbbreviation, type Variant } from "../hanabi/variants";
   import { suitBackground, suitInk } from "./colors";
   import Sheet from "./Sheet.svelte";
 
@@ -37,7 +37,7 @@
 </script>
 
 <Sheet {title} {subtitle} {onclose}>
-  <div class="grid" style:--cols={RANKS.length}>
+  <div class="grid" style:--cols={variant.ranks.length}>
     {#each variant.suits as suit, suitIndex (suit.name)}
       <div
         class="suit-chip"
@@ -47,7 +47,7 @@
       >
         {suitAbbreviation(variant, suitIndex)}
       </div>
-      {#each RANKS as rank (rank)}
+      {#each variant.ranks as rank (rank)}
         {@const identity = { suitIndex, rank }}
         {@const left = counts?.get(identityKey(identity))}
         <button
@@ -56,9 +56,9 @@
           style:color={suitInk(suit)}
           disabled={!enabled(identity)}
           onclick={() => onpick(identity)}
-          aria-label="{suit.display} {rank}"
+          aria-label="{suit.display} {rankLabel(rank)}"
         >
-          <span class="rank">{rank}</span>
+          <span class="rank">{rankLabel(rank)}</span>
           {#if left !== undefined}<span class="left">{left}</span>{/if}
         </button>
       {/each}

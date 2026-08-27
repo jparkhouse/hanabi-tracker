@@ -21,7 +21,7 @@
   // Scoring every legal clue is the expensive part, so only do it when the
   // panel is open and it is actually a turn worth advising on.
   let suggestions = $derived.by<Suggestion[]>(() => {
-    if (!open || game.finished) return [];
+    if (!open || game.finished || analysis.unsupported) return [];
     return suggestMoves(record, analysis).slice(0, 6);
   });
 
@@ -44,7 +44,13 @@
   </div>
 
   {#if open}
-    {#if game.finished}
+    {#if analysis.unsupported}
+      <p class="small muted">
+        Conventions are off for <strong>{game.variant.name}</strong> — {analysis.unsupported}, and
+        H-Group does not describe that. The tracker underneath is recording the game as usual;
+        only the notes and suggestions are withheld.
+      </p>
+    {:else if game.finished}
       <p class="small muted">Nothing left to suggest.</p>
     {:else if suggestions.length === 0}
       <p class="small muted">No move to suggest here.</p>

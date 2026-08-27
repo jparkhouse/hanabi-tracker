@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { pace, type GameState } from "../hanabi/engine";
+  import { clueTokenLabel, pace, type GameState } from "../hanabi/engine";
   import { MAX_CLUE_TOKENS, MAX_STRIKES } from "../hanabi/types";
-  import { suitAbbreviation } from "../hanabi/variants";
+  import { rankLabel, suitAbbreviation } from "../hanabi/variants";
   import { suitBackground, suitInk } from "../ui/colors";
 
   interface Props {
@@ -10,6 +10,13 @@
 
   let { game }: Props = $props();
   let currentPace = $derived(pace(game));
+  // Throw It in a Hole players never see what they have scored, so neither does
+  // the strip until the game is over.
+  let hidesScore = $derived(game.variant.rules.throwItInAHole && !game.finished);
+  // Reversed and Up or Down stacks run downwards, so the chip shows the card on
+  // top rather than a height.
+  let topOf = (suitIndex: number) =>
+    game.playStacks[suitIndex] ? rankLabel(game.playStacks[suitIndex]) : "–";
 </script>
 
 <section class="strip">
@@ -21,19 +28,25 @@
         style:background={suitBackground(suit)}
         style:color={suitInk(suit)}
         class:empty={game.playStacks[suitIndex] === 0}
-        aria-label="{suit.display}: {game.playStacks[suitIndex] || 'nothing'} played"
+        aria-label="{suit.display}: {game.playStacks[suitIndex]
+          ? `${topOf(suitIndex)} on top`
+          : 'nothing played'}"
       >
-        <span class="rank">{game.playStacks[suitIndex] || "–"}</span>
+        <span class="rank">{topOf(suitIndex)}</span>
         <span class="abbr">{suitAbbreviation(game.variant, suitIndex)}</span>
       </div>
     {/each}
   </div>
 
   <div class="pills">
-    <span class="pill" class:warn={game.clueTokens === 0}>🔵 {game.clueTokens}/{MAX_CLUE_TOKENS}</span>
+    <span class="pill" class:warn={game.clueTokens < 1}>
+      🔵 {clueTokenLabel(game.clueTokens)}/{MAX_CLUE_TOKENS}
+    </span>
     <span class="pill" class:danger={game.strikes > 0}>✖ {game.strikes}/{MAX_STRIKES}</span>
     <span class="pill">🂠 {game.cardsRemaining}</span>
-    <span class="pill">{game.score}/{game.maxScore}</span>
+    <span class="pill" title={hidesScore ? "Hidden until the game ends" : undefined}>
+      {hidesScore ? "?" : game.score}/{game.maxScore}
+    </span>
     <span class="pill" class:warn={currentPace <= 0} title="Discards left before the max score slips">
       pace {currentPace}
     </span>

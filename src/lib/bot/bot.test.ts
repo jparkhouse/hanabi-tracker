@@ -9,7 +9,8 @@ import fixture from "../hanabi/fixtures/live-game-4p.json";
 import { fromHanabLive } from "../hanabi/hanabLive";
 import { ActionType, type GameAction, type GameRecord, type Identity } from "../hanabi/types";
 import { DEFAULT_BOT_SETTINGS, missingTechniques, type BotSettings } from "./conventions";
-import { analyse } from "./hgroup";
+import { analyse, unsupportedVariantReason } from "./hgroup";
+import { getVariant } from "../hanabi/variants";
 import { ordOf } from "./empathy";
 import type { BotOverride, BotOverrides } from "./overrides";
 import { botNote } from "./notes";
@@ -686,5 +687,58 @@ describe("convention settings", () => {
 
     expect(intermediate.interps.at(-1)?.connections.map((c) => c.kind)).toContain("finesse");
     expect(beginner.interps.at(-1)?.connections).toEqual([]);
+  });
+});
+
+describe("variants the conventions do not cover", () => {
+  it("names the rule that makes H-Group inapplicable", () => {
+    const cases: Array<[string, string]> = [
+      ["Up or Down (5 Suits)", "either way"],
+      ["Sudoku (5 Suits)", "wrap"],
+      ["Chimneys (5 Suits)", "whole range"],
+      ["Pink-Ones (5 Suits)", "own clue rules"],
+      ["Duck (5 Suits)", "never reaches"],
+      ["Clue Starved (5 Suits)", "half a clue"],
+      ["Color Mute (5 Suits)", "no colour clues"],
+      ["Reversed (5 Suits)", "downwards"],
+    ];
+    for (const [name, fragment] of cases) {
+      expect(unsupportedVariantReason(getVariant(name))).toContain(fragment);
+    }
+  });
+
+  it("still reads the variants whose oddness is only in the suits", () => {
+    for (const name of [
+      "No Variant",
+      "Black (6 Suits)",
+      "Rainbow (5 Suits)",
+      "Prism (5 Suits)",
+      "Ambiguous (6 Suits)",
+      "Dual-Color (6 Suits)",
+      "Critical Fours (5 Suits)",
+      "Scarce Ones (5 Suits)",
+    ]) {
+      expect(unsupportedVariantReason(getVariant(name))).toBeUndefined();
+    }
+  });
+
+  it("stands down rather than reading a game it cannot read", () => {
+    const deck = [...ourHand, ...bo(id(0, 1), id(1, 1), id(2, 3), id(3, 4), id(4, 5))];
+    const record: GameRecord = {
+      ...game(deck, [{ type: ActionType.RankClue, target: 1, value: 1 }]),
+      variantName: "Chimneys (5 Suits)",
+    };
+    const analysis = analyse(record, SETTINGS);
+
+    expect(analysis.unsupported).toContain("whole range");
+    expect(analysis.thoughts.size).toBe(0);
+    expect(analysis.interps).toEqual([]);
+    // The board underneath is still replayed exactly as the tracker records it:
+    // a Chimneys "1" touches every rank, so the whole hand is clued.
+    expect(analysis.state.turn).toBe(2);
+    expect(analysis.state.clueTokens).toBe(7);
+    for (const order of analysis.state.hands[1]) {
+      expect(analysis.state.cards[order].knowledge.clued).toBe(true);
+    }
   });
 });

@@ -1,7 +1,13 @@
 <script lang="ts">
   import { UNKNOWN, isKnown, type Identity } from "../hanabi/types";
   import type { CardKnowledge } from "../hanabi/engine";
-  import { identityName, suitAbbreviation, type Variant } from "../hanabi/variants";
+  import {
+    clueName,
+    identityName,
+    rankLabel,
+    suitAbbreviation,
+    type Variant,
+  } from "../hanabi/variants";
   import { suitBackground, suitInk } from "./colors";
 
   interface Props {
@@ -71,20 +77,19 @@
   {onclick}
 >
   {#if shown}
-    <span class="rank">{shown.rank}</span>
+    <span class="rank">{rankLabel(shown.rank)}</span>
     <span class="suit">{suitAbbreviation(variant, shown.suitIndex)}</span>
   {:else}
     <span class="rank faint">?</span>
     {#if knowledge && (knowledge.positiveRanks.length > 0 || knowledge.positiveColors.length > 0)}
       <span class="chips">
         {#each knowledge.positiveRanks as rank (rank)}
-          <span class="chip">{rank}</span>
+          <span class="chip">{clueName(variant, { kind: "rank", value: rank })}</span>
         {/each}
         {#each knowledge.positiveColors as color (color)}
-          <span
-            class="chip dot"
-            style:background={suitBackground(variant.suits[variant.clueColors[color]?.suitIndex])}
-          ></span>
+          <!-- The colour's own swatch, not a suit's: one colour may name several
+               suits (Ambiguous) and one suit several colours (Dual-Color). -->
+          <span class="chip dot" style:background={variant.clueColors[color]?.fill}></span>
         {/each}
       </span>
     {/if}

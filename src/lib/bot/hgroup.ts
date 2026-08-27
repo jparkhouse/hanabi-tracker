@@ -22,7 +22,7 @@
  * is the difference between reading a clue and reading it *correctly*.
  */
 import { clueOf, replay, touchedOrders, type GameState } from "../hanabi/engine";
-import { getVariant, identityName } from "../hanabi/variants";
+import { getVariant, identityName, type Variant } from "../hanabi/variants";
 import {
   ActionType,
   isKnown,
@@ -109,6 +109,11 @@ export interface DiscardInterp {
 
 export interface BotAnalysis {
   state: GameState;
+  /**
+   * Why the conventions are switched off for this game, or undefined when the
+   * bot is reading normally. See `unsupportedVariantReason`.
+   */
+  unsupported?: string;
   thoughts: Map<number, Thought>;
   interps: ClueInterp[];
   /** Discards that meant something beyond getting a clue token back. */
@@ -904,6 +909,40 @@ interface Pass {
 }
 
 /**
+ * Why the convention reader will not touch a variant, or undefined if it will.
+ *
+ * H-Group is written for ordinary stacks and ordinary clues. Chop, finesse
+ * position and "a 1 clue means these are playable" all stop holding when 1s
+ * answer to every colour, when a rank clue takes a whole range, when a stack can
+ * run downwards, or when the clue's value never reaches the player at all. The
+ * conventions for those variants are different, and the bot does not know them —
+ * so it stands down rather than producing confident nonsense, and the tracker
+ * underneath goes on recording the game exactly as it always does.
+ *
+ * Suits that behave oddly are fine: Rainbow, Pink, Prism, dual-colour and
+ * ambiguous suits all reach the reader through `cardTouched` and need no special
+ * handling. It is the variant-level rules that break it.
+ */
+export function unsupportedVariantReason(variant: Variant): string | undefined {
+  const r = variant.rules;
+  if (r.upOrDown) return "stacks can run either way in Up or Down";
+  if (r.sudoku) return "Sudoku stacks start anywhere and wrap";
+  if (variant.suits.some((suit) => suit.reversed)) return "reversed suits run downwards";
+  if (r.specialRank) return `${r.specialRank}s follow their own clue rules`;
+  if (r.funnels || r.chimneys) return "one rank clue touches a whole range";
+  if (r.oddsAndEvens) return "rank clues name parity, not a number";
+  if (r.synesthesia) return "colour clues double as rank clues";
+  if (r.cowAndPig || r.duck) return "the clue's value never reaches the player";
+  if (r.colorCluesTouchNothing || r.rankCluesTouchNothing) return "clues touch nothing";
+  if (variant.clueColors.length === 0) return "there are no colour clues";
+  if (variant.clueRanks.length === 0) return "there are no rank clues";
+  if (r.clueStarved) return "a discard is only worth half a clue";
+  if (r.alternatingClues) return "clue types have to alternate";
+  if (r.throwItInAHole) return "plays are face down and the score is hidden";
+  return undefined;
+}
+
+/**
  * Replays a game and keeps the table's shared reading of every card alongside
  * it.
  *
@@ -915,6 +954,10 @@ export function analyse(
   overrides: BotOverrides = NO_OVERRIDES,
   through = Number.POSITIVE_INFINITY,
 ): BotAnalysis {
+  const variant = getVariant(record.variantName);
+  const unsupported = unsupportedVariantReason(variant);
+  if (unsupported) return standDown(record, variant, settings, overrides, through, unsupported);
+
   const ruledOut: RuledOut = {};
   const history: Disproof[] = [];
   let pass = analyseOnce(record, settings, overrides, through, ruledOut);
@@ -936,6 +979,47 @@ export function analyse(
   }
 
   return { ...pass.analysis, reinterpretations: history };
+}
+
+/**
+ * The board, replayed, with no reading on top of it: no thoughts, no clue
+ * interpretations, nothing waiting. Everything downstream treats an empty
+ * thought map as "nothing to say about this card", which is exactly right here.
+ */
+function standDown(
+  record: GameRecord,
+  variant: Variant,
+  settings: BotSettings,
+  overrides: BotOverrides,
+  through: number,
+  unsupported: string,
+): BotAnalysis {
+  const limit = Math.min(record.actions.length, through);
+  const state = replay(
+    {
+      players: record.players,
+      ourPlayerIndex: record.ourPlayerIndex,
+      variant,
+      deck: record.deck,
+      actions: record.actions,
+      touchedByAction: record.touchedByAction,
+      options: record.options,
+    },
+    limit,
+  );
+  return {
+    state,
+    unsupported,
+    thoughts: new Map(),
+    interps: [],
+    discards: [],
+    settings,
+    overrides,
+    waiting: [],
+    reinterpretations: [],
+    earlyGame: true,
+    actionCount: limit,
+  };
 }
 
 function analyseOnce(

@@ -2,7 +2,13 @@
   import { app } from "../state/app.svelte";
   import { createGame } from "../hanabi/recording";
   import { handSize, MAX_PLAYERS, MIN_PLAYERS } from "../hanabi/types";
-  import { DEFAULT_VARIANT_NAME, getVariant, searchVariants, variantExists } from "../hanabi/variants";
+  import {
+    DEFAULT_VARIANT_NAME,
+    getVariant,
+    searchVariants,
+    variantExists,
+    variantNotes,
+  } from "../hanabi/variants";
   import Sheet from "../ui/Sheet.svelte";
 
   // Pre-filled from the last table so a regular group starts in two taps.
@@ -28,6 +34,7 @@
     trimmed.length >= MIN_PLAYERS && trimmed.every((name) => name !== "") && !duplicate,
   );
   let variant = $derived(getVariant(variantName));
+  let notes = $derived(variantNotes(variant));
   let results = $derived(searchVariants(variantQuery));
 
   function addPlayer() {
@@ -140,6 +147,13 @@
       <span>{variantName}</span>
       <span class="muted small">{variant.suits.length} suits · {variant.totalCards} cards</span>
     </button>
+    {#if notes.length > 0}
+      <ul class="notes muted small">
+        {#each notes as note (note)}
+          <li>{note}</li>
+        {/each}
+      </ul>
+    {/if}
     <div class="swatches">
       {#each variant.suits as suit (suit.name)}
         <span
@@ -256,6 +270,13 @@
   .variant {
     justify-content: space-between;
     text-align: left;
+  }
+
+  .notes {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 2px;
   }
 
   .swatches {

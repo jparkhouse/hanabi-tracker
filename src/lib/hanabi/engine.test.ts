@@ -1,9 +1,19 @@
 import { describe, expect, it } from "vitest";
 import fixture from "./fixtures/live-game-4p.json";
-import { identityStatus, isCritical, replay, stateOf } from "./engine";
+import {
+  allowedClueKinds,
+  canGiveClue,
+  clueTokenLabel,
+  identityStatus,
+  isCritical,
+  isPlayable,
+  nextPlayableRanks,
+  replay,
+  stateOf,
+} from "./engine";
 import { fromHanabLive } from "./hanabLive";
 import { ActionType, handSize, type GameAction, type Identity } from "./types";
-import { getVariant } from "./variants";
+import { getVariant, START_RANK } from "./variants";
 
 // A real four-player game recorded at a table, exported from hanab.live's format.
 const record = fromHanabLive(fixture, { ourPlayerIndex: 0 });
@@ -249,5 +259,223 @@ describe("play and discard", () => {
     });
     expect(state.strikes).toBe(1);
     expect(state.clueTokens).toBe(6);
+  });
+});
+
+describe("variants that change what playing means", () => {
+  /**
+   * Builds a game whose deck starts with the cards under test, padded out with a
+   * junk suit so the deal and the draws never run dry.
+   */
+  function game(variantName: string, head: Identity[], actions: GameAction[], junkSuit = 4) {
+    const variant = getVariant(variantName);
+    const deck: Identity[] = [
+      ...head,
+      ...Array.from({ length: variant.totalCards - head.length }, () => ({
+        suitIndex: junkSuit,
+        rank: 1,
+      })),
+    ];
+    return replay({
+      players: ["a", "b"],
+      ourPlayerIndex: 1,
+      variant,
+      deck,
+      actions,
+      touchedByAction: {},
+      options: { deckPlays: false, emptyClues: false },
+    });
+  }
+
+  const play = (target: number): GameAction => ({ type: ActionType.Play, target, value: 0 });
+
+  it("starts a reversed suit at 5 and runs it down", () => {
+    const reversed = getVariant("Reversed (5 Suits)");
+    const suit = 4; // the only reversed suit in this variant
+    // Order 0 is a 5 and order 1 a 1, both of the reversed suit.
+    const state = game(
+      "Reversed (5 Suits)",
+      [
+        { suitIndex: suit, rank: 5 },
+        { suitIndex: suit, rank: 1 },
+      ],
+      [],
+      0,
+    );
+    expect(nextPlayableRanks(state, suit)).toEqual([5]);
+    expect(isPlayable(state, { suitIndex: suit, rank: 5 })).toBe(true);
+    expect(isPlayable(state, { suitIndex: suit, rank: 1 })).toBe(false);
+    // The ordinary suits still run upwards in the same game.
+    expect(nextPlayableRanks(state, 0)).toEqual([1]);
+    expect(reversed.suits[suit].reversed).toBe(true);
+
+    const after = game(
+      "Reversed (5 Suits)",
+      [
+        { suitIndex: suit, rank: 5 },
+        { suitIndex: suit, rank: 1 },
+      ],
+      [play(0)],
+      0,
+    );
+    expect(after.score).toBe(1);
+    expect(nextPlayableRanks(after, suit)).toEqual([4]);
+    expect(identityStatus(after, { suitIndex: suit, rank: 5 })).toBe("played");
+  });
+
+  it("lets an Up or Down stack open with a 1, a 5 or a START", () => {
+    const head: Identity[] = [
+      { suitIndex: 0, rank: START_RANK }, // order 0
+      { suitIndex: 0, rank: 4 }, // order 1
+      { suitIndex: 0, rank: 3 }, // order 2
+    ];
+    const fresh = game("Up or Down (5 Suits)", head, []);
+    expect(fresh.playStackDirections[0]).toBe("undecided");
+    expect(nextPlayableRanks(fresh, 0)).toEqual([1, 5, START_RANK]);
+
+    // START goes down first, which leaves 2 and 4 as the ways to commit.
+    const started = game("Up or Down (5 Suits)", head, [play(0)]);
+    expect(started.score).toBe(1);
+    expect(started.playStackDirections[0]).toBe("undecided");
+    expect(nextPlayableRanks(started, 0)).toEqual([2, 4]);
+
+    // Playing the 4 commits the suit downwards, so a 3 comes next, not a 5.
+    const committed = game("Up or Down (5 Suits)", head, [play(0), play(1)]);
+    expect(committed.playStackDirections[0]).toBe("down");
+    expect(nextPlayableRanks(committed, 0)).toEqual([3]);
+    expect(identityStatus(committed, { suitIndex: 0, rank: 5 })).toBe("dead");
+    expect(identityStatus(committed, { suitIndex: 0, rank: 2 })).toBe("later");
+  });
+
+  it("hands a clue back for finishing a stack, not for playing a five", () => {
+    // Going down, the 1 finishes the suit; the 5 that started it does not.
+    const head: Identity[] = [
+      { suitIndex: 0, rank: 5 },
+      { suitIndex: 0, rank: 4 },
+      { suitIndex: 0, rank: 3 },
+      { suitIndex: 0, rank: 2 },
+      { suitIndex: 0, rank: 1 },
+    ];
+    const afterFive = game("Up or Down (5 Suits)", head, [
+      { type: ActionType.RankClue, target: 1, value: 1 },
+      { type: ActionType.RankClue, target: 0, value: 1 },
+      play(0),
+    ]);
+    expect(afterFive.score).toBe(1);
+    expect(afterFive.clueTokens).toBe(6);
+  });
+
+  it("pays the stack-completion clue to whichever card actually finishes it", () => {
+    // Five cards of one suit, played 5-4-3-2-1. The 1 completes the stack.
+    const head: Identity[] = [
+      { suitIndex: 0, rank: 5 },
+      { suitIndex: 0, rank: 4 },
+      { suitIndex: 0, rank: 3 },
+      { suitIndex: 0, rank: 2 },
+      { suitIndex: 0, rank: 1 },
+    ];
+    const plays = [play(0), play(1), play(2), play(3), play(4)];
+    const spend: GameAction[] = [
+      { type: ActionType.RankClue, target: 1, value: 2 },
+      { type: ActionType.RankClue, target: 0, value: 2 },
+    ];
+
+    // Four cards down, the stack is unfinished and no clue has come back.
+    const partway = game("Up or Down (5 Suits)", head, [...spend, ...plays.slice(0, 4)]);
+    expect(partway.score).toBe(4);
+    expect(partway.clueTokens).toBe(6);
+
+    const done = game("Up or Down (5 Suits)", head, [...spend, ...plays]);
+    expect(done.score).toBe(5);
+    expect(done.playStackDirections[0]).toBe("finished");
+    expect(done.clueTokens).toBe(7);
+  });
+
+  it("holds off calling an Up or Down 1 critical while the suit could still go up", () => {
+    // Up or Down deals a single 1, but a suit that can still start on 5 or START
+    // does not need it, so losing it costs nothing yet.
+    const head: Identity[] = [{ suitIndex: 0, rank: 1 }];
+    const fresh = game("Up or Down (5 Suits)", head, []);
+    expect(fresh.playStackDirections[0]).toBe("undecided");
+    expect(isCritical(fresh, { suitIndex: 0, rank: 1 })).toBe(false);
+
+    // Once the suit commits downwards the 1 is the card that finishes it.
+    const down = game(
+      "Up or Down (5 Suits)",
+      [
+        { suitIndex: 0, rank: 5 },
+        { suitIndex: 0, rank: 4 },
+        { suitIndex: 0, rank: 1 },
+      ],
+      [play(0), play(1)],
+    );
+    expect(down.playStackDirections[0]).toBe("down");
+    expect(isCritical(down, { suitIndex: 0, rank: 1 })).toBe(true);
+  });
+
+  it("starts each Sudoku stack on its own rank and wraps at the top", () => {
+    const head: Identity[] = [
+      { suitIndex: 0, rank: 4 }, // order 0
+      { suitIndex: 0, rank: 1 }, // order 1: 4 wraps to 1, not to 5
+    ];
+    const fresh = game("Sudoku (4 Suits)", head, [], 3);
+    expect(fresh.variant.stackSize).toBe(4);
+    expect(nextPlayableRanks(fresh, 0)).toEqual([1, 2, 3, 4]);
+
+    const started = game("Sudoku (4 Suits)", head, [play(0)], 3);
+    expect(started.playStackStarts[0]).toBe(4);
+    // Wrapping: after the 4 comes the 1.
+    expect(nextPlayableRanks(started, 0)).toEqual([1]);
+    // And no other suit may open on a 4 any more.
+    expect(nextPlayableRanks(started, 1)).toEqual([1, 2, 3]);
+  });
+
+  it("spends whole clues and earns half of one back when Clue Starved", () => {
+    const state = game(
+      "Clue Starved (5 Suits)",
+      [{ suitIndex: 0, rank: 1 }],
+      [
+        { type: ActionType.RankClue, target: 1, value: 1 }, // 8 -> 7
+        { type: ActionType.Discard, target: 9, value: 0 }, // 7 -> 7.5
+      ],
+    );
+    expect(state.clueTokens).toBe(7.5);
+    expect(clueTokenLabel(state.clueTokens)).toBe("7½");
+  });
+
+  it("makes Alternating Clues refuse two of a kind in a row", () => {
+    const afterColour = game("Alternating Clues (5 Suits)", [{ suitIndex: 0, rank: 1 }], [
+      { type: ActionType.ColorClue, target: 1, value: 0 },
+    ]);
+    expect(afterColour.lastClueKind).toBe("color");
+    expect(allowedClueKinds(afterColour)).toEqual(["rank"]);
+    expect(canGiveClue(afterColour)).toBe(true);
+
+    const afterRank = game("Alternating Clues (5 Suits)", [{ suitIndex: 0, rank: 1 }], [
+      { type: ActionType.ColorClue, target: 1, value: 0 },
+      { type: ActionType.RankClue, target: 0, value: 1 },
+    ]);
+    expect(allowedClueKinds(afterRank)).toEqual(["color"]);
+  });
+
+  it("leaves a Duck clue pointing at cards but saying nothing about them", () => {
+    const head: Identity[] = [{ suitIndex: 0, rank: 1 }];
+    const state = game("Duck (5 Suits)", head, [
+      { type: ActionType.RankClue, target: 1, value: 1 },
+    ]);
+    // Seat 1 holds orders 5-9; the junk suit is all 1s, so a "1" touches them.
+    const touched = state.hands[1].filter((order) => state.cards[order].knowledge.clued);
+    expect(touched.length).toBeGreaterThan(0);
+    for (const order of state.hands[1]) {
+      expect(state.cards[order].knowledge.positiveRanks).toEqual([]);
+      expect(state.cards[order].knowledge.negativeRanks).toEqual([]);
+    }
+  });
+
+  it("offers no clue of a kind the variant does not have", () => {
+    const mute = game("Color Mute (5 Suits)", [{ suitIndex: 0, rank: 1 }], []);
+    expect(allowedClueKinds(mute)).toEqual(["rank"]);
+    const synesthesia = game("Synesthesia (5 Suits)", [{ suitIndex: 0, rank: 1 }], []);
+    expect(allowedClueKinds(synesthesia)).toEqual(["color"]);
   });
 });
